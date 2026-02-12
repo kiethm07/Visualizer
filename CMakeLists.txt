@@ -12,8 +12,12 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(main src/main.cpp)
-target_compile_features(main PRIVATE cxx_std_17)
-target_link_libraries(main PRIVATE SFML::Graphics)
+add_executable(Visualizer src/main.cpp)
+target_compile_features(Visualizer PRIVATE cxx_std_17)
+target_link_libraries(Visualizer PRIVATE SFML::Graphics)
 
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT main)
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Visualizer)
+
+target_include_directories(Visualizer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+target_compile_definitions(Visualizer PRIVATE ASSET_DIR="${CMAKE_SOURCE_DIR}/assets")
