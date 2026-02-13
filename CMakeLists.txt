@@ -12,7 +12,14 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(Visualizer src/main.cpp)
+add_executable(Visualizer 
+                            src/main.cpp 
+                            "src/UI/Camera.cpp"
+                            "src/UI/UI.cpp"
+                            
+                            "include/UI/Camera.h" 
+                            "include/UI/UI.h")
+
 target_compile_features(Visualizer PRIVATE cxx_std_17)
 target_link_libraries(Visualizer PRIVATE SFML::Graphics)
 
