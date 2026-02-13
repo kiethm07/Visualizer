@@ -1,6 +1,8 @@
 #include <UI/UI.h>
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <string>
+#include <Model/Button.h>
 
 UI::UI() {
     settings.antiAliasingLevel = 8;
@@ -23,23 +25,25 @@ UI::UI() {
 }
 
 void UI::run() {
+    sf::Font font;
+    if (!font.openFromFile(std::string(ASSET_DIR) + "/fonts/Roboto-Regular.ttf")) {
+        std::cout << "Cannot load font!\n";
+    }
     while (window.isOpen()) {
         while (const std::optional<sf::Event> ev = window.pollEvent()) {
             cam.handleEvent(window, view, *ev);
         }
-
         window.setView(view);
-
         window.clear();
-        // draw world...
         sf::CircleShape cir;
-        cir.setFillColor(sf::Color::Green);
-        cir.setPosition({ 0,0 });
-        cir.setRadius(100);
         cir.setPointCount(75);
-        //cir.setPointCount(cir.getRadius());
-        //std::cout << cir.getPointCount() << "\n";
-        window.draw(cir);
+        //cir.setOrigin(sf::Vector2f({ (float)DEFAULT_WIDTH / 2, (float)DEFAULT_HEIGHT / 2 }));
+        cir.setRadius(100);
+        cir.setOrigin(sf::Vector2f({ 100, 100 }));
+        cir.setPosition(sf::Vector2f({ (float)DEFAULT_WIDTH / 2, (float)DEFAULT_HEIGHT / 2 }));
+        auto t = cir.getOrigin();
+        Button start(font, "start", cir.getPosition(), sf::Vector2f({ 100,100 }), 100);
+        window.draw(start);
         window.display();
     }
 }
