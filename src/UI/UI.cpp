@@ -42,7 +42,9 @@ void UI::run() {
         cir.setOrigin(sf::Vector2f({ 100, 100 }));
         cir.setPosition(sf::Vector2f({ (float)DEFAULT_WIDTH / 2, (float)DEFAULT_HEIGHT / 2 }));
         auto t = cir.getOrigin();
-        Button start(font, "start", cir.getPosition(), sf::Vector2f({ 100,100 }), 100);
+        Button start(font, "start", cir.getPosition(), sf::Vector2f({ 300, 300 }), 50);
+        start.setPosition(cir.getPosition());
+        start.setOrigin(start.getSize() / 2.f);
         window.draw(start);
         window.display();
     }
