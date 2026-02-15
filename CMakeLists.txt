@@ -23,7 +23,7 @@ add_executable(Visualizer
                             "include/Model/Button.h"                         
                             "include/UI/Camera.h" 
                             "include/UI/UI.h" 
-                            "include/DataStructures/LinkedList.h" )
+                            "include/DataStructures/LinkedList.h"  "include/UI/Menu.h" "src/UI/Menu.cpp" "include/AssetManager/AssetManager.h" "src/AssetManager/AssetManager.cpp")
 
 target_compile_features(Visualizer PRIVATE cxx_std_17)
 target_link_libraries(Visualizer PRIVATE SFML::Graphics)

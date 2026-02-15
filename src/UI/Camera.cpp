@@ -1,9 +1,9 @@
 #include <UI/Camera.h>
 #include <SFML/Graphics.hpp>
+#include <iostream>
 
 void CameraController::handleEvent(sf::RenderWindow& window, sf::View& view, const sf::Event& ev) {
-    if (ev.is<sf::Event::Closed>()) window.close();
-
+    if (enable == false) return;
     if (const auto* mb = ev.getIf<sf::Event::MouseButtonPressed>()) {
         if (mb->button == sf::Mouse::Button::Middle) {
             dragging = true;
@@ -42,6 +42,10 @@ void CameraController::handleEvent(sf::RenderWindow& window, sf::View& view, con
     }
 
     if (const auto* rs = ev.getIf<sf::Event::Resized>()) {
-
+        //std::cout << window.getSize().x << " " << window.getSize().y << "\n";
     }
+}
+
+void CameraController::setEnable(const bool flag) {
+    enable = flag;
 }
