@@ -48,6 +48,10 @@ void Button::setCharacterSize(const unsigned int& size) {
 	centerText();
 }
 
+void Button::setCharacterColor(const sf::Color& color) {
+	text.setFillColor(color);
+}
+
 std::string Button::getLabel() {
 	return text.getString();
 }

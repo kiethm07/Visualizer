@@ -14,7 +14,7 @@ private:
 	const AssetManager& asset_manager;
 	sf::RenderWindow window;
 	sf::ContextSettings settings;
-	sf::View view;
+	sf::View cam_view, fixed_view;
 	CameraController cam;
 	Menu menu;
 	MenuState current_state = MenuState::Menu;

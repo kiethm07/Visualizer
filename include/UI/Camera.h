@@ -3,7 +3,7 @@
 
 struct CameraController {
     bool dragging = false;
-    bool enable = false;
+    bool enable = true;
     sf::Vector2i lastMousePos{};
     float zoom = 1.f;              // 1 = default
     float zoomMin = 0.33f;

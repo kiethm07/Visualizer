@@ -18,14 +18,14 @@ UI::UI(const AssetManager& a_manager) :
     window.setVerticalSyncEnabled(true);
     window.setMinimumSize(sf::Vector2u{ MIN_WIDTH, MIN_HEIGHT });
 
-    view.setSize(sf::Vector2f({ (float)DEFAULT_WIDTH, (float)DEFAULT_HEIGHT }));
-    view.setCenter(sf::Vector2f({ (float)DEFAULT_WIDTH / 2, (float)DEFAULT_HEIGHT / 2 }));
-
-    window.setView(view);
+    cam_view.setSize(sf::Vector2f({ (float)DEFAULT_WIDTH, (float)DEFAULT_HEIGHT }));
+    cam_view.setCenter(sf::Vector2f({ (float)DEFAULT_WIDTH / 2, (float)DEFAULT_HEIGHT / 2 }));
+    fixed_view.setSize(sf::Vector2f({ (float)DEFAULT_WIDTH, (float)DEFAULT_HEIGHT }));
+    fixed_view.setCenter(sf::Vector2f({ (float)DEFAULT_WIDTH / 2, (float)DEFAULT_HEIGHT / 2 }));
+    window.setView(fixed_view);
 }
 
 void UI::run() {
-    std::cout << view.getSize().x << " " << view.getSize().y << "\n";
     while (window.isOpen()) {
         while (const std::optional<sf::Event> ev = window.pollEvent()) {
             if (ev->is<sf::Event::Closed>()) window.close();
@@ -35,16 +35,16 @@ void UI::run() {
                 }
             }
             if (current_state == MenuState::Menu) {
-                cam.setEnable(false);
+                //cam.setEnable(false);
             }
-            //cam.handleEvent(window, view, *ev);
+            cam.handleEvent(window, cam_view, *ev);
         }
-        view.setSize(sf::Vector2f(window.getSize()));
-        view.setCenter(sf::Vector2f(window.getSize()) / 2.f);
-        window.setView(view);
+        fixed_view.setSize(sf::Vector2f(window.getSize()));
+        fixed_view.setCenter(sf::Vector2f(window.getSize()) / 2.f);
+        window.setView(fixed_view);
         window.clear();
         if (current_state == MenuState::Menu) {
-            menu.update(window);
+            menu.update(window, fixed_view);
             window.draw(menu);
         }
         window.display();

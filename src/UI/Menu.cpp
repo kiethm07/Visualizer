@@ -6,9 +6,9 @@ Menu::Menu(const sf::Font& font) :
 	start_button(font, "Start", {}, {}, 20),
 	setting_button(font, "", {}, {}, 20) {}
 
-void Menu::update(const sf::RenderWindow& window) {
-	sf::Vector2u current_window_size = window.getSize();
-	updateWindowSize(current_window_size);
+void Menu::update(const sf::RenderWindow& window, const sf::View& view) {
+	updateWindowSize(window, view);
+	updateButtonState(window, view);
 }
 
 std::optional<MenuState> Menu::handleEvent(const sf::RenderWindow & window, const sf::Event & ev) {
@@ -16,7 +16,8 @@ std::optional<MenuState> Menu::handleEvent(const sf::RenderWindow & window, cons
 	return std::nullopt;
 }
 
-void Menu::updateWindowSize(const sf::Vector2u& size) {
+void Menu::updateWindowSize(const sf::RenderWindow& window, const sf::View& view) {
+	sf::Vector2u size = window.getSize();
 	sf::Vector2f center = { size.x / 2.f, size.y / 2.f };
 	//std::cout << center.x << " " << center.y << "\n";
 	float button_width = 0.2f * size.x;
@@ -31,3 +32,6 @@ void Menu::updateWindowSize(const sf::Vector2u& size) {
 	//std::cout << button_width << " " << button_height << "\n";
 }
 
+void Menu::updateButtonState(const sf::RenderWindow& window, const sf::View& view) {
+	start_button.update(window, view);
+}

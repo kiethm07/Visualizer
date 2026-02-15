@@ -10,6 +10,7 @@ public:
 	void setButtonSize(const sf::Vector2f& size);
 	void setLabel(const std::string& label);
 	void setCharacterSize(const unsigned int& size);
+	void setCharacterColor(const sf::Color& color);
 	void handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
 	void update(const sf::RenderWindow& window, const sf::View& view);
 
