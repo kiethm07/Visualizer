@@ -4,11 +4,12 @@
 
 class Button : public sf::Drawable {
 public:
-	Button(const sf::Font& font, const std::string& label, const sf::Vector2f pos, const sf::Vector2f size, const unsigned int char_size);
-	void setPosition(sf::Vector2f pos);
-	void setOrigin(sf::Vector2f origin);
-	void setSize(sf::Vector2f size);
-	void setLabel(const std::string label);
+	explicit Button(const sf::Font& font, const std::string& label, const sf::Vector2f pos, const sf::Vector2f size, const unsigned int char_size);
+	void setPosition(const sf::Vector2f& pos);
+	void setOrigin(const sf::Vector2f& origin);
+	void setButtonSize(const sf::Vector2f& size);
+	void setLabel(const std::string& label);
+	void setCharacterSize(const unsigned int& size);
 	void handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
 	void update(const sf::RenderWindow& window, const sf::View& view);
 

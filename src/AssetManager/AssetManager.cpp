@@ -22,7 +22,7 @@ void AssetManager::loadAllFontFromFile() {
 	}
 }
 
-const sf::Font& AssetManager::getFont(const std::string& font_name) {
+const sf::Font& AssetManager::getFont(const std::string& font_name) const {
 	auto it = font_container.find(font_name);
 	if (it == font_container.end()) {
 		std::cout << "font " << font_name << " not founded!\n";

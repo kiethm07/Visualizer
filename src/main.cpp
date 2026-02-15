@@ -5,8 +5,8 @@
 
 int main() {
     AssetManager asset_manager;
-    UI ui;
     asset_manager.loadAllFontFromFile();
+    UI ui(asset_manager);
     //asset_manager.printAllFont();
     ui.run();
 }

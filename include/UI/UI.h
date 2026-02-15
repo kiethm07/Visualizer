@@ -8,9 +8,10 @@
 
 class UI{
 public:
-	UI();
+	UI(const AssetManager& asset_manager);
 	void run();
 private:
+	const AssetManager& asset_manager;
 	sf::RenderWindow window;
 	sf::ContextSettings settings;
 	sf::View view;

@@ -1,7 +1,10 @@
 #include <UI/UI.h>
 #include <iostream>
 
-UI::UI() {
+UI::UI(const AssetManager& a_manager) : 
+    asset_manager(a_manager),
+    menu(asset_manager.getFont("Roboto-Regular"))
+{
     settings.antiAliasingLevel = 8;
 
     window.create(
@@ -22,28 +25,28 @@ UI::UI() {
 }
 
 void UI::run() {
-    sf::Font font;
-    if (!font.openFromFile(std::string(ASSET_DIR) + "/fonts/Roboto-Regular.ttf")) {
-        std::cout << "Cannot load font!\n";
-    }
+    std::cout << view.getSize().x << " " << view.getSize().y << "\n";
     while (window.isOpen()) {
-        Button start(font, "Halo", { 0.f,0.f }, { 100.f,100.f }, 20);
         while (const std::optional<sf::Event> ev = window.pollEvent()) {
             if (ev->is<sf::Event::Closed>()) window.close();
-            if (current_state == MenuState::Menu) {
-                cam.setEnable(false);
-            }
-            cam.handleEvent(window, view, *ev);
             if (const auto* keyPressed = ev->getIf<sf::Event::KeyPressed>()) {
                 if (keyPressed->scancode == sf::Keyboard::Scancode::Escape) {
                     window.close();
                 }
             }
+            if (current_state == MenuState::Menu) {
+                cam.setEnable(false);
+            }
+            //cam.handleEvent(window, view, *ev);
         }
-        start.update(window, view);
+        view.setSize(sf::Vector2f(window.getSize()));
+        view.setCenter(sf::Vector2f(window.getSize()) / 2.f);
         window.setView(view);
         window.clear();
-        window.draw(start);
+        if (current_state == MenuState::Menu) {
+            menu.update(window);
+            window.draw(menu);
+        }
         window.display();
     }
 }

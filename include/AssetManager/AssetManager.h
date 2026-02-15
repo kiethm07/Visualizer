@@ -10,7 +10,7 @@ class AssetManager {
 public:
 	void loadFont(const std::filesystem::path& file_path);
 	void loadAllFontFromFile();
-	const sf::Font& getFont(const std::string& font_name);
+	const sf::Font& getFont(const std::string& font_name) const;
 	///Debug purpose
 	int getFontSize() { return font_container.size(); }
 	int getTextureSize() { return texture_container.size(); }
