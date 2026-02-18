@@ -11,8 +11,10 @@ public:
 	void setLabel(const std::string& label);
 	void setCharacterSize(const unsigned int& size);
 	void setCharacterColor(const sf::Color& color);
-	void handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
+	//void handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
 	void update(const sf::RenderWindow& window, const sf::View& view);
+	bool mousePressed(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
+	bool contains(const sf::RenderWindow& window, const sf::View& view, const sf::Vector2f& position);
 
 	sf::Vector2f getPosition();
 	sf::Vector2f getOrigin();
@@ -28,8 +30,8 @@ private:
 		target.draw(text, states);
 	}
 
-	const sf::Color IDLE_COLOR = sf::Color::Green;
-	const sf::Color HOVER_COLOR = sf::Color::Red;
+	const sf::Color IDLE_COLOR = sf::Color(89, 145, 46);
+	const sf::Color HOVER_COLOR = sf::Color(209, 70, 38);
 
 	void centerText();
 };

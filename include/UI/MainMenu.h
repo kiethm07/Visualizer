@@ -4,11 +4,11 @@
 #include <Model/MenuState.h>
 #include <optional>
 
-class Menu : public sf::Drawable{
+class MainMenu : public sf::Drawable {
 public:
-	Menu(const sf::Font& font);
-	std::optional<MenuState> handleEvent(const sf::RenderWindow& window, const sf::Event& ev);
-	void Menu::update(const sf::RenderWindow& window, const sf::View& view);
+	MainMenu(const sf::Font& font);
+	std::optional<MenuState> handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
+	void MainMenu::update(const sf::RenderWindow& window, const sf::View& view);
 private:
 	const sf::Font& menu_font;
 	Button start_button;

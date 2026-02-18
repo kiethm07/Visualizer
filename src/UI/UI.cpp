@@ -3,7 +3,8 @@
 
 UI::UI(const AssetManager& a_manager) : 
     asset_manager(a_manager),
-    menu(asset_manager.getFont("Roboto-Regular"))
+    main_menu(asset_manager.getFont("Roboto-Regular")),
+    ds_menu(asset_manager.getFont("Roboto-Regular"))
 {
     settings.antiAliasingLevel = 8;
 
@@ -29,23 +30,46 @@ void UI::run() {
     while (window.isOpen()) {
         while (const std::optional<sf::Event> ev = window.pollEvent()) {
             if (ev->is<sf::Event::Closed>()) window.close();
+            if (ev->is<sf::Event::Resized>()) {
+                fixed_view.setSize(sf::Vector2f(window.getSize()));
+                fixed_view.setCenter(sf::Vector2f(window.getSize()) / 2.f);
+            }
             if (const auto* keyPressed = ev->getIf<sf::Event::KeyPressed>()) {
                 if (keyPressed->scancode == sf::Keyboard::Scancode::Escape) {
                     window.close();
                 }
+                if (keyPressed->scancode == sf::Keyboard::Scancode::Home) {
+                    current_state = MenuState::MainMenu;
+                    break;
+                }
             }
-            if (current_state == MenuState::Menu) {
+            if (current_state == MenuState::MainMenu) {
                 //cam.setEnable(false);
+                std::optional<MenuState> chosen = main_menu.handleEvent(window, fixed_view, *ev);
+                if (chosen.has_value()) {
+                    current_state = chosen.value();
+                    break;
+                }
+            }
+            if (current_state == MenuState::DSMenu) {
+                std::optional<MenuState> chosen = ds_menu.handleEvent(window, fixed_view, *ev);
+                if (chosen.has_value()) {
+                    current_state = chosen.value();
+                    break;
+                }
             }
             cam.handleEvent(window, cam_view, *ev);
         }
-        fixed_view.setSize(sf::Vector2f(window.getSize()));
-        fixed_view.setCenter(sf::Vector2f(window.getSize()) / 2.f);
+
         window.setView(fixed_view);
         window.clear();
-        if (current_state == MenuState::Menu) {
-            menu.update(window, fixed_view);
-            window.draw(menu);
+        if (current_state == MenuState::MainMenu) {
+            main_menu.update(window, fixed_view);
+            window.draw(main_menu);
+        }
+        if (current_state == MenuState::DSMenu) {
+            ds_menu.update(window, fixed_view);
+            window.draw(ds_menu);
         }
         window.display();
     }

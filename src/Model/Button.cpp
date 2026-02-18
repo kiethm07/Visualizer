@@ -60,18 +60,25 @@ sf::FloatRect Button::getGlobalBounds() {
 	return container.getGlobalBounds();
 }
 
+bool Button::contains(const sf::RenderWindow& window, const sf::View& view, const sf::Vector2f& position) {
+	sf::Vector2f mouse_world = window.mapPixelToCoords(sf::Mouse::getPosition(window), view);
+	return container.getGlobalBounds().contains(mouse_world);
+}
+
 void Button::update(const sf::RenderWindow& window, const sf::View& view) {
 	sf::Vector2f mouse_world = window.mapPixelToCoords(sf::Mouse::getPosition(window), view);
 	hovered = container.getGlobalBounds().contains(mouse_world);
 	container.setFillColor(hovered ? HOVER_COLOR : IDLE_COLOR);
 }
 
-void Button::handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev) {
-	std::cout << hovered << "\n";
-	sf::Vector2f mouse_world = window.mapPixelToCoords(sf::Mouse::getPosition(window), view);
-	hovered = container.getGlobalBounds().contains(mouse_world);
-	if (hovered == 0) container.setFillColor(IDLE_COLOR);
-	if (hovered == 1) container.setFillColor(HOVER_COLOR);
+bool Button::mousePressed(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev) {
+	if (const auto* mouse_press = ev.getIf<sf::Event::MouseButtonPressed>()) {
+		if (mouse_press->button == sf::Mouse::Button::Left) {
+			sf::Vector2f mouse_world = window.mapPixelToCoords(sf::Mouse::getPosition(window), view);
+			return container.getGlobalBounds().contains(mouse_world);
+		}
+	}
+	return 0;
 }
 
 void Button::centerText() {

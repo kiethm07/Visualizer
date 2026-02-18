@@ -1,0 +1,22 @@
+#pragma once
+#include <SFML/Graphics.hpp>
+#include <Model/Button.h>
+#include <Model/MenuState.h>
+#include <optional>
+
+class DSMenu : public sf::Drawable {
+public:
+	DSMenu(const sf::Font& font);
+	std::optional<MenuState> handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
+	void DSMenu::update(const sf::RenderWindow& window, const sf::View& view);
+private:
+	const sf::Font& menu_font;
+	Button main_menu_button;
+	Button linked_list_button;
+	void updateWindowSize(const sf::RenderWindow& window, const sf::View& view);
+	void updateButtonState(const sf::RenderWindow& window, const sf::View& view);
+	void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
+		target.draw(main_menu_button, states);
+		target.draw(linked_list_button, states);
+	}
+};

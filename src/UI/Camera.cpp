@@ -5,13 +5,13 @@
 void CameraController::handleEvent(sf::RenderWindow& window, sf::View& view, const sf::Event& ev) {
     if (enable == false) return;
     if (const auto* mb = ev.getIf<sf::Event::MouseButtonPressed>()) {
-        if (mb->button == sf::Mouse::Button::Middle) {
+        if (mb->button == sf::Mouse::Button::Right) {
             dragging = true;
             lastMousePos = mb->position;
         }
     }
     if (const auto* mb = ev.getIf<sf::Event::MouseButtonReleased>()) {
-        if (mb->button == sf::Mouse::Button::Middle) dragging = false;
+        if (mb->button == sf::Mouse::Button::Right) dragging = false;
     }
     if (const auto* mw = ev.getIf<sf::Event::MouseWheelScrolled>()) {
         const float factor = (mw->delta > 0.f) ? 0.9f : 1.1f;
