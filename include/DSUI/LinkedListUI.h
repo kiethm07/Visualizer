@@ -4,6 +4,7 @@
 class LinkedListUI : public sf::Drawable{
 public:
 	LinkedListUI(const sf::Font& NODE_FONT);
+	
 private:
 	const sf::Font& NODE_FONT;
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
