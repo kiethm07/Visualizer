@@ -34,6 +34,7 @@ void UI::run() {
                 fixed_view.setSize(sf::Vector2f(window.getSize()));
                 fixed_view.setCenter(sf::Vector2f(window.getSize()) / 2.f);
             }
+            cam.handleEvent(window, cam_view, *ev);
             if (const auto* keyPressed = ev->getIf<sf::Event::KeyPressed>()) {
                 if (keyPressed->scancode == sf::Keyboard::Scancode::Escape) {
                     window.close();
@@ -58,7 +59,6 @@ void UI::run() {
                     break;
                 }
             }
-            cam.handleEvent(window, cam_view, *ev);
         }
 
         window.setView(fixed_view);
@@ -70,6 +70,9 @@ void UI::run() {
         if (current_state == MenuState::DSMenu) {
             ds_menu.update(window, fixed_view);
             window.draw(ds_menu);
+        }
+        if (current_state == MenuState::LinkedList) {
+
         }
         window.display();
     }

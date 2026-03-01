@@ -43,6 +43,14 @@ void CameraController::handleEvent(sf::RenderWindow& window, sf::View& view, con
 
     if (const auto* rs = ev.getIf<sf::Event::Resized>()) {
         //std::cout << window.getSize().x << " " << window.getSize().y << "\n";
+        const sf::Vector2f oldCenter = view.getCenter();
+        view.setSize(sf::Vector2f{
+            static_cast<float>(rs->size.x),
+            static_cast<float>(rs->size.y)
+            });
+
+        view.zoom(zoom);
+        view.setCenter(oldCenter);
     }
 }
 

@@ -1,9 +1,11 @@
 #pragma once
 
+
 class LinkedList {
 public:
     void insertFirst(int x) { insertFirst(pHead, x); }
     void remove(int x);
+    void clear() { clear(pHead); }
     LinkedList();
     ~LinkedList();
 
@@ -12,12 +14,14 @@ public:
 private:
     struct Node {
         int val;
+        int ui_id; //Specific for UI
         Node* pNext;
         Node() {}
-        Node(int x) :
-            val(x), pNext(nullptr) {
+        Node(int x, int ui_id) :
+            val(x), ui_id(ui_id), pNext(nullptr) {
         }
     };
+    int next_ui_id;
     Node* pHead;
     void clear(Node*& pHead);
     void insertFirst(Node*& pHead, int x);

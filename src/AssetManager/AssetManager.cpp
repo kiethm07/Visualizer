@@ -11,7 +11,6 @@ void AssetManager::loadFont(const std::filesystem::path& file_path) {
 	font_container[font_name] = std::move(font);
 }
 
-
 void AssetManager::loadAllFontFromFile() {
 	namespace fs = std::filesystem;
 	std::string folder_path = std::string(ASSET_DIR) + "/fonts";
