@@ -8,7 +8,7 @@ class DSMenu : public sf::Drawable {
 public:
 	DSMenu(const sf::Font& font);
 	std::optional<MenuState> handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
-	void DSMenu::update(const sf::RenderWindow& window, const sf::View& view);
+	void update(const sf::RenderWindow& window, const sf::View& view);
 private:
 	const sf::Font& menu_font;
 	Button main_menu_button;
