@@ -6,6 +6,7 @@
 #include <optional>
 #include <Model/MenuState.h>
 #include <AssetManager/AssetManager.h>
+#include <DSUI/LinkedListUI.h>
 
 class UI{
 public:
@@ -21,6 +22,7 @@ private:
 	CameraController cam;
 	MainMenu main_menu;
 	DSMenu ds_menu;
+	LinkedListUI linked_list_ui;
 	MenuState current_state = MenuState::MainMenu;
 	const unsigned int DEFAULT_WIDTH = 1280;
 	const unsigned int DEFAULT_HEIGHT = 720;

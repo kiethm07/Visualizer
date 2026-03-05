@@ -1,13 +1,16 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <Panel/LinkedListPanel.h>
+#include <Model/Button.h>
 
-class LinkedListUI : public sf::Drawable{
+class LinkedListUI {
 public:
 	LinkedListUI(const sf::Font& NODE_FONT);
-	
+	void update(const sf::RenderWindow& window, const sf::View& fixed_view, const sf::View& cam_view);
+	void handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
+	void draw(sf::RenderWindow& window, const sf::View& fixed_view, const sf::View& cam_view);
 private:
 	const sf::Font& NODE_FONT;
-	void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
-		const sf::View current_view = target.getView();
-	}
+	LinkedListPanel panel;
+	Button test;
 };

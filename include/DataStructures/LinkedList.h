@@ -16,7 +16,9 @@ private:
         int val;
         int ui_id; //Specific for UI
         Node* pNext;
-        Node() {}
+        Node() :
+            val(0), ui_id(-1), pNext(nullptr) {
+        }
         Node(int x, int ui_id) :
             val(x), ui_id(ui_id), pNext(nullptr) {
         }

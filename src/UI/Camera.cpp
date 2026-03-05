@@ -57,3 +57,10 @@ void CameraController::handleEvent(sf::RenderWindow& window, sf::View& view, con
 void CameraController::setEnable(const bool flag) {
     enable = flag;
 }
+
+void CameraController::reset(const sf::RenderWindow& window, sf::View& view) {
+    sf::Vector2f window_size = sf::Vector2f(window.getSize());
+    sf::Vector2f window_center = window_size / 2.f;
+    view.setSize(window_size);
+    view.setCenter(window_center);
+}
