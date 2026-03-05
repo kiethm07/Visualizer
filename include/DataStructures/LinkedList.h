@@ -1,5 +1,5 @@
 #pragma once
-
+#include <Model/LinkedListModel/LinkedListState.h>
 
 class LinkedList {
 public:
@@ -8,6 +8,8 @@ public:
     void clear() { clear(pHead); }
     LinkedList();
     ~LinkedList();
+    LinkedListState getState();
+    void loadState(const LinkedListState& state);
 
     ///Debug purpose
     void print();

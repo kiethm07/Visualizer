@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <Panel/LinkedListPanel.h>
+#include <DataStructures/LinkedList.h>
 #include <Model/Button.h>
 
 class LinkedListUI {
@@ -12,5 +13,6 @@ public:
 private:
 	const sf::Font& NODE_FONT;
 	LinkedListPanel panel;
+	LinkedList list;
 	Button test;
 };

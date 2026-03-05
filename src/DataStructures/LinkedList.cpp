@@ -1,6 +1,34 @@
 #include <DataStructures/LinkedList.h>
 #include <iostream>
 
+LinkedListState LinkedList::getState() {
+    LinkedListState state;
+    state.next_ui_id = this->next_ui_id;
+    for (LinkedList::Node* cur = pHead; cur != nullptr; cur = cur->pNext){
+        state.value.push_back(cur->val);
+        state.ui_id.push_back(cur->ui_id);
+    }
+    return state;
+}
+
+void LinkedList::loadState(const LinkedListState& state) {
+    this->next_ui_id = state.next_ui_id;
+    clear(pHead);
+    Node* cur = nullptr;
+    for (int i = 0; i < state.value.size(); i++) {
+        int val = state.value[i];
+        int ui_id = state.ui_id[i];
+        if (i == 0) {
+            pHead = new Node(val, ui_id);
+            cur = pHead;
+        }
+        else {
+            cur->pNext = new Node(val, ui_id);
+            cur = cur->pNext;
+        }
+    }
+}
+
 LinkedList::LinkedList() :
     pHead(nullptr), next_ui_id(0) {
 }
