@@ -19,7 +19,7 @@ void LinkedListUI::handleEvent(const sf::RenderWindow& window, const sf::View& v
 	auto op = panel.handleEvent(window, view, ev);
 	if (op.has_value()) {
 		timeline.push(current_state, *op);
-		current_state.apply(*op);
+		list.applyOperation(*op);
 	}
 }
 

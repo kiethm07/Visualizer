@@ -11,7 +11,4 @@ struct LinkedListState {
 	std::vector<int> ui_id;
 	LinkedListState() :
 		next_ui_id(0) {}
-	void apply(const ListOperation& operation) {
-
-	}
 };

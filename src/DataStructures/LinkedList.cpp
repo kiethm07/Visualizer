@@ -29,6 +29,23 @@ void LinkedList::loadState(const LinkedListState& state) {
     }
 }
 
+void LinkedList::applyOperation(const ListOperation& operation) {
+    if (operation.type == ListOperationType::InsertSingle) {
+        int x = operation.value;
+        int k = operation.position;
+        insert(pHead, x, k);
+        return;
+    }
+    if (operation.type == ListOperationType::InsertMultiple) {
+
+        return;
+    }
+    if (operation.type == ListOperationType::Delete) {
+        int k = operation.position;
+        return;
+    }
+}
+
 LinkedList::LinkedList() :
     pHead(nullptr), next_ui_id(0) {
 }

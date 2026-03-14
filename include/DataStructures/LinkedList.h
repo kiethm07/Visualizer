@@ -1,5 +1,6 @@
 #pragma once
 #include <Model/LinkedListModel/LinkedListState.h>
+#include <Model/LinkedListModel/ListOperation.h>
 
 class LinkedList {
 public:
@@ -11,7 +12,7 @@ public:
     ~LinkedList();
     LinkedListState getState();
     void loadState(const LinkedListState& state);
-
+    void applyOperation(const ListOperation& operation);
     ///Debug purpose
     void print();
 private:
