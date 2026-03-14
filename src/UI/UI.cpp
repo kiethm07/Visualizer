@@ -5,7 +5,7 @@ UI::UI(const AssetManager& a_manager) :
     asset_manager(a_manager),
     main_menu(asset_manager.getFont("Roboto-Regular")),
     ds_menu(asset_manager.getFont("Roboto-Regular")),
-    linked_list_ui(asset_manager.getFont("Roboto-Regular"))
+    linked_list_ui(asset_manager)
 {
     settings.antiAliasingLevel = 8;
 

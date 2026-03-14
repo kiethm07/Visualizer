@@ -1,5 +1,13 @@
 #include <Panel/LinkedListPanel.h>
 #include <iostream>
+#include <chrono>
+#include <random>
+
+std::mt19937 rng(6969);
+
+static int rand(int l, int r) {
+	return std::uniform_int_distribution<int>(l,r)(rng);
+}
 
 LinkedListPanel::LinkedListPanel(const sf::Font& BUTTON_FONT) :
 	BUTTON_FONT(BUTTON_FONT),
@@ -50,7 +58,7 @@ std::optional<ListOperation> LinkedListPanel::handleEvent(const sf::RenderWindow
 		if (mb->button == sf::Mouse::Button::Left) {
 			if (insert_last_button.contains(window, view, sf::Vector2f(mb->position))) {
 				std::cout << "insert clicked!\n";
-				return ListOperation::insertSingle(0, 10);
+				return ListOperation::insertSingle(0, rand(1,100));
 			}
 
 			if (remove_last_button.contains(window, view, sf::Vector2f(mb->position))) {

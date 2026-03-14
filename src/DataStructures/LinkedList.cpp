@@ -73,6 +73,7 @@ void LinkedList::insert(LinkedList::Node*& pHead, const int& x, const int& k) {
         cur = cur->pNext;
     }
     if (i < k - 1) return;
+    if (cur == nullptr) return;
     Node* tmp = new Node(x, ++next_ui_id);
     tmp->pNext = cur->pNext;
     cur->pNext = tmp;
