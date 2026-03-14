@@ -45,12 +45,25 @@ void LinkedListPanel::updateWindowState(const sf::RenderWindow& window, const sf
 	remove_last_button.setPosition({ background_size.x / 2.f, background_size.y * 0.6f });
 }
 
-void LinkedListPanel::handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev) {
-	if (auto* mb = ev.getIf<sf::Event::MouseButtonReleased>()) {
+std::optional<ListOperation> LinkedListPanel::handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev) {
+	if (const auto* mb = ev.getIf<sf::Event::MouseButtonReleased>()) {
 		if (mb->button == sf::Mouse::Button::Left) {
 			if (insert_last_button.contains(window, view, sf::Vector2f(mb->position))) {
 				std::cout << "insert clicked!\n";
+				return ListOperation::insertSingle(0, 10);
+			}
+
+			if (remove_last_button.contains(window, view, sf::Vector2f(mb->position))) {
+				std::cout << "remove clicked!\n";
+				return ListOperation::erase(0);
+			}
+
+			if (reset_button.contains(window, view, sf::Vector2f(mb->position))) {
+				std::cout << "reset clicked!\n";
+				return ListOperation::reset();
 			}
 		}
 	}
+
+	return std::nullopt;
 }

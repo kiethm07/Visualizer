@@ -16,7 +16,11 @@ void LinkedListUI::update(const sf::RenderWindow& window, const sf::View& fixed_
 }
 
 void LinkedListUI::handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev) {
-	panel.handleEvent(window, view, ev);
+	auto op = panel.handleEvent(window, view, ev);
+	if (op.has_value()) {
+		timeline.push(current_state, *op);
+		current_state.apply(*op);
+	}
 }
 
 void LinkedListUI::draw(sf::RenderWindow& window, const sf::View& fixed_view, const sf::View& cam_view) {

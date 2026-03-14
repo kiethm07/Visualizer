@@ -6,6 +6,7 @@
 ListNode::ListNode(const sf::Font& font, const std::string& label, const sf::Vector2f& pos, const int& size, const unsigned int char_size) : text(font, label, char_size) {
 	container.setPosition(pos);
 	container.setRadius(size);
+	container.setOrigin({ size / 2.f, size / 2.f });
 	container.setFillColor(IDLE_COLOR);
 
 	centerText();

@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <Panel/LinkedListPanel.h>
 #include <DataStructures/LinkedList.h>
+#include <Model/LinkedListModel/LinkedListTimeline.h>
 #include <Model/Button.h>
 
 class LinkedListUI {
@@ -11,8 +12,11 @@ public:
 	void handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
 	void draw(sf::RenderWindow& window, const sf::View& fixed_view, const sf::View& cam_view);
 private:
+	bool inAnimation = 0;
 	const sf::Font& NODE_FONT;
 	LinkedListPanel panel;
+	LinkedListState current_state;
+	LinkedListTimeline timeline;
 	LinkedList list;
 	Button test;
 };

@@ -3,6 +3,7 @@
 
 class LinkedList {
 public:
+    void insert(int x, int k);
     void insertFirst(int x) { insertFirst(pHead, x); }
     void remove(int x);
     void clear() { clear(pHead); }
@@ -27,6 +28,7 @@ private:
     };
     int next_ui_id;
     Node* pHead;
+    void insert(Node*& pHead, const int& x, const int& k);
     void clear(Node*& pHead);
     void insertFirst(Node*& pHead, int x);
     void remove(Node*& pHead, int x);

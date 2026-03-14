@@ -44,6 +44,23 @@ LinkedList::~LinkedList() {
     clear(pHead);
 }
 
+void LinkedList::insert(LinkedList::Node*& pHead, const int& x, const int& k) {
+    if (k < 0) return;
+    if (k == 0) {
+        insertFirst(pHead, x);
+        return;
+    }
+    Node* cur = pHead;
+    int i = 0;
+    for (i; i < k - 1 && cur != nullptr; i++) {
+        cur = cur->pNext;
+    }
+    if (i < k - 1) return;
+    Node* tmp = new Node(x, ++next_ui_id);
+    tmp->pNext = cur->pNext;
+    cur->pNext = tmp;
+}
+
 void LinkedList::insertFirst(LinkedList::Node*& pHead, int x) {
     Node* tmp = new Node(x, ++next_ui_id);
     tmp->pNext = pHead;

@@ -1,12 +1,14 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <Model/Button.h>
+#include <Model/LinkedListModel/ListOperation.h>
+#include <optional>
 
 class LinkedListPanel : public sf::Drawable {
 public:
 	LinkedListPanel(const sf::Font& BUTTON_FONT);
 	void update(const sf::RenderWindow& window, const sf::View& view);
-	void handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
+	std::optional<ListOperation> handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
 
 	sf::Vector2f getSize();
 private:
