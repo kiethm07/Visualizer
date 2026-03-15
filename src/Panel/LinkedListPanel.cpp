@@ -6,6 +6,7 @@
 std::mt19937 rng(6969);
 
 static int rand(int l, int r) {
+	if (l > r) std::swap(l, r);
 	return std::uniform_int_distribution<int>(l,r)(rng);
 }
 
@@ -63,7 +64,7 @@ std::optional<ListOperation> LinkedListPanel::handleEvent(const sf::RenderWindow
 
 			if (remove_last_button.contains(window, view, sf::Vector2f(mb->position))) {
 				std::cout << "remove clicked!\n";
-				return ListOperation::erase(0);
+				return ListOperation::erase(rand(0, 0));
 			}
 
 			if (reset_button.contains(window, view, sf::Vector2f(mb->position))) {

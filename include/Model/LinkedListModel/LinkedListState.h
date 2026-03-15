@@ -9,6 +9,9 @@ struct LinkedListState {
 	int next_ui_id;
 	std::vector<int> value;
 	std::vector<int> ui_id;
+	int getSize() {
+		return value.size();
+	}
 	LinkedListState() :
 		next_ui_id(0) {}
 };

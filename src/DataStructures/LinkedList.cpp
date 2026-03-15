@@ -42,6 +42,17 @@ void LinkedList::applyOperation(const ListOperation& operation) {
     }
     if (operation.type == ListOperationType::Delete) {
         int k = operation.position;
+        remove(pHead, k);
+        return;
+    }
+    if (operation.type == ListOperationType::Update) {
+        int x = operation.value;
+        int k = operation.position;
+        update(pHead, x, k);
+        return;
+    }
+    if (operation.type == ListOperationType::Reset) {
+        clear(pHead);
         return;
     }
 }
@@ -68,11 +79,9 @@ void LinkedList::insert(LinkedList::Node*& pHead, const int& x, const int& k) {
         return;
     }
     Node* cur = pHead;
-    int i = 0;
-    for (i; i < k - 1 && cur != nullptr; i++) {
+    for (int i = 0; i < k - 1 && cur != nullptr; i++) {
         cur = cur->pNext;
     }
-    if (i < k - 1) return;
     if (cur == nullptr) return;
     Node* tmp = new Node(x, ++next_ui_id);
     tmp->pNext = cur->pNext;
@@ -92,4 +101,37 @@ void LinkedList::print() {
         cur = cur->pNext;
     }
     return;
+}
+
+void LinkedList::remove(LinkedList::Node*& pHead, int k) {
+    if (k == 0) {
+        removeFirst(pHead);
+        return;
+    }
+    Node* cur = pHead;
+    for (int i = 0; i < k && cur; i++) {
+        cur = cur->pNext;
+    }
+    if (cur == nullptr) return;
+    Node* tmp = cur->pNext;
+    cur->pNext = tmp->pNext;
+    delete tmp;
+    tmp = nullptr;
+}
+
+void LinkedList::removeFirst(LinkedList::Node*& pHead) {
+    if (pHead == nullptr) return;
+    Node* tmp = pHead;
+    pHead = pHead->pNext;
+    delete tmp;
+    tmp = nullptr;
+}
+
+void LinkedList::update(LinkedList::Node*& pHead, int x, int k) {
+    Node* cur = pHead;
+    for (int i = 0; i < k && cur; i++) {
+        cur = cur->pNext;
+    }
+    if (cur == nullptr) return;
+    cur->val = x;
 }

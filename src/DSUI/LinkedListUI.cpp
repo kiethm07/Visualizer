@@ -29,9 +29,9 @@ void LinkedListUI::handleEvent(const sf::RenderWindow& window, const sf::View& v
 }
 
 void LinkedListUI::draw(sf::RenderWindow& window, const sf::View& fixed_view, const sf::View& cam_view) {
-	window.setView(fixed_view);
-	window.draw(panel);
 	window.setView(cam_view);
 	//window.draw(test);
 	renderer.draw(window, cam_view);
+	window.setView(fixed_view);
+	window.draw(panel);
 }

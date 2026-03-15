@@ -27,7 +27,7 @@ add_executable(Visualizer
                             "include/UI/DSMenu.h" 
                             "src/UI/DSMenu.cpp" 
                             "include/AssetManager/AssetManager.h" 
-                            "src/AssetManager/AssetManager.cpp" "include/UI/MainMenu.h" "src/UI/MainMenu.cpp" "include/DSUI/LinkedListUI.h" "include/Model/ListNode.h" "src/Model/ListNode.cpp" "src/DSUI/LinkedListUI.cpp" "include/Panel/LinkedListPanel.h" "src/Panel/LinkedListPanel.cpp" "include/Model/LinkedListModel/LinkedListState.h" "include/Model/LinkedListModel/ListOperation.h" "include/Model/LinkedListModel/LinkedListTimeline.h" "src/Model/LinkedListModel/LinkedListTimeline.cpp" "src/Model/LinkedListModel/LinkedListState.cpp" "include/Model/LinkedListModel/LinkedListRenderer.h" "src/Model/LinkedListModel/LinkedListRenderer.cpp")
+                            "src/AssetManager/AssetManager.cpp" "include/UI/MainMenu.h" "src/UI/MainMenu.cpp" "include/DSUI/LinkedListUI.h" "include/Model/ListNode.h" "src/Model/ListNode.cpp" "src/DSUI/LinkedListUI.cpp" "include/Panel/LinkedListPanel.h" "src/Panel/LinkedListPanel.cpp" "include/Model/LinkedListModel/LinkedListState.h" "include/Model/LinkedListModel/ListOperation.h" "include/Model/LinkedListModel/LinkedListTimeline.h" "src/Model/LinkedListModel/LinkedListTimeline.cpp" "src/Model/LinkedListModel/LinkedListState.cpp" "include/Model/LinkedListModel/LinkedListRenderer.h" "src/Model/LinkedListModel/LinkedListRenderer.cpp" "include/Model/Arrow.h" "src/Model/Arrow.cpp")
 
 target_compile_features(Visualizer PRIVATE cxx_std_17)
 target_link_libraries(Visualizer PRIVATE SFML::Graphics)

@@ -4,9 +4,10 @@
 
 class LinkedList {
 public:
-    void insert(int x, int k);
+    void insert(int x, int k) { insert(pHead, x, k); }
     void insertFirst(int x) { insertFirst(pHead, x); }
-    void remove(int x);
+    void remove(int x) { remove(pHead, x); }
+    void update(int x, int k) { update(pHead, x, k); }
     void clear() { clear(pHead); }
     LinkedList();
     ~LinkedList();
@@ -32,5 +33,7 @@ private:
     void insert(Node*& pHead, const int& x, const int& k);
     void clear(Node*& pHead);
     void insertFirst(Node*& pHead, int x);
-    void remove(Node*& pHead, int x);
+    void remove(Node*& pHead, int k);
+    void removeFirst(Node*& pHead);
+    void update(Node*& pHead, int x, int k);
 };
