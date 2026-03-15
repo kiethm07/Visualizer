@@ -5,6 +5,7 @@
 #include <AssetManager/AssetManager.h>
 #include <Model/LinkedListModel/LinkedListState.h>
 #include <string>
+#include <algorithm>
 
 class LinkedListRenderer {
 public:
