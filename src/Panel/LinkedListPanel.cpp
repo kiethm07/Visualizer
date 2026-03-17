@@ -14,7 +14,8 @@ LinkedListPanel::LinkedListPanel(const sf::Font& BUTTON_FONT) :
 	BUTTON_FONT(BUTTON_FONT),
 	reset_button(BUTTON_FONT, "reset", {}, {}, 20),
 	insert_last_button(BUTTON_FONT, "insert last", {}, {}, 20),
-	remove_last_button(BUTTON_FONT, "remove last", {}, {}, 20)
+	remove_last_button(BUTTON_FONT, "remove last", {}, {}, 20),
+	insert_value(BUTTON_FONT, "insert val", {}, {}, 20)
 {
 	background.setFillColor(sf::Color::White);
 	background.setOrigin({ 0,0 });
@@ -35,6 +36,7 @@ void LinkedListPanel::updateButtonState(const sf::RenderWindow& window, const sf
 	reset_button.update(window, view);
 	insert_last_button.update(window, view);
 	remove_last_button.update(window, view);
+	insert_value.update(window, view);
 }
 
 void LinkedListPanel::updateWindowState(const sf::RenderWindow& window, const sf::View& view) {
@@ -52,9 +54,13 @@ void LinkedListPanel::updateWindowState(const sf::RenderWindow& window, const sf
 	remove_last_button.setButtonSize(button_size);
 	remove_last_button.setOrigin(button_size / 2.f);
 	remove_last_button.setPosition({ background_size.x / 2.f, background_size.y * 0.6f });
+	insert_value.setButtonSize(button_size);
+	insert_value.setOrigin(button_size / 2.f);
+	insert_value.setPosition({ background_size.x / 2.f, background_size.y * 0.8f });
 }
 
 std::optional<ListOperation> LinkedListPanel::handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev) {
+	insert_value.handleEvent(window, view, ev);
 	if (const auto* mb = ev.getIf<sf::Event::MouseButtonReleased>()) {
 		if (mb->button == sf::Mouse::Button::Left) {
 			if (insert_last_button.contains(window, view, sf::Vector2f(mb->position))) {
@@ -70,6 +76,17 @@ std::optional<ListOperation> LinkedListPanel::handleEvent(const sf::RenderWindow
 			if (reset_button.contains(window, view, sf::Vector2f(mb->position))) {
 				std::cout << "reset clicked!\n";
 				return ListOperation::reset();
+			}
+
+			if (insert_value.contains(window, view, sf::Vector2f(mb->position))) {
+				std::cout << "insert clicked!\n";
+				std::string s = insert_value.getValue();
+				if (!s.empty()) {
+					int x = std::stoi(s);
+					return ListOperation::insertSingle(0, x);
+				}
+
+				return std::nullopt;
 			}
 		}
 	}

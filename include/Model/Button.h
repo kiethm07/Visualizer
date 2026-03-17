@@ -21,7 +21,7 @@ public:
 	sf::Vector2f getSize();
 	sf::FloatRect getGlobalBounds();
 	std::string getLabel();
-private:
+protected:
 	sf::RectangleShape container;
 	sf::Text text;
 	bool hovered = 0;

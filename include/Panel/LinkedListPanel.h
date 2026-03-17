@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <Model/Button.h>
 #include <Model/LinkedListModel/ListOperation.h>
+#include <Model/TextBox.h>
 #include <optional>
 
 class LinkedListPanel : public sf::Drawable {
@@ -16,6 +17,7 @@ private:
 	Button reset_button;
 	Button insert_last_button;
 	Button remove_last_button;
+	TextBox insert_value;
 	sf::RectangleShape background;
 	void updateWindowState(const sf::RenderWindow& window, const sf::View& view);
 	void updateButtonState(const sf::RenderWindow& window, const sf::View& view);
@@ -25,5 +27,6 @@ private:
 		target.draw(reset_button, states);
 		target.draw(insert_last_button, states);
 		target.draw(remove_last_button, states);
+		target.draw(insert_value, states);
 	}
 };
