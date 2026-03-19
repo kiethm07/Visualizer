@@ -17,6 +17,7 @@ public:
 	bool contains(const sf::RenderWindow& window, const sf::View& view, const sf::Vector2f& position);
 
 	sf::Vector2f getPosition();
+	sf::Vector2f getCenter();
 	sf::Vector2f getOrigin();
 	sf::Vector2f getSize();
 	sf::FloatRect getGlobalBounds();

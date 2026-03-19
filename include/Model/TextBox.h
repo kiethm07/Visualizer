@@ -21,17 +21,29 @@ public:
     void setFocused(bool focused);
     void setMaxLength(std::size_t max_length);
 
+    std::optional<int> getValueAsInt() const;
     const std::string& getValue() const;
     const std::string& getPlaceholder() const;
     bool isFocused() const;
     bool isEmpty() const;
+    void draw(sf::RenderTarget& target, sf::RenderStates states) const override{
+        Button::draw(target, states);
 
+        if (focused && caret_visible) {
+            target.draw(caret, states);
+        }
+    }
 private:
     std::string value;
     std::string placeholder;
     bool focused = false;
-    std::size_t max_length = 32;
+    std::size_t max_length = 5;
+    sf::Vector2f caret_pos;
+    sf::Clock caret_timer;
+    bool caret_visible;
+    sf::RectangleShape caret;
 
+    const float BLINK_INTERVAL = 0.5f;
     const sf::Color FOCUSED_COLOR = sf::Color(70, 110, 180);
     const sf::Color PLACEHOLDER_COLOR = sf::Color(160, 160, 160);
     const sf::Color TEXT_COLOR = sf::Color::White;

@@ -80,9 +80,10 @@ std::optional<ListOperation> LinkedListPanel::handleEvent(const sf::RenderWindow
 
 			if (insert_value.contains(window, view, sf::Vector2f(mb->position))) {
 				std::cout << "insert clicked!\n";
-				std::string s = insert_value.getValue();
-				if (!s.empty()) {
-					int x = std::stoi(s);
+				std::optional<int> value = insert_value.getValueAsInt();
+				if (value.has_value()) {
+					int x = *value;
+					std::cout << x << "\n";
 					return ListOperation::insertSingle(0, x);
 				}
 

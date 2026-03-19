@@ -25,6 +25,11 @@ void Button::setButtonSize(const sf::Vector2f& size) {
 	centerText();
 }
 
+sf::Vector2f Button::getCenter() {
+	sf::Vector2f upper_left = container.getPosition() - container.getOrigin();
+	return upper_left + container.getSize() / 2.f;
+}
+
 sf::Vector2f Button::getSize() {
 	return container.getSize();
 }
