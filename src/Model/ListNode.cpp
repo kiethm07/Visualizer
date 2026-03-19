@@ -8,7 +8,7 @@ ListNode::ListNode(const sf::Font& font, const std::string& label, const sf::Vec
 	container.setOrigin(sf::Vector2f{ (float)size, (float)size });
 	container.setPosition(pos);
 	container.setFillColor(IDLE_COLOR);
-
+	container.setPointCount(75);
 	centerText();
 }
 
