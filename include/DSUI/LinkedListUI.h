@@ -22,5 +22,6 @@ private:
 	LinkedListTimeline timeline;
 	LinkedList list;
 	LinkedListRenderer renderer;
+	LinkedListRecorder recorder;
 	Button test;
 };

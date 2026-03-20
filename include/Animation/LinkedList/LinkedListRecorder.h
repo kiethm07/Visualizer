@@ -14,6 +14,9 @@ public:
 	void addNewPhase() {
 		phases.push_back(LinkedListAnimationPhase());
 	}
+	void clear() {
+		phases.clear();
+	}
 private:
 	std::vector<LinkedListAnimationPhase> phases;
 };

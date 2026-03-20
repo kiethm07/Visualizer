@@ -1,6 +1,7 @@
 #pragma once
 #include <Model/LinkedListModel/LinkedListState.h>
 #include <Model/LinkedListModel/ListOperation.h>
+#include <Animation/LinkedList/LinkedListRecorder.h>
 #include <vector>
 
 class LinkedListTimeline {
@@ -9,4 +10,5 @@ public:
 private:
 	std::vector<ListOperation> list_operations;
 	std::vector<LinkedListState> list_states;
+	std::vector<LinkedListRecorder> records;
 };

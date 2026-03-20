@@ -21,8 +21,9 @@ void LinkedListUI::update(const sf::RenderWindow& window, const sf::View& fixed_
 void LinkedListUI::handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev) {
 	auto op = panel.handleEvent(window, view, ev);
 	if (op.has_value()) {
+		recorder.clear();
 		timeline.push(current_state, *op);
-		list.applyOperation(*op);
+		list.applyOperation(*op, recorder);
 		current_state = list.getState();
 		renderer.loadState(current_state);
 	}
