@@ -80,6 +80,9 @@ void LinkedList::insert(LinkedList::Node*& pHead, const int& x, const int& k) {
     }
     Node* cur = pHead;
     for (int i = 0; i < k - 1 && cur != nullptr; i++) {
+        //highlight node i
+		//unhightlight node i - 1
+        //wait
         cur = cur->pNext;
     }
     if (cur == nullptr) return;

@@ -2,6 +2,8 @@
 #include <Model/Button.h>
 #include <SFML/Graphics.hpp>
 #include <string>
+#include <algorithm>
+#include <optional>
 
 class TextBox : public Button {
 public:
