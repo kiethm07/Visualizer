@@ -56,6 +56,7 @@ void LinkedListAnimator::generateAnimationState(LinkedListAnimationState& animat
 		edge.to_ui_id = state.ui_id[i];
 		edge.from_position = node_list[i - 1].position + sf::Vector2f{ (float)NODE_RADIUS, 0.f };
 		edge.to_position = node_list[i].position - sf::Vector2f{ (float)NODE_RADIUS, 0.f };
+		edge.fill_color = DEFAULT_EDGE_COLOR;
 		edge_list.push_back(edge);
 	}
 	animation_state.setEdgeList(edge_list);

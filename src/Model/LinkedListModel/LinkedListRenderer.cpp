@@ -51,7 +51,7 @@ void LinkedListRenderer::loadState(const LinkedListAnimationState& animation_sta
 		edge.setColor(edges[i].fill_color);
 		edge_list.push_back(edge);
 	}
-	//std::cout << "Loaded animation state with " << node_list.size() << " nodes and " << edge_list.size() << " edges\n";
+	std::cout << "Loaded animation state with " << node_list.size() << " nodes and " << edge_list.size() << " edges\n";
 }
 
 void LinkedListRenderer::draw(sf::RenderWindow& window, const sf::View& view) {
