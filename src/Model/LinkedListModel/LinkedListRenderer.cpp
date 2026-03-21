@@ -32,33 +32,26 @@ static std::string int_to_string(int n) {
 	return res;
 }
 
-void LinkedListRenderer::loadState(const LinkedListState& list_state) {
+void LinkedListRenderer::loadState(const LinkedListAnimationState& animation_state) {
 	node_list.clear();
 	edge_list.clear();
-	int n = list_state.value.size();
-	const std::vector<int>& value = list_state.value;
-	const std::vector<int>& ui_id = list_state.ui_id;
-	float x = X_MARGIN;
-	float y = Y_MARGIN;
-	for (int i = 0; i < n; i++){
-		std::string label = int_to_string(value[i]);
-		ListNode node(a_manager.getFont("Roboto-Regular"), label, sf::Vector2f{x, y}, NODE_RADIUS, 20);
-		x += NODE_GAP;
-		if (i > 0) {
-			sf::Vector2f prev_pos = node_list.back().getPosition();
-			sf::Vector2f cur_pos = node.getPosition();
-
-			sf::Vector2f from = prev_pos + sf::Vector2f{ (float)NODE_RADIUS, 0.f};
-			sf::Vector2f to = cur_pos - sf::Vector2f{ (float)NODE_RADIUS, 0.f};
-
-			//std::cout << from.x << " " << from.y << " " << to.x << " " << to.y << " " << prev_pos.x << " " << prev_pos.y << "\n";
-
-			Arrow edge(from, to, 5.f, 16.f, 12.f);
-			edge.setColor(sf::Color::White);
-			edge_list.push_back(edge);
-		}
+	std::vector<LinkedListAnimationNode> nodes;
+	std::vector<LinkedListAnimationEdge> edges;
+	nodes = animation_state.getNodeList();
+	edges = animation_state.getEdgeList();
+	for (int i = 0; i < nodes.size(); i++){
+		std::string label = int_to_string(nodes[i].value);
+		ListNode node(a_manager.getFont("Roboto-Regular"), label, nodes[i].position, NODE_RADIUS, 20);
+		//Default color is green, but since the animation state may have some node highlighted, we need to set the color according to the animation state
+		node.setListNodeColor(nodes[i].fill_color);
 		node_list.push_back(node);
 	}
+	for (int i = 0; i < edges.size(); i++) {
+		Arrow edge(edges[i].from_position, edges[i].to_position, 5.f, 16.f, 12.f);
+		edge.setColor(edges[i].fill_color);
+		edge_list.push_back(edge);
+	}
+	//std::cout << "Loaded animation state with " << node_list.size() << " nodes and " << edge_list.size() << " edges\n";
 }
 
 void LinkedListRenderer::draw(sf::RenderWindow& window, const sf::View& view) {

@@ -18,6 +18,7 @@ UI::UI(const AssetManager& a_manager) :
     );
 
     window.setVerticalSyncEnabled(true);
+    //window.setFramerateLimit(5); //Debug purpose
     window.setMinimumSize(sf::Vector2u{ MIN_WIDTH, MIN_HEIGHT });
 
     cam_view.setSize(sf::Vector2f({ (float)DEFAULT_WIDTH, (float)DEFAULT_HEIGHT }));

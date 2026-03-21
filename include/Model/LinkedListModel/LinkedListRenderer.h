@@ -4,12 +4,13 @@
 #include <Model/Arrow.h>
 #include <AssetManager/AssetManager.h>
 #include <Model/LinkedListModel/LinkedListState.h>
+#include <Animation/LinkedList/LinkedListAnimationState.h>
 #include <string>
 #include <algorithm>
 
 class LinkedListRenderer {
 public:
-	void loadState(const LinkedListState& list_state);
+	void loadState(const LinkedListAnimationState& animation_state);
 	void draw(sf::RenderWindow& window, const sf::View& view);
 	LinkedListRenderer(const AssetManager& asset_manager);
 private:

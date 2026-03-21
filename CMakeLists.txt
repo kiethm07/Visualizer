@@ -12,22 +12,10 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(Visualizer 
-                            "src/main.cpp" 
-                            "src/UI/Camera.cpp"
-                            "src/UI/UI.cpp"
-                            "src/DataStructures/LinkedList.cpp"  
-                            "src/Model/Button.cpp" 
+file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS src/*.cpp)
+file(GLOB_RECURSE HEADER_FILES CONFIGURE_DEPENDS include/*.h)
 
-                            "include/Model/MenuState.h" 
-                            "include/Model/Button.h"                         
-                            "include/UI/Camera.h" 
-                            "include/UI/UI.h" 
-                            "include/DataStructures/LinkedList.h"  
-                            "include/UI/DSMenu.h" 
-                            "src/UI/DSMenu.cpp" 
-                            "include/AssetManager/AssetManager.h" 
-                            "src/AssetManager/AssetManager.cpp" "include/UI/MainMenu.h" "src/UI/MainMenu.cpp" "include/DSUI/LinkedListUI.h" "include/Model/ListNode.h" "src/Model/ListNode.cpp" "src/DSUI/LinkedListUI.cpp" "include/Panel/LinkedListPanel.h" "src/Panel/LinkedListPanel.cpp" "include/Model/LinkedListModel/LinkedListState.h" "include/Model/LinkedListModel/ListOperation.h" "include/Model/LinkedListModel/LinkedListTimeline.h" "src/Model/LinkedListModel/LinkedListTimeline.cpp" "src/Model/LinkedListModel/LinkedListState.cpp" "include/Model/LinkedListModel/LinkedListRenderer.h" "src/Model/LinkedListModel/LinkedListRenderer.cpp" "include/Model/Arrow.h" "src/Model/Arrow.cpp" "include/Model/TextBox.h" "src/Model/TextBox.cpp" "include/Animation/LinkedList/LinkedListAnimationType.h" "include/Animation/LinkedList/LinkedListRecorder.h" "include/Animation/LinkedList/LinkedListAnimationCommand.h")
+add_executable(Visualizer ${SRC_FILES} ${HEADER_FILES})
 
 target_compile_features(Visualizer PRIVATE cxx_std_17)
 target_link_libraries(Visualizer PRIVATE SFML::Graphics)

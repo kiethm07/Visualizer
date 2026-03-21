@@ -21,7 +21,7 @@ private:
 	LinkedListState current_state;
 	LinkedListTimeline timeline;
 	LinkedList list;
-	LinkedListRenderer renderer;
 	LinkedListRecorder recorder;
+	sf::Clock clock;
 	Button test;
 };

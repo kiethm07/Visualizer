@@ -9,6 +9,7 @@ public:
 	void setOrigin(const sf::Vector2f& origin);
 	void setListNodeRadius(const int& size);
 	void setLabel(const std::string& label);
+	void setListNodeColor(const sf::Color& color);
 	void setCharacterSize(const unsigned int& size);
 	void setCharacterColor(const sf::Color& color);
 	//void handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);

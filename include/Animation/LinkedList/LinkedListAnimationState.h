@@ -1,0 +1,59 @@
+#pragma once
+#include <Model/LinkedListModel/LinkedListState.h>
+
+struct LinkedListAnimationNode {
+	int value;
+	int ui_id;
+	sf::Vector2f position;
+	int alpha;
+	sf::Color fill_color;
+};
+
+struct LinkedListAnimationEdge {
+	int from_ui_id;
+	int to_ui_id;
+	sf::Vector2f from_position;
+	sf::Vector2f to_position;
+	int alpha;
+	sf::Color fill_color;
+};
+
+class LinkedListAnimationState {
+public:
+	LinkedListAnimationState():
+		edge_list(), node_list() {
+	}
+	const std::vector<LinkedListAnimationEdge>& getEdgeList() const {
+		return edge_list;
+	}
+	const std::vector<LinkedListAnimationNode>& getNodeList() const {
+		return node_list;
+	}
+	void setEdgeList(const std::vector<LinkedListAnimationEdge>& edge_list) {
+		this->edge_list = edge_list;
+	}
+	void setNodeList(const std::vector<LinkedListAnimationNode>& node_list) {
+		this->node_list = node_list;
+	}
+	void clear() {
+		edge_list.clear();
+		node_list.clear();
+	}
+	void modifyEdge(const LinkedListAnimationEdge& new_edge, int index){
+		if (index < 0 || index >= edge_list.size()) {
+			std::cout << "Edge index " << index << " out of range" << std::endl;
+			return;
+		}
+		edge_list[index] = new_edge;
+	}
+	void modifyNode(const LinkedListAnimationNode& new_node, int index) {
+		if (index < 0 || index >= node_list.size()) {
+			std::cout << "Node index " << index << " out of range" << std::endl;
+			return;
+		}
+		node_list[index] = new_node;
+	}
+private:
+	std::vector<LinkedListAnimationEdge> edge_list;
+	std::vector<LinkedListAnimationNode> node_list;
+};

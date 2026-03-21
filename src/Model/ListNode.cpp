@@ -26,6 +26,10 @@ void ListNode::setListNodeRadius(const int& size) {
 	centerText();
 }
 
+void ListNode::setListNodeColor(const sf::Color& color) {
+	container.setFillColor(color);
+}
+
 int ListNode::getRadius() {
 	return container.getRadius();
 }

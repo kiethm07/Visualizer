@@ -6,9 +6,6 @@ class LinkedListRecorder {
 public:
 	LinkedListRecorder(){}
 	void addCommand(const LinkedListAnimationCommand& command) {
-		if (phases.empty()) {
-			phases.push_back(LinkedListAnimationPhase());
-		}
 		phases.back().commands.push_back(command);
 	}
 	void addNewPhase() {
@@ -16,6 +13,9 @@ public:
 	}
 	void clear() {
 		phases.clear();
+	}
+	std::vector<LinkedListAnimationPhase> getPhases() const {
+		return phases;
 	}
 private:
 	std::vector<LinkedListAnimationPhase> phases;
