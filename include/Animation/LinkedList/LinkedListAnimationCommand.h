@@ -42,13 +42,36 @@ struct LinkedListAnimationCommand {
 		target(target), type(type), ui_id(-1), from_ui_id(from_ui_id), to_ui_id(to_ui_id), direction(direction) {
 		duration = getCommandDuration(type);
 	}
+	static LinkedListAnimationCommand createSpawnNodeCommand(int ui_id, int spawn_from_ui_id, int value, sf::Vector2f spawn_offset = { 0, 100 }) {
+		LinkedListAnimationCommand command;
+		command.target = LinkedListAnimationTarget::Node;
+		command.type = LinkedListAnimationType::Spawn;
+		command.ui_id = ui_id;
+		command.spawn_from_ui_id = spawn_from_ui_id;
+		command.spawn_offset = spawn_offset;
+		command.duration = getCommandDuration(command.type);
+		command.value = value;
+		return command;
+	}
+	static LinkedListAnimationCommand createSpawnEdgeCommand(int from_ui_id, int to_ui_id) {
+		LinkedListAnimationCommand command;
+		command.target = LinkedListAnimationTarget::Edge;
+		command.type = LinkedListAnimationType::Spawn;
+		command.from_ui_id = from_ui_id;
+		command.to_ui_id = to_ui_id;
+		command.duration = getCommandDuration(command.type);
+		return command;
+	}
 	LinkedListAnimationTarget target;
 	LinkedListAnimationType type;
 	LinkedListMoveDirection direction; // for move and fade in/out, default is right for move, no direction for fade in/out
-	sf::Vector2f spawn_position = { 0,0 }; // for spawn commands, default is (0, 0)
+	sf::Vector2f spawn_offset = { 0, 100 }; // for spawn command, the offset from the original position to spawn position
 	//Spawn commands must be handled first
 	int ui_id; // for node
 	int from_ui_id, to_ui_id; // for edge
+	int spawn_from_ui_id;
+	int value = 0; // for spawn node, the value to display on the node, default is 0
+
 
 	float duration = 1.f; //Duration of this animation command, default is 1 second
 };

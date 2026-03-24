@@ -15,7 +15,7 @@ public:
 private:
 	void generateAnimationState(LinkedListAnimationState& animation_state, const LinkedListState& state);
 	void applyCommand(const LinkedListAnimationCommand& command, const LinkedListAnimationState& base_state, LinkedListAnimationState& state, const float& progress) const;
-	void applySpawnCommand(const LinkedListAnimationCommand& command, LinkedListAnimationState& state) const;
+	void applySpawnCommand(const LinkedListAnimationCommand& command, LinkedListAnimationState& state, const LinkedListAnimationState& base_state) const;
 	void applyCommandOnNode(LinkedListAnimationNode& node, const LinkedListAnimationCommand& command, const float& progress) const;
 	void applyCommandOnEdge(LinkedListAnimationEdge& edge, const LinkedListAnimationCommand& command, const float& progress) const;
 	LinkedListAnimationState initial_state;

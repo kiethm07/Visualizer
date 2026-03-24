@@ -24,8 +24,8 @@ void LinkedListUI::handleEvent(const sf::RenderWindow& window, const sf::View& v
 	if (op.has_value()) {
 		recorder.clear();
 		list.applyOperation(*op, recorder);
-		current_state = list.getState(); 
 		timeline.push(current_state, *op, recorder);
+		current_state = list.getState(); 
 	}
 	if (const auto* key = ev.getIf<sf::Event::KeyPressed>()) {
 		if (key->code == sf::Keyboard::Key::Space) {

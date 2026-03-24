@@ -43,15 +43,21 @@ void LinkedListRenderer::loadState(const LinkedListAnimationState& animation_sta
 		std::string label = int_to_string(nodes[i].value);
 		ListNode node(a_manager.getFont("Roboto-Regular"), label, nodes[i].position, NODE_RADIUS, 20);
 		//Default color is green, but since the animation state may have some node highlighted, we need to set the color according to the animation state
-		node.setListNodeColor(nodes[i].fill_color);
+		sf::Color node_color = nodes[i].fill_color;
+		node_color.a = nodes[i].alpha;
+		node.setListNodeColor(node_color);
+		node.setCharacterColor(sf::Color(255, 255, 255, nodes[i].alpha));
 		node_list.push_back(node);
 	}
 	for (int i = 0; i < edges.size(); i++) {
 		Arrow edge(edges[i].from_position, edges[i].to_position, 5.f, 16.f, 12.f);
-		edge.setColor(edges[i].fill_color);
+		sf::Color edge_color = edges[i].fill_color;
+		edge_color.a = edges[i].alpha;
+		//std::cout << edges[i].from_position.x << " " << edges[i].from_position.y << " -> " << edges[i].to_position.x << " " << edges[i].to_position.y << "\n";
+		edge.setColor(edge_color);
 		edge_list.push_back(edge);
 	}
-	std::cout << "Loaded animation state with " << node_list.size() << " nodes and " << edge_list.size() << " edges\n";
+	//std::cout << "Loaded animation state with " << node_list.size() << " nodes and " << edge_list.size() << " edges\n";
 }
 
 void LinkedListRenderer::draw(sf::RenderWindow& window, const sf::View& view) {

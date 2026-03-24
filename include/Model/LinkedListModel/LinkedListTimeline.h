@@ -6,6 +6,7 @@
 #include <Animation/LinkedList/LinkedListRecorder.h>
 #include <Animation/LinkedList/LinkedListAnimator.h>
 #include <vector>
+#include <algorithm>
 
 class LinkedListTimeline {
 public:

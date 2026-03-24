@@ -10,38 +10,37 @@ LinkedListTimeline::LinkedListTimeline(const AssetManager& a_manager) :
 
 void LinkedListTimeline::update(const sf::RenderWindow& window, const sf::View& view, const float& real_delta_time) {
 	if (!running) return;
+	//speed = 0.1;
 	float dt = real_delta_time * speed;
 	current_time += dt * direction;
-	//current_time = 0.3f; //Debug
 	//Debug purpose
+	//current_time = 0.3f; //Debug
 	//if (list_operations.size()) {
 	//	animator.generateBaseStates(list_states[current_operation_index], records[current_operation_index]);
-		//std::cout << "Generated base states for operation " << current_operation_index << "\n";
-		//std::cout << animator.getTotalDuration() << " total duration\n";
+	//	//std::cout << "Generated base states for operation " << current_operation_index << "\n";
+	//	//std::cout << animator.getTotalDuration() << " total duration\n";
 	//}
-	if (current_time > animator.getTotalDuration()) {
-		while(current_time > animator.getTotalDuration() && current_operation_index < list_operations.size()) {
-			animator.generateBaseStates(list_states[current_operation_index], records[current_operation_index]);
-			if (current_time > animator.getTotalDuration()) {
-				current_time -= animator.getTotalDuration();
-			}
-			else break;
-			current_operation_index++;
-		}
-		current_time = std::min(current_time, animator.getTotalDuration());
+	if (current_time > animator.getTotalDuration() && current_operation_index == list_operations.size()) {
+		current_time = animator.getTotalDuration();
 	}
-	//else if (current_time < 0){
-	//	while(current_time < 0 && current_operation_index > 0) {
-	//		animator.generateBaseStates(list_states[current_operation_index - 1], records[current_operation_index - 1]);
-	//		current_operation_index--;
-	//		current_time += animator.getTotalDuration();
-	//	}
-	//	current_time = std::max(current_time, 0.f);
-	//}
-	std::cout << list_operations.size() << " operations, current index: " << current_operation_index << ", current time: " << current_time << "\n";
-	std::cout << animator.getTotalDuration() << " total duration\n";
-	std::cout << current_operation_index << " current operation index\n";
+	else if (current_time > animator.getTotalDuration()) {
+		current_time -= animator.getTotalDuration();
+		while (current_operation_index < list_operations.size()) {
+			animator.generateBaseStates(list_states[current_operation_index], records[current_operation_index]);
+			current_operation_index++;
+			if (current_time < animator.getTotalDuration() || current_operation_index == list_operations.size()) {
+				break;
+			}
+			current_time -= animator.getTotalDuration();
+		}
+		if (current_operation_index == list_operations.size()) {
+			current_time = std::min(current_time, animator.getTotalDuration());
+		}
+	}
 	current_animation_state = animator.getStateAtTime(current_time);
+	//std::cout << list_operations.size() << " operations, current index: " << current_operation_index << ", current time: " << current_time << "\n";
+	//std::cout << animator.getTotalDuration() << " total duration\n";
+	//std::cout << current_operation_index << " current operation index\n";
 }
 
 void LinkedListTimeline::push(const LinkedListState& current_state, const ListOperation& operation, const LinkedListRecorder& record) {

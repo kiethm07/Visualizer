@@ -146,6 +146,7 @@ void LinkedList::insert(LinkedList::Node*& pHead, const int& x, const int& k, Li
 void LinkedList::insertFirst(LinkedList::Node*& pHead, int x, LinkedListRecorder& recorder) {
     recorder.addNewPhase();
     for (Node* cur = pHead; cur != nullptr; cur = cur->pNext) {
+		//std::cout << "Move node " << cur->val << " with ui_id " << cur->ui_id << "\n";
         recorder.addCommand(LinkedListAnimationCommand(LinkedListAnimationTarget::Node, LinkedListAnimationType::Move, cur->ui_id));
         if (cur->pNext) {
             recorder.addCommand(LinkedListAnimationCommand(LinkedListAnimationTarget::Edge, LinkedListAnimationType::Move, cur->ui_id, cur->pNext->ui_id));
@@ -153,10 +154,12 @@ void LinkedList::insertFirst(LinkedList::Node*& pHead, int x, LinkedListRecorder
     }
     Node* tmp = new Node(x, next_ui_id++);
 	recorder.addNewPhase();
+    recorder.addCommand(LinkedListAnimationCommand::createSpawnNodeCommand(tmp->ui_id, pHead ? pHead->ui_id : -1, x, { 0, 200 }));
 	recorder.addCommand(LinkedListAnimationCommand(LinkedListAnimationTarget::Node, LinkedListAnimationType::FadeIn, tmp->ui_id));
     tmp->pNext = pHead;
     if (pHead) {
 		recorder.addNewPhase();
+		recorder.addCommand(LinkedListAnimationCommand::createSpawnEdgeCommand(tmp->ui_id, pHead->ui_id));
 		recorder.addCommand(LinkedListAnimationCommand(LinkedListAnimationTarget::Edge, LinkedListAnimationType::FadeIn, tmp->ui_id, pHead->ui_id));
     }
     pHead = tmp;

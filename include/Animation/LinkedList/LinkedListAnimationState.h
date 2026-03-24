@@ -53,6 +53,26 @@ public:
 		}
 		node_list[index] = new_node;
 	}
+	void insertNode(const LinkedListAnimationNode& new_node, int index) {
+		if (index < 0 || index > node_list.size()) {
+			std::cout << "Node index " << index << " out of range" << std::endl;
+			return;
+		}
+		node_list.insert(node_list.begin() + index, new_node);
+	}
+	void insertNode(const LinkedListAnimationNode& new_node) {
+		node_list.push_back(new_node);
+	}
+	void insertEdge(const LinkedListAnimationEdge& new_edge, int index) {
+		if (index < 0 || index > edge_list.size()) {
+			std::cout << "Edge index " << index << " out of range" << std::endl;
+			return;
+		}
+		edge_list.insert(edge_list.begin() + index, new_edge);
+	}
+	void insertEdge(const LinkedListAnimationEdge& new_edge) {
+		edge_list.push_back(new_edge);
+	}
 private:
 	std::vector<LinkedListAnimationEdge> edge_list;
 	std::vector<LinkedListAnimationNode> node_list;
