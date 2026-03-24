@@ -16,9 +16,11 @@ void LinkedListAnimator::generateBaseStates(const LinkedListState& state, const 
 		std::vector<LinkedListAnimationCommand> commands = phases[i].commands;
 		//std::cout << commands.size() << " commands in phase " << i << "\n";
 		float phase_duration = 0.f;
+		
 		for (int j = 0; j < commands.size(); j++) {
 			//std::cout << "Applying command " << j << " of phase " << i << "\n";
 			//std::cout << "Command type: " << static_cast<int>(commands[j].type) << ", target: " << static_cast<int>(commands[j].target) << "\n";
+			if (commands[j].type == LinkedListAnimationType::Spawn) continue;
 			applyCommand(commands[j], base_state, new_state, 1.0f);
 			phase_duration = std::max(phase_duration, commands[j].duration);
 		}
@@ -182,6 +184,27 @@ void LinkedListAnimator::applyCommandOnEdge(LinkedListAnimationEdge& edge, const
 		}
 		edge.from_position = lerpVector2f(edge.from_position, edge.from_position + move_vector, progress);
 		edge.to_position = lerpVector2f(edge.to_position, edge.to_position + move_vector, progress);
+	}
+}
+
+void LinkedListAnimator::applySpawnCommand(const LinkedListAnimationCommand& command, LinkedListAnimationState& state) const {
+	if (command.target == LinkedListAnimationTarget::Node) {
+		LinkedListAnimationNode new_node;
+		new_node.ui_id = command.ui_id;
+		new_node.position = command.spawn_position;
+		new_node.alpha = 0;
+		new_node.fill_color = DEFAULT_NODE_COLOR;
+		state.getNodeList().push_back(new_node);
+	}
+	else {
+		LinkedListAnimationEdge new_edge;
+		new_edge.from_ui_id = command.from_ui_id;
+		new_edge.to_ui_id = command.to_ui_id;
+		new_edge.from_position = command.spawn_position;
+		new_edge.to_position = command.spawn_position;
+		new_edge.alpha = 0;
+		new_edge.fill_color = DEFAULT_EDGE_COLOR;
+		state.getEdgeList().push_back(new_edge);
 	}
 }
 

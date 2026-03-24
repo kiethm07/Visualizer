@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <SFML/Graphics.hpp>
 #include <Animation/LinkedList/LinkedListAnimationType.h>
 #include <Animation/LinkedList/LinkedListMoveDirection.h>
 
@@ -44,6 +45,8 @@ struct LinkedListAnimationCommand {
 	LinkedListAnimationTarget target;
 	LinkedListAnimationType type;
 	LinkedListMoveDirection direction; // for move and fade in/out, default is right for move, no direction for fade in/out
+	sf::Vector2f spawn_position = { 0,0 }; // for spawn commands, default is (0, 0)
+	//Spawn commands must be handled first
 	int ui_id; // for node
 	int from_ui_id, to_ui_id; // for edge
 
