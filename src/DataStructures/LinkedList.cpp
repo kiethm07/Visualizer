@@ -77,7 +77,7 @@ void LinkedList::clear(LinkedList::Node*& pHead, LinkedListRecorder& recorder) {
     recorder.addNewPhase();
 	recorder.addCommand(LinkedListAnimationCommand(LinkedListAnimationTarget::Node, LinkedListAnimationType::FadeOut, pHead->ui_id));
     if (pNext_ui_id != -1) {
-        recorder.addNewPhase();
+        //recorder.addNewPhase();
         recorder.addCommand(LinkedListAnimationCommand(LinkedListAnimationTarget::Edge, LinkedListAnimationType::FadeOut, pHead->ui_id, pNext_ui_id));
 	}
     delete pHead;
