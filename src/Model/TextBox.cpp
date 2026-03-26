@@ -5,7 +5,8 @@ TextBox::TextBox(
     const std::string& placeholder,
     const sf::Vector2f& pos,
     const sf::Vector2f& size,
-    unsigned int char_size
+    unsigned int char_size,
+	bool outside_click_reset
 ) : Button(font, "", pos, size, char_size), placeholder(placeholder), caret_visible(0) {
     caret.setSize({ 1.5f, float(char_size) });
     caret.setFillColor(sf::Color::White);

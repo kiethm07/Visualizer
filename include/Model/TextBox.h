@@ -12,7 +12,8 @@ public:
         const std::string& placeholder,
         const sf::Vector2f& pos,
         const sf::Vector2f& size,
-        unsigned int char_size
+        unsigned int char_size,
+        bool outside_click_reset = true
     );
 
     void handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
@@ -35,6 +36,9 @@ public:
             target.draw(caret, states);
         }
     }
+    void setOutsideClickReset(bool reset) {
+        outside_click_reset = reset;
+	}
 private:
     std::string value;
     std::string placeholder;
@@ -44,6 +48,7 @@ private:
     sf::Clock caret_timer;
     bool caret_visible;
     sf::RectangleShape caret;
+    bool outside_click_reset = true;
 
     const float BLINK_INTERVAL = 0.5f;
     const sf::Color FOCUSED_COLOR = sf::Color(70, 110, 180);
