@@ -8,11 +8,12 @@
 class LinkedListAnimator{
 public:
 	void generateBaseStates(const LinkedListState& initial_state, const LinkedListRecorder& record);
-	LinkedListAnimationState getStateAtTime(float t) const; //Get the state of the animation at time t, used to draw the animation
+	LinkedListAnimationState getStateAtTime(float t); //Get the state of the animation at time t, used to draw the animation
 	float getTotalDuration() const {
 		return total_duration;
 	}
 private:
+	void normalizeEdgeLists(LinkedListAnimationState& animation_state);
 	void generateAnimationState(LinkedListAnimationState& animation_state, const LinkedListState& state);
 	void applyCommand(const LinkedListAnimationCommand& command, const LinkedListAnimationState& base_state, LinkedListAnimationState& state, const float& progress) const;
 	void applySpawnCommand(const LinkedListAnimationCommand& command, LinkedListAnimationState& state, const LinkedListAnimationState& base_state) const;

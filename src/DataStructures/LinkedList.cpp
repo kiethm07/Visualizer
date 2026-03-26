@@ -161,6 +161,8 @@ void LinkedList::insertFirst(LinkedList::Node*& pHead, int x, LinkedListRecorder
 		recorder.addNewPhase();
 		recorder.addCommand(LinkedListAnimationCommand::createSpawnEdgeCommand(tmp->ui_id, pHead->ui_id));
 		recorder.addCommand(LinkedListAnimationCommand(LinkedListAnimationTarget::Edge, LinkedListAnimationType::FadeIn, tmp->ui_id, pHead->ui_id));
+        recorder.addNewPhase();
+		recorder.addCommand(LinkedListAnimationCommand(LinkedListAnimationTarget::Node, LinkedListAnimationType::Move, LinkedListMoveDirection::Up, tmp->ui_id));
     }
     pHead = tmp;
 }

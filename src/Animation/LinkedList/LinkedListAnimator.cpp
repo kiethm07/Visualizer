@@ -28,7 +28,7 @@ void LinkedListAnimator::generateBaseStates(const LinkedListState& state, const 
 			}
 		}
 	}
-
+	normalizeEdgeLists(base_state_after_spawn);
 	base_states.push_back(base_state_after_spawn);
 	//std::cout << initial_state.getNodeList().size() << " nodes, " << initial_state.getEdgeList().size() << " edges in initial state\n";
 	//std::cout << phases.size() << " phases generated\n";
@@ -49,6 +49,7 @@ void LinkedListAnimator::generateBaseStates(const LinkedListState& state, const 
 		//std::cout << new_state.getNodeList().size() << " nodes, " << new_state.getEdgeList().size() << " edges in new state after phase " << i << "\n";
 		//std::cout << phase_duration << " seconds for phase " << i << "\n";
 		start_time.push_back(start_time.back() + phase_duration);
+		normalizeEdgeLists(new_state);
 		base_states.push_back(new_state);
 		total_duration += phase_duration;
 		//std::cout << "Phase " << i << ": duration " << phase_duration << " seconds, total duration so far: " << total_duration << " seconds\n";
@@ -92,7 +93,7 @@ void LinkedListAnimator::generateAnimationState(LinkedListAnimationState& animat
 	animation_state.setNodeList(node_list);
 }
 
-LinkedListAnimationState LinkedListAnimator::getStateAtTime(float t) const {
+LinkedListAnimationState LinkedListAnimator::getStateAtTime(float t) {
 	//return LinkedListAnimationState(); //Debug
 	if (base_states.empty()) {
 		//std::cout << "No base states generated" << std::endl;
@@ -128,6 +129,7 @@ LinkedListAnimationState LinkedListAnimator::getStateAtTime(float t) const {
 		if (commands[i].type == LinkedListAnimationType::Spawn) continue;
 		applyCommand(commands[i], base_state, new_state, progress);
 	}
+	normalizeEdgeLists(new_state);
 	//std::cout << "commands in phase " << phase_index << ": " << commands.size() << "\n";
 	//std::cout << "Calculated animation state for time " << t << " in phase " << phase_index << " with progress " << progress << "\n";
 	//std::cout << new_state.getNodeList().size() << " nodes, " << new_state.getEdgeList().size() << " edges in new state\n";
@@ -294,4 +296,22 @@ void LinkedListAnimator::applyCommand(const LinkedListAnimationCommand& command,
 		applyCommandOnEdge(new_edge, command, progress);
 		state.modifyEdge(new_edge, edge_index);
 	}
+}
+
+void LinkedListAnimator::normalizeEdgeLists(LinkedListAnimationState& animation_state) {
+	std::vector<LinkedListAnimationEdge> edge_list = animation_state.getEdgeList();
+	std::vector<LinkedListAnimationNode> node_list = animation_state.getNodeList();
+	std::unordered_map<int, sf::Vector2f> ui_id_to_position;
+	for (const LinkedListAnimationNode& node : node_list) {
+		ui_id_to_position[node.ui_id] = node.position;
+	}
+	for (LinkedListAnimationEdge& edge : edge_list) {
+		if (ui_id_to_position.find(edge.from_ui_id) != ui_id_to_position.end()) {
+			edge.from_position = ui_id_to_position[edge.from_ui_id] + sf::Vector2f{ (float)NODE_RADIUS, 0.f };
+		}
+		if (ui_id_to_position.find(edge.to_ui_id) != ui_id_to_position.end()) {
+			edge.to_position = ui_id_to_position[edge.to_ui_id] - sf::Vector2f{ (float)NODE_RADIUS, 0.f };
+		}
+	}
+	animation_state.setEdgeList(edge_list);
 }
