@@ -84,7 +84,7 @@ std::optional<ListOperation> LinkedListPanel::handleEvent(const sf::RenderWindow
 				if (value.has_value()) {
 					int x = *value;
 					std::cout << x << "\n";
-					return ListOperation::insertSingle(0, x);
+					return ListOperation::insertSingle(2, x);
 				}
 
 				return std::nullopt;

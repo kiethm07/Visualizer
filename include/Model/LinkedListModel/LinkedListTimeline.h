@@ -39,7 +39,7 @@ private:
 	//each operation consists of multiple phases,
 	//each phase consists of multiple animation states
 	int direction = 1; //1 for forward, -1 for backward
-	float speed = 1.0f;
+	float speed = 2.0f;
 	const float MIN_SPEED = 0.1f;
 	const float MAX_SPEED = 10.f;
 	bool running = true;

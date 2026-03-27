@@ -89,58 +89,55 @@ LinkedList::~LinkedList() {
 }
 
 void LinkedList::insert(LinkedList::Node*& pHead, const int& x, const int& k, LinkedListRecorder& recorder) {
+    using Command = LinkedListAnimationCommand;
+    using Target = LinkedListAnimationTarget;
+    using Type = LinkedListAnimationType;
     if (k < 0) return;
     if (k == 0) {
         insertFirst(pHead, x, recorder);
         return;
     }
     Node* cur = pHead;
+    Node* pre = nullptr;
     int preId = -1;
-    for (int i = 0; i < k - 1 && cur != nullptr; i++) {
-        //unhightlight node i - 1
-        //highlight node i
-        //wait
-        if (preId != -1) {
-            recorder.addNewPhase();
-            recorder.addCommand(LinkedListAnimationCommand(LinkedListAnimationTarget::Node, LinkedListAnimationType::HighlightOff, preId));
-		}
+    for (int i = 0; i < k && cur != nullptr; i++) {
         recorder.addNewPhase();
-		recorder.addCommand(LinkedListAnimationCommand(LinkedListAnimationTarget::Node, LinkedListAnimationType::HighlightOn, cur->ui_id));
-        preId = cur->ui_id;
+        recorder.addCommand(Command(Target::Node, Type::HighlightOn, cur->ui_id));
+        if (pre) recorder.addCommand(Command(Target::Node, Type::HighlightOff, pre->ui_id));
+        if (i == k - 1) break;
+        pre = cur;
         cur = cur->pNext;
-        recorder.addNewPhase();
-		recorder.addCommand(LinkedListAnimationCommand(LinkedListAnimationTarget::Node, LinkedListAnimationType::Wait, cur ? cur->ui_id : -1));
     }
-    if (cur == nullptr) {
+    if (cur == nullptr && pre != nullptr) {
         recorder.addNewPhase();
-		recorder.addCommand(LinkedListAnimationCommand(LinkedListAnimationTarget::Node, LinkedListAnimationType::HighlightOff, preId));
-		return;
+        recorder.addCommand(Command(Target::Node, Type::HighlightOff, pre->ui_id));
+        return;
     }
-	///Move ALL nodes and edges from cur to the right
-    recorder.addNewPhase();
-    for (Node* cur_ui = cur ->pNext; cur_ui != nullptr; cur_ui = cur_ui->pNext) {
-        recorder.addCommand(LinkedListAnimationCommand(LinkedListAnimationTarget::Node, LinkedListAnimationType::Move, cur_ui->ui_id));
-        if (cur_ui->pNext) {
-            recorder.addCommand(LinkedListAnimationCommand(LinkedListAnimationTarget::Edge, LinkedListAnimationType::Move, cur_ui->ui_id, cur_ui->pNext->ui_id));
-		}
-	}
+    if (cur == nullptr) return;
     Node* tmp = new Node(x, next_ui_id++);
     recorder.addNewPhase();
-	recorder.addCommand(LinkedListAnimationCommand(LinkedListAnimationTarget::Node, LinkedListAnimationType::FadeIn, tmp->ui_id));
+    recorder.addCommand(Command::createSpawnNodeCommand(tmp->ui_id, cur->ui_id, x, { 200, 200 }));
+    recorder.addCommand(Command(Target::Node, Type::FadeIn, tmp->ui_id));
+    recorder.addNewPhase();
+    for (Node* n = cur->pNext; n != nullptr; n = n->pNext) {
+        recorder.addCommand(Command(Target::Node, Type::Move, n->ui_id));
+    }
     tmp->pNext = cur->pNext;
-    if (cur->pNext) {
+    if (tmp->pNext) {
         recorder.addNewPhase();
-        recorder.addCommand(LinkedListAnimationCommand(LinkedListAnimationTarget::Edge, LinkedListAnimationType::FadeIn, tmp->ui_id, cur->pNext->ui_id));
+        recorder.addCommand(Command::createSpawnEdgeCommand(tmp->ui_id, tmp->pNext->ui_id));
+        recorder.addCommand(Command(Target::Edge, Type::FadeIn, tmp->ui_id, tmp->pNext->ui_id));
+        recorder.addNewPhase();
+        recorder.addCommand(Command(Target::Edge, Type::FadeOut, cur->ui_id, tmp->pNext->ui_id));
     }
     cur->pNext = tmp;
-    if (tmp->pNext) {
-		recorder.addNewPhase();
-		recorder.addCommand(LinkedListAnimationCommand(LinkedListAnimationTarget::Edge, LinkedListAnimationType::FadeOut, cur->ui_id, tmp->pNext->ui_id));
-    }
     recorder.addNewPhase();
-	recorder.addCommand(LinkedListAnimationCommand(LinkedListAnimationTarget::Edge, LinkedListAnimationType::FadeIn, cur->ui_id, tmp->ui_id));
-	recorder.addNewPhase();
-	recorder.addCommand(LinkedListAnimationCommand(LinkedListAnimationTarget::Node, LinkedListAnimationType::HighlightOff, cur->ui_id));
+    recorder.addCommand(Command::createSpawnEdgeCommand(cur->ui_id, tmp->ui_id));
+    recorder.addCommand(Command(Target::Edge, Type::FadeIn, cur->ui_id, tmp->ui_id));
+    recorder.addNewPhase();
+    recorder.addCommand(Command(Target::Node, Type::Move, LinkedListMoveDirection::Up, tmp->ui_id));
+    recorder.addNewPhase();
+    recorder.addCommand(Command(Target::Node, Type::HighlightOff, cur->ui_id));
 }
     
 void LinkedList::insertFirst(LinkedList::Node*& pHead, int x, LinkedListRecorder& recorder) {
@@ -148,9 +145,9 @@ void LinkedList::insertFirst(LinkedList::Node*& pHead, int x, LinkedListRecorder
     for (Node* cur = pHead; cur != nullptr; cur = cur->pNext) {
 		//std::cout << "Move node " << cur->val << " with ui_id " << cur->ui_id << "\n";
         recorder.addCommand(LinkedListAnimationCommand(LinkedListAnimationTarget::Node, LinkedListAnimationType::Move, cur->ui_id));
-        if (cur->pNext) {
-            recorder.addCommand(LinkedListAnimationCommand(LinkedListAnimationTarget::Edge, LinkedListAnimationType::Move, cur->ui_id, cur->pNext->ui_id));
-        }
+        //if (cur->pNext) {
+        //    recorder.addCommand(LinkedListAnimationCommand(LinkedListAnimationTarget::Edge, LinkedListAnimationType::Move, cur->ui_id, cur->pNext->ui_id));
+        //}
     }
     Node* tmp = new Node(x, next_ui_id++);
 	recorder.addNewPhase();
