@@ -37,6 +37,25 @@ void LinkedListTimeline::update(const sf::RenderWindow& window, const sf::View& 
 			current_time = std::min(current_time, animator.getTotalDuration());
 		}
 	}
+	else if (current_time < 0 && current_operation_index == 0) {
+		current_time = 0;
+		animator.clear();
+	}
+	else if (current_time < 0) {
+		while (current_operation_index > 0) {
+			current_operation_index--;
+			if (current_operation_index == 0) break;
+			animator.generateBaseStates(list_states[current_operation_index - 1], records[current_operation_index - 1]);
+			current_time += animator.getTotalDuration();
+			if (current_time > 0 || current_operation_index == 0) {
+				break;
+			}
+		}
+		if (current_operation_index == 0) {
+			current_time = 0;
+			animator.clear();
+		}
+	}
 	current_animation_state = animator.getStateAtTime(current_time);
 	//std::cout << list_operations.size() << " operations, current index: " << current_operation_index << ", current time: " << current_time << "\n";
 	//std::cout << animator.getTotalDuration() << " total duration\n";

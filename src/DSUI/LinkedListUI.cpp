@@ -38,6 +38,12 @@ void LinkedListUI::handleEvent(const sf::RenderWindow& window, const sf::View& v
 				std::cout << "timeline running\n";
 			}
 		}
+		if (key->code == sf::Keyboard::Key::Right) {
+			timeline.setDirection(1);
+		}
+		if (key->code == sf::Keyboard::Key::Left) {
+			timeline.setDirection(-1);
+		}
 	}
 }
 

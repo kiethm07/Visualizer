@@ -12,6 +12,7 @@ public:
 	float getTotalDuration() const {
 		return total_duration;
 	}
+	void clear();
 private:
 	void normalizeEdgeLists(LinkedListAnimationState& animation_state);
 	void generateAnimationState(LinkedListAnimationState& animation_state, const LinkedListState& state);

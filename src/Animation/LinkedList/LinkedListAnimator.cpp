@@ -315,3 +315,8 @@ void LinkedListAnimator::normalizeEdgeLists(LinkedListAnimationState& animation_
 	}
 	animation_state.setEdgeList(edge_list);
 }
+
+void LinkedListAnimator::clear() {
+	base_states.clear();
+	start_time.clear();
+}

@@ -17,6 +17,16 @@ public:
 	void setAutoPlay(bool auto_play) {
 		this->auto_play = auto_play;
 	}
+	void setSpeed(float new_speed) {
+		if (new_speed > MAX_SPEED) new_speed = MAX_SPEED;
+		if (new_speed < MIN_SPEED) new_speed = MIN_SPEED;
+		this->speed = new_speed;
+	}
+	void setDirection(int dir) {
+		//-1: left
+		//1: right
+		this->direction = dir;
+	}
 	void push(const LinkedListState& current_state, const ListOperation& operation, const LinkedListRecorder& record);
 	void run();
 	void clear();
@@ -39,7 +49,7 @@ private:
 	//each operation consists of multiple phases,
 	//each phase consists of multiple animation states
 	int direction = 1; //1 for forward, -1 for backward
-	float speed = 2.0f;
+	float speed = 1.0f;
 	const float MIN_SPEED = 0.1f;
 	const float MAX_SPEED = 10.f;
 	bool running = true;
