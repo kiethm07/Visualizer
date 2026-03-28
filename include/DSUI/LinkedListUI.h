@@ -6,6 +6,7 @@
 #include <Model/LinkedListModel/LinkedListRenderer.h>
 #include <Model/Button.h>
 #include <AssetManager/AssetManager.h>
+#include <Panel/TimelinePanel.h>
 
 class LinkedListUI {
 public:
@@ -24,4 +25,5 @@ private:
 	LinkedListRecorder recorder;
 	sf::Clock clock;
 	Button test;
+	TimelinePanel timeline_panel;
 };
