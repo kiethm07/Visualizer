@@ -22,29 +22,36 @@ void LinkedListUI::update(const sf::RenderWindow& window, const sf::View& fixed_
 }
 
 void LinkedListUI::handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev) {
-	auto op = panel.handleEvent(window, view, ev);
-	if (op.has_value()) {
+	if (const auto op = panel.handleEvent(window, view, ev); op.has_value()) {
 		recorder.clear();
 		list.applyOperation(*op, recorder);
 		timeline.push(current_state, *op, recorder);
 		current_state = list.getState(); 
 	}
-	if (const auto* key = ev.getIf<sf::Event::KeyPressed>()) {
-		if (key->code == sf::Keyboard::Key::Space) {
-			if (timeline.isRunning()) {
-				timeline.pause();
-				std::cout << "timeline paused\n";
-			}
-			else {
-				timeline.run();
-				std::cout << "timeline running\n";
-			}
+	if (const auto op = timeline_panel.handleEvent(window, view, ev)) {
+		if (op->type == TimelineOperation::Play) {
+
 		}
-		if (key->code == sf::Keyboard::Key::Right) {
-			timeline.setDirection(1);
+		else if (op->type == TimelineOperation::OnePhaseForward) {
+
 		}
-		if (key->code == sf::Keyboard::Key::Left) {
-			timeline.setDirection(-1);
+		else if (op->type == TimelineOperation::OnePhaseBackward) {
+
+		}
+		else if (op->type == TimelineOperation::OneStepForward) {
+
+		}
+		else if (op->type == TimelineOperation::OneStepBackward) {
+
+		}
+		else if (op->type == TimelineOperation::LastState) {
+
+		}
+		else if (op->type == TimelineOperation::InitState) {
+
+		}
+		else if (op->type == TimelineOperation::ChangeSpeed) {
+
 		}
 	}
 }
