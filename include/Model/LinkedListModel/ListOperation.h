@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-enum class ListOperationType {InsertSingle, InsertMultiple, Delete, Update, Reset};
+enum class ListOperationType {InsertSingle, InsertMultiple, Remove, Update, Reset};
 
 struct ListOperation {
     ListOperationType type;
@@ -25,9 +25,9 @@ struct ListOperation {
         return op;
     }
 
-    static ListOperation erase(int position) {
+    static ListOperation remove(int position) {
         ListOperation op;
-        op.type = ListOperationType::Delete;
+        op.type = ListOperationType::Remove;
         op.position = position;
         return op;
     }

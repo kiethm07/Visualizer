@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <Animation/LinkedList/LinkedListAnimationType.h>
 #include <Animation/LinkedList/LinkedListMoveDirection.h>
+#include <iostream>
 
 float getCommandDuration(const LinkedListAnimationType& type);
 
@@ -60,6 +61,16 @@ struct LinkedListAnimationCommand {
 		command.from_ui_id = from_ui_id;
 		command.to_ui_id = to_ui_id;
 		command.duration = getCommandDuration(command.type);
+		return command;
+	}
+	static LinkedListAnimationCommand createChangeValueCommand(int ui_id, int value) {
+		LinkedListAnimationCommand command;
+		command.target = LinkedListAnimationTarget::Node;
+		command.type = LinkedListAnimationType::UpdateValue;
+		command.ui_id = ui_id;
+		command.value = value;
+		command.duration = getCommandDuration(command.type);
+		std::cout << command.duration << "\n";
 		return command;
 	}
 	LinkedListAnimationTarget target;

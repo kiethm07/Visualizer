@@ -17,5 +17,8 @@ float getCommandDuration(const LinkedListAnimationType& type) {
 	if (type == Type::Spawn) {
 		return 0.0f;
 	}
+	if (type == Type::UpdateValue) {
+		return 0.0f;
+	}
 	return 1.f; //Default duration is 1 second
 }

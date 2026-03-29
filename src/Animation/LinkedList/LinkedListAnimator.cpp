@@ -218,6 +218,12 @@ void LinkedListAnimator::applyCommandOnNode(LinkedListAnimationNode& node, const
 	else if (type == Type::HighlightOff) {
 		node.fill_color = lerpColor(HIGHLIGHT_NODE_COLOR, DEFAULT_NODE_COLOR, progress);
 	}
+	else if (type == Type::UpdateValue) {
+		node.value = command.value;
+	}
+	else if (type == Type::Wait) {
+		//do nothing
+	}
 	else if (type == Type::Move) {
 		sf::Vector2f move_vector = { 0.f, 0.f };
 		if (command.direction == LinkedListMoveDirection::Right) {

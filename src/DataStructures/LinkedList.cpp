@@ -47,7 +47,7 @@ void LinkedList::applyOperation(const ListOperation& operation, LinkedListRecord
 
         return;
     }
-    if (operation.type == ListOperationType::Delete) {
+    if (operation.type == ListOperationType::Remove) {
         int k = operation.position;
         remove(pHead, k, recorder);
         return;
@@ -230,19 +230,38 @@ void LinkedList::remove(LinkedList::Node*& pHead, int k, LinkedListRecorder& rec
     cur = nullptr;
 }
 
-void LinkedList::removeFirst(LinkedList::Node*& pHead, LinkedListRecorder& recorder) {
-    if (pHead == nullptr) return;
-    Node* tmp = pHead;
-    pHead = pHead->pNext;
-    delete tmp;
-    tmp = nullptr;
-}
-
-void LinkedList::update(LinkedList::Node*& pHead, int x, int k, LinkedListRecorder& recorder) {
+void LinkedList::update(Node*& pHead, const int& x, const int& k, LinkedListRecorder& recorder) {
+    using Command = LinkedListAnimationCommand;
+    using Target = LinkedListAnimationTarget;
+    using Type = LinkedListAnimationType;
+    if (k < 0) return;
     Node* cur = pHead;
-    for (int i = 0; i < k && cur; i++) {
+    Node* pre = nullptr;
+    for (int i = 0; i < k && cur != nullptr; i++) {
+        recorder.addNewPhase();
+        recorder.addCommand(Command(Target::Node, Type::HighlightOn, cur->ui_id));
+        if (pre) recorder.addCommand(Command(Target::Node, Type::HighlightOff, pre->ui_id));
+        pre = cur;
         cur = cur->pNext;
     }
-    if (cur == nullptr) return;
+    if (cur == nullptr) {
+        if (pre != nullptr) {
+            recorder.addNewPhase();
+            recorder.addCommand(Command(Target::Node, Type::HighlightOff, pre->ui_id));
+        }
+        return;
+    }
+    recorder.addNewPhase();
+    recorder.addCommand(Command(Target::Node, Type::HighlightOn, cur->ui_id));
+    if (pre) recorder.addCommand(Command(Target::Node, Type::HighlightOff, pre->ui_id));
+    recorder.addNewPhase();
+    recorder.addCommand(Command(Target::Node, Type::FadeOut, cur->ui_id));
+    recorder.addNewPhase();
+    recorder.addCommand(Command::createChangeValueCommand(cur->ui_id, x));
+    //std::cout << " " << x << "\n";
     cur->val = x;
+    recorder.addNewPhase();
+    recorder.addCommand(Command(Target::Node, Type::FadeIn, cur->ui_id));
+    recorder.addNewPhase();
+    recorder.addCommand(Command(Target::Node, Type::HighlightOff, cur->ui_id));
 }

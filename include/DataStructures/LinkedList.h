@@ -32,10 +32,10 @@ private:
     int next_ui_id;
     Node* pHead;
     void insert(Node*& pHead, const int& x, const int& k, LinkedListRecorder& recorder);
+    void update(Node*& pHead, const int& x, const int& k, LinkedListRecorder& recorder);
     void clear(Node*& pHead, LinkedListRecorder& recorder);
     void insertFirst(Node*& pHead, int x, LinkedListRecorder& recorder);
     void remove(Node*& pHead, int k, LinkedListRecorder& recorder);
     void removeFirst(Node*& pHead, LinkedListRecorder& recorder);
-    void update(Node*& pHead, int x, int k, LinkedListRecorder& recorder);
 	void clearWithoutRecorder(Node*& pHead);
 };
