@@ -93,7 +93,7 @@ void TimelinePanel::updateWindowState(const sf::RenderWindow& window, const sf::
         b.setButtonSize(button_size);
         b.setOrigin(button_size / 2.f);
         b.setPosition({ x, y });
-        };
+    };
 
     float delta = button_size.x + gap;
 

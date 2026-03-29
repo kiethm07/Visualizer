@@ -157,7 +157,7 @@ void LinkedListTimeline::onePhaseBackward() {
 void LinkedListTimeline::oneStepForward() {
 	direction = 1;
 	next_phase_wating = 0;
-	std::cout << current_operation_index << " " << current_time << " " << animator.getTotalDuration() << "\n";
+	//std::cout << current_operation_index << " " << current_time << " " << animator.getTotalDuration() << "\n";
 	if (current_operation_index == list_states.size()) {
 		current_time = animator.getTotalDuration();
 		return;

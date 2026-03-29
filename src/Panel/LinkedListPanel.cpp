@@ -70,7 +70,7 @@ std::optional<ListOperation> LinkedListPanel::handleEvent(const sf::RenderWindow
 
 			if (remove_last_button.contains(window, view, sf::Vector2f(mb->position))) {
 				std::cout << "remove clicked!\n";
-				return ListOperation::erase(rand(0, 0));
+				return ListOperation::erase(0);
 			}
 
 			if (reset_button.contains(window, view, sf::Vector2f(mb->position))) {
