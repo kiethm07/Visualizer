@@ -197,6 +197,7 @@ void LinkedListTimeline::oneStepBackward() {
 }
 
 void LinkedListTimeline::toLast() {
+	direction = 1;
 	if (list_states.empty()) return;
 	generateAnimation(list_states.back(), records.back());
 	current_operation_index = list_states.size();
@@ -204,6 +205,7 @@ void LinkedListTimeline::toLast() {
 }
 
 void LinkedListTimeline::toInit() {
+	direction = -1;
 	animator.clear();
 	current_operation_index = 0;
 	current_time = 0;
