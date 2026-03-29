@@ -104,6 +104,7 @@ void LinkedListTimeline::generateAnimation(const LinkedListState& initial_state,
 }
 
 void LinkedListTimeline::onePhaseForward() {
+	if (!running) return;
 	direction = 1;
 	float old_time = current_time;
 	if (animator.isPhaseBoundary(current_time)) {
@@ -130,6 +131,7 @@ void LinkedListTimeline::onePhaseForward() {
 }
 
 void LinkedListTimeline::onePhaseBackward() {
+	if (!running) return;
 	direction = -1;
 	if (animator.isPhaseBoundary(current_time)) {
 		next_phase_wating = 1;
@@ -155,6 +157,7 @@ void LinkedListTimeline::onePhaseBackward() {
 }
 
 void LinkedListTimeline::oneStepForward() {
+	if (!running) return;
 	direction = 1;
 	next_phase_wating = 0;
 	//std::cout << current_operation_index << " " << current_time << " " << animator.getTotalDuration() << "\n";
@@ -174,6 +177,7 @@ void LinkedListTimeline::oneStepForward() {
 }
 
 void LinkedListTimeline::oneStepBackward() {
+	if (!running) return;
 	direction = -1;
 	next_phase_wating = 0;
 	//std::cout << current_operation_index << " " << current_time << " " << animator.getTotalDuration() << "\n";
@@ -197,6 +201,7 @@ void LinkedListTimeline::oneStepBackward() {
 }
 
 void LinkedListTimeline::toLast() {
+	if (!running) return;
 	direction = 1;
 	if (list_states.empty()) return;
 	generateAnimation(list_states.back(), records.back());
@@ -205,6 +210,7 @@ void LinkedListTimeline::toLast() {
 }
 
 void LinkedListTimeline::toInit() {
+	if (!running) return;
 	direction = -1;
 	animator.clear();
 	current_operation_index = 0;
