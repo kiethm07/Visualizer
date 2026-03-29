@@ -14,6 +14,9 @@ public:
 	bool isRunning() const{
 		return running;
 	}
+	bool isAutoPlaying() const {
+		return auto_play;
+	}
 	void setAutoPlay(bool auto_play) {
 		this->auto_play = auto_play;
 	}
@@ -27,6 +30,12 @@ public:
 		//1: right
 		this->direction = dir;
 	}
+	void onePhaseForward();
+	void onePhaseBackward();
+	void oneStepForward();
+	void oneStepBackward();
+	void toInit();
+	void toLast();
 	void push(const LinkedListState& current_state, const ListOperation& operation, const LinkedListRecorder& record);
 	void run();
 	void clear();
@@ -44,7 +53,7 @@ private:
 
 	LinkedListAnimator animator;
 	LinkedListAnimationState current_animation_state; //used to draw
-
+	bool next_phase_wating; //boundary case
 	int current_operation_index = 0;
 	//each operation consists of multiple phases,
 	//each phase consists of multiple animation states

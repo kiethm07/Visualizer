@@ -3,9 +3,7 @@
 void LinkedListAnimator::generateBaseStates(const LinkedListState& state, const LinkedListRecorder& record) {
 	generateAnimationState(initial_state, state);
 	phases = record.getPhases();
-	total_duration = 0.f;
-	base_states.clear();
-	start_time.clear();
+	clear();
 	start_time.push_back(0.f);
 	LinkedListAnimationState base_state_after_spawn = initial_state;
 	//Generate the spawn two times
@@ -91,6 +89,50 @@ void LinkedListAnimator::generateAnimationState(LinkedListAnimationState& animat
 	}
 	animation_state.setEdgeList(edge_list);
 	animation_state.setNodeList(node_list);
+}
+
+bool LinkedListAnimator::isPhaseBoundary(float t) const {
+	int i = 0;
+	for (i = 0; i < start_time.size(); i++) {
+		if (start_time[i] < t) continue;
+		if (start_time[i] > t) break;
+	}
+	//Check 3 closest;
+	const float EPSILON = 1e-5;
+	for (int j = i - 1; j <= i + 1; j++) {
+		if (j < 0) continue;
+		if (j >= start_time.size()) break;
+		if (abs(start_time[j] - t) <= EPSILON) return 1;
+	}
+	return 0;
+}
+
+float LinkedListAnimator::getNextPhaseTimer(float t) const {
+	for (int i = 0; i < start_time.size(); i++) {
+		if (start_time[i] > t) return start_time[i];
+	}
+	return -1;
+}
+
+float LinkedListAnimator::getPreviousPhaseTimer(float t) const {
+	for (int i = 0; i < start_time.size(); i++) {
+		if (start_time[i] >= t && i > 0) return start_time[i - 1];
+	}
+	return -1;
+}
+
+float LinkedListAnimator::getLeftBound(float t) const {
+	for (int i = 0; i < start_time.size(); i++) {
+		if (start_time[i] > t && i > 0) return start_time[i - 1];
+	}
+	return -1;
+}
+
+float LinkedListAnimator::getRightBound(float t) const {
+	for (int i = 0; i < start_time.size(); i++) {
+		if (start_time[i] >= t) return start_time[i];
+	}
+	return -1;
 }
 
 LinkedListAnimationState LinkedListAnimator::getStateAtTime(float t) {
@@ -319,4 +361,5 @@ void LinkedListAnimator::normalizeEdgeLists(LinkedListAnimationState& animation_
 void LinkedListAnimator::clear() {
 	base_states.clear();
 	start_time.clear();
+	total_duration = 0;
 }

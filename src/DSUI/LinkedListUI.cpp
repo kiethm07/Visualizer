@@ -30,25 +30,32 @@ void LinkedListUI::handleEvent(const sf::RenderWindow& window, const sf::View& v
 	}
 	if (const auto op = timeline_panel.handleEvent(window, view, ev)) {
 		if (op->type == TimelineOperation::Play) {
-
+			if (timeline.isRunning()) {
+				timeline.pause();
+			}
+			else timeline.run();
+		}
+		else if (op->type == TimelineOperation::AutoPlay) {
+			bool flag = timeline.isAutoPlaying() ^ 1;
+			timeline.setAutoPlay(flag);
 		}
 		else if (op->type == TimelineOperation::OnePhaseForward) {
-
+			timeline.onePhaseForward();
 		}
 		else if (op->type == TimelineOperation::OnePhaseBackward) {
-
+			timeline.onePhaseBackward();
 		}
 		else if (op->type == TimelineOperation::OneStepForward) {
-
+			timeline.oneStepForward();
 		}
 		else if (op->type == TimelineOperation::OneStepBackward) {
-
+			timeline.oneStepBackward();
 		}
 		else if (op->type == TimelineOperation::LastState) {
-
+			timeline.toLast();
 		}
 		else if (op->type == TimelineOperation::InitState) {
-
+			timeline.toInit();
 		}
 		else if (op->type == TimelineOperation::ChangeSpeed) {
 

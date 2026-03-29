@@ -12,6 +12,11 @@ public:
 	float getTotalDuration() const {
 		return total_duration;
 	}
+	float getNextPhaseTimer(float t) const;
+	float getPreviousPhaseTimer(float t) const;
+	float getLeftBound(float t) const;
+	float getRightBound(float t) const;
+	bool isPhaseBoundary(float t) const; // Return -1 if not the boundary, or the boundary itself
 	void clear();
 private:
 	void normalizeEdgeLists(LinkedListAnimationState& animation_state);
@@ -28,7 +33,7 @@ private:
 	const int NODE_RADIUS = 50;
 	const int NODE_GAP = 2 * NODE_RADIUS + 100;
 	const int X_MARGIN = 400;
-	const int Y_MARGIN = 400;
+	const int Y_MARGIN = 200;
 	const sf::Color DEFAULT_NODE_COLOR = sf::Color(89, 145, 46);
 	const sf::Color DEFAULT_EDGE_COLOR = sf::Color(255, 255, 255);
 	const sf::Color HIGHLIGHT_NODE_COLOR = sf::Color(209, 70, 38);
