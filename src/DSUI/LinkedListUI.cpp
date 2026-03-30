@@ -18,17 +18,17 @@ void LinkedListUI::update(const sf::RenderWindow& window, const sf::View& fixed_
 	//test.setPosition(panel.getSize() + sf::Vector2f({ 100.f, -300.f }));
 	//test.update(window, cam_view);
 	//renderer.update(window, cam_view);
-	timeline.update(window, cam_view, clock.restart().asSeconds());
+	timeline.update(clock.restart().asSeconds());
 }
 
-void LinkedListUI::handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev) {
+void LinkedListUI::handleEvent(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const sf::Event& ev) {
 	if (const auto op = panel.handleEvent(window, view, ev); op.has_value()) {
 		recorder.clear();
 		list.applyOperation(*op, recorder);
 		timeline.push(current_state, *op, recorder);
 		current_state = list.getState(); 
 	}
-	if (const auto op = timeline_panel.handleEvent(window, view, ev)) {
+	if (const auto op = timeline_panel.handleEvent(window, view, cam_view, cam, ev)) {
 		if (op->type == TimelineOperation::Play) {
 			if (timeline.isRunning()) {
 				timeline.pause();

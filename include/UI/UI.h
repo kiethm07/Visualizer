@@ -24,6 +24,7 @@ private:
 	DSMenu ds_menu;
 	LinkedListUI linked_list_ui;
 	MenuState current_state = MenuState::MainMenu;
+	bool changed_state = 1;
 	const unsigned int DEFAULT_WIDTH = 1280;
 	const unsigned int DEFAULT_HEIGHT = 720;
 

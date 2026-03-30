@@ -10,7 +10,9 @@ TimelinePanel::TimelinePanel(const AssetManager& a_manager) :
     one_step_backward(FONT, "<<", {}, {}, 20),
     skip_to_last(FONT, "|>", {}, {}, 20),
     skip_to_init(FONT, "<|", {}, {}, 20),
-    auto_play(FONT, "Auto play", {}, {}, 20)
+    auto_play(FONT, "Auto play", {}, {}, 20),
+    fix_camera(FONT, "Fix camera", {}, {}, 20),
+    reset_camera(FONT, "Reset camera", {}, {}, 20)
 {
     background.setFillColor(sf::Color::Blue);
     background.setOrigin({ 0,0 });
@@ -18,7 +20,7 @@ TimelinePanel::TimelinePanel(const AssetManager& a_manager) :
     background.setSize({ 0,0 });
 }
 
-std::optional<TimelineConfig> TimelinePanel::handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev) {
+std::optional<TimelineConfig> TimelinePanel::handleEvent(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const sf::Event& ev) {
     TimelineConfig timeline_config;
     if (const auto* mb = ev.getIf<sf::Event::MouseButtonReleased>()) {
         sf::Vector2f mouse_pos = sf::Vector2f(mb->position);
@@ -46,6 +48,13 @@ std::optional<TimelineConfig> TimelinePanel::handleEvent(const sf::RenderWindow&
         if (skip_to_init.contains(window, view, mouse_pos)) {
             return TimelineConfig::toInit();
         }
+        if (fix_camera.contains(window, view, mouse_pos)) {
+            bool flag = cam.isEnable() ^ 1;
+            cam.setEnable(flag);
+        }
+        if (reset_camera.contains(window, view, mouse_pos)) {
+            cam_view = view;
+        }
     }
     return std::nullopt;
 }
@@ -57,13 +66,15 @@ void TimelinePanel::update(const sf::RenderWindow& window, const sf::View& view)
 
 void TimelinePanel::updateButtonState(const sf::RenderWindow& window, const sf::View& view) {
     play.update(window, view);
-    auto_play.update(window, view);
     one_phase_forward.update(window, view);
     one_phase_backward.update(window, view);
     one_step_forward.update(window, view);
     one_step_backward.update(window, view);
     skip_to_last.update(window, view);
     skip_to_init.update(window, view);
+    auto_play.update(window, view);
+    fix_camera.update(window, view);
+    reset_camera.update(window, view);
 }
 
 void TimelinePanel::updateWindowState(const sf::RenderWindow& window, const sf::View& view) {
@@ -114,4 +125,6 @@ void TimelinePanel::updateWindowState(const sf::RenderWindow& window, const sf::
 
     // Auto play (bottom center)
     place(auto_play, center_x, bottom_y);
+    place(fix_camera, center_x - delta, bottom_y);
+    place(reset_camera, center_x + delta, bottom_y);
 }

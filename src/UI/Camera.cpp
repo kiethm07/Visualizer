@@ -63,4 +63,6 @@ void CameraController::reset(const sf::RenderWindow& window, sf::View& view) {
     sf::Vector2f window_center = window_size / 2.f;
     view.setSize(window_size);
     view.setCenter(window_center);
+    zoom = 1.f;
+    view.zoom(zoom);
 }

@@ -7,12 +7,13 @@
 #include <Model/Button.h>
 #include <AssetManager/AssetManager.h>
 #include <Panel/TimelinePanel.h>
+#include <UI/Camera.h>
 
 class LinkedListUI {
 public:
 	LinkedListUI(const AssetManager& a_manager);
 	void update(const sf::RenderWindow& window, const sf::View& fixed_view, const sf::View& cam_view);
-	void handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
+	void handleEvent(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const sf::Event& ev);
 	void draw(sf::RenderWindow& window, const sf::View& fixed_view, const sf::View& cam_view);
 private:
 	bool inAnimation = 0;

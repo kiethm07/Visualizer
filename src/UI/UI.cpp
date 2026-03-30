@@ -48,26 +48,40 @@ void UI::run() {
                 }
             }
             if (current_state == MenuState::MainMenu) {
-                cam.setEnable(false);
+                if (changed_state) {
+                    cam.reset(window, cam_view);
+                    cam.setEnable(0);
+                    changed_state = 0;
+                }
                 std::optional<MenuState> chosen = main_menu.handleEvent(window, fixed_view, *ev);
                 if (chosen.has_value()) {
+                    changed_state = 1;
                     current_state = chosen.value();
                     cam.reset(window, cam_view);
                     break;
                 }
             }
             if (current_state == MenuState::DSMenu) {
-                cam.setEnable(false);
+                if (changed_state) {
+                    cam.reset(window, cam_view);
+                    cam.setEnable(0);
+                    changed_state = 0;
+                }
                 std::optional<MenuState> chosen = ds_menu.handleEvent(window, fixed_view, *ev);
                 if (chosen.has_value()) {
+                    changed_state = 1;
                     current_state = chosen.value();
                     cam.reset(window, cam_view);
                     break;
                 }
             }
             if (current_state == MenuState::LinkedList) {
-                cam.setEnable(true);
-                linked_list_ui.handleEvent(window, fixed_view, *ev);
+                if (changed_state) {
+                    cam.reset(window, cam_view);
+                    cam.setEnable(1);
+                    changed_state = 0;
+                }
+                linked_list_ui.handleEvent(window, fixed_view, cam_view, cam, *ev);
             }
         }
         window.clear();

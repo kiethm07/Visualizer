@@ -18,7 +18,7 @@ public:
 
     void handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
     void update(const sf::RenderWindow& window, const sf::View& view);
-
+    void reset();
     void setValue(const std::string& value);
     void setPlaceholder(const std::string& placeholder);
     void setFocused(bool focused);

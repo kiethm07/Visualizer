@@ -6,8 +6,8 @@ TextBox::TextBox(
     const sf::Vector2f& pos,
     const sf::Vector2f& size,
     unsigned int char_size,
-	bool outside_click_reset
-) : Button(font, "", pos, size, char_size), placeholder(placeholder), caret_visible(0) {
+    bool outside_click_reset
+) : Button(font, "", pos, size, char_size), placeholder(placeholder), caret_visible(0), outside_click_reset(outside_click_reset) {
     caret.setSize({ 1.5f, float(char_size) });
     caret.setFillColor(sf::Color::White);
     refreshText();
@@ -27,6 +27,8 @@ void TextBox::handleEvent(const sf::RenderWindow& window, const sf::View& view, 
 
     if (const auto* mb = ev.getIf<sf::Event::MouseButtonPressed>()) {
         if (mb->button == sf::Mouse::Button::Left) {
+            //std::cout << placeholder << " " << outside_click_reset << "\n";
+            if (!outside_click_reset) return;
             sf::Vector2f mouse_pos = window.mapPixelToCoords(mb->position, view);
             focused = contains(window, view, mouse_pos);
             if (focused) return;
@@ -144,6 +146,10 @@ const std::string& TextBox::getValue() const {
 
 const std::string& TextBox::getPlaceholder() const {
     return placeholder;
+}
+
+void TextBox::reset() {
+    value.clear();
 }
 
 bool TextBox::isFocused() const {

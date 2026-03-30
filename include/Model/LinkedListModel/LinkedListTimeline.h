@@ -42,7 +42,7 @@ public:
 	void pause();
 	void draw(sf::RenderWindow& window, const sf::View& view);
 	void generateAnimation(const LinkedListState& initial_state, const LinkedListRecorder& record);
-	void update(const sf::RenderWindow& window, const sf::View& view, const float& real_delta_time);
+	void update(const float& real_delta_time);
 	void handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
 private:
 	const AssetManager& a_manager;

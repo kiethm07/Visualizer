@@ -5,10 +5,12 @@ LinkedListTimeline::LinkedListTimeline(const AssetManager& a_manager) :
 	renderer(a_manager),
 	list_operations(),
 	list_states(),
-	records() {
+	records(),
+	next_phase_wating(0) 
+{
 }
 
-void LinkedListTimeline::update(const sf::RenderWindow& window, const sf::View& view, const float& real_delta_time) {
+void LinkedListTimeline::update(const float& real_delta_time) {
 	if (!running) return;
 	float dt = real_delta_time * speed;
 	float new_time = current_time + dt * direction;
