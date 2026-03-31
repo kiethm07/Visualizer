@@ -3,8 +3,8 @@
 LinkedListTimeline::LinkedListTimeline(const AssetManager& a_manager) :
 	a_manager(a_manager),
 	renderer(a_manager),
-	list_operations(),
-	list_states(),
+	operations(),
+	states(),
 	records(),
 	next_phase_wating(0) 
 {
@@ -32,25 +32,25 @@ void LinkedListTimeline::update(const float& real_delta_time) {
 	current_time = new_time;
 	//Debug purpose
 	//current_time = 0.3f; //Debug
-	//if (list_operations.size()) {
-	//	animator.generateBaseStates(list_states[current_operation_index], records[current_operation_index]);
+	//if (operations.size()) {
+	//	animator.generateBaseStates(states[current_operation_index], records[current_operation_index]);
 	//	//std::cout << "Generated base states for operation " << current_operation_index << "\n";
 	//	//std::cout << animator.getTotalDuration() << " total duration\n";
 	//}
-	if (current_time > animator.getTotalDuration() && current_operation_index == list_operations.size()) {
+	if (current_time > animator.getTotalDuration() && current_operation_index == operations.size()) {
 		current_time = animator.getTotalDuration();
 	}
 	else if (current_time > animator.getTotalDuration()) {
 		current_time -= animator.getTotalDuration();
-		while (current_operation_index < list_operations.size()) {
-			animator.generateBaseStates(list_states[current_operation_index], records[current_operation_index]);
+		while (current_operation_index < operations.size()) {
+			animator.generateBaseStates(states[current_operation_index], records[current_operation_index]);
 			current_operation_index++;
-			if (current_time < animator.getTotalDuration() || current_operation_index == list_operations.size()) {
+			if (current_time < animator.getTotalDuration() || current_operation_index == operations.size()) {
 				break;
 			}
 			current_time -= animator.getTotalDuration();
 		}
-		if (current_operation_index == list_operations.size()) {
+		if (current_operation_index == operations.size()) {
 			current_time = std::min(current_time, animator.getTotalDuration());
 		}
 	}
@@ -62,7 +62,7 @@ void LinkedListTimeline::update(const float& real_delta_time) {
 		while (current_operation_index > 0) {
 			current_operation_index--;
 			if (current_operation_index == 0) break;
-			animator.generateBaseStates(list_states[current_operation_index - 1], records[current_operation_index - 1]);
+			animator.generateBaseStates(states[current_operation_index - 1], records[current_operation_index - 1]);
 			current_time += animator.getTotalDuration();
 			if (current_time > 0 || current_operation_index == 0) {
 				break;
@@ -74,15 +74,15 @@ void LinkedListTimeline::update(const float& real_delta_time) {
 		}
 	}
 	current_animation_state = animator.getStateAtTime(current_time);
-	//std::cout << list_operations.size() << " operations, current index: " << current_operation_index << ", current time: " << current_time << "\n";
+	//std::cout << operations.size() << " operations, current index: " << current_operation_index << ", current time: " << current_time << "\n";
 	//std::cout << animator.getTotalDuration() << " total duration\n";
 	//std::cout << current_operation_index << " current operation index\n";
 	//std::cout << current_operation_index << " " << current_time << "\n";
 }
 
 void LinkedListTimeline::push(const LinkedListState& current_state, const ListOperation& operation, const LinkedListRecorder& record) {
-	list_states.push_back(current_state);
-	list_operations.push_back(operation);
+	states.push_back(current_state);
+	operations.push_back(operation);
 	records.push_back(record);
 }
 
@@ -96,8 +96,8 @@ void LinkedListTimeline::pause() {
 
 void LinkedListTimeline::clear() {
 	running = false;
-	list_operations.clear();
-	list_states.clear();
+	operations.clear();
+	states.clear();
 	records.clear();
 }
 
@@ -116,11 +116,11 @@ void LinkedListTimeline::onePhaseForward() {
 	float next_phase_timer = animator.getNextPhaseTimer(current_time);
 	if (next_phase_timer == -1) {
 		//end of current operation
-		if (current_operation_index == list_operations.size()) {
+		if (current_operation_index == operations.size()) {
 			next_phase_timer = animator.getTotalDuration();
 		}
 		else {
-			generateAnimation(list_states[current_operation_index], records[current_operation_index]);
+			generateAnimation(states[current_operation_index], records[current_operation_index]);
 			current_operation_index++;
 			next_phase_timer = 0;
 		}
@@ -148,7 +148,7 @@ void LinkedListTimeline::onePhaseBackward() {
 		}
 		else {
 			current_operation_index--;
-			generateAnimation(list_states[current_operation_index], records[current_operation_index]);
+			generateAnimation(states[current_operation_index], records[current_operation_index]);
 			prev_phase_timer = animator.getTotalDuration();
 		}
 		current_time = prev_phase_timer;
@@ -163,7 +163,7 @@ void LinkedListTimeline::oneStepForward() {
 	direction = 1;
 	next_phase_wating = 0;
 	//std::cout << current_operation_index << " " << current_time << " " << animator.getTotalDuration() << "\n";
-	if (current_operation_index == list_states.size()) {
+	if (current_operation_index == states.size()) {
 		current_time = animator.getTotalDuration();
 		return;
 	}
@@ -171,7 +171,7 @@ void LinkedListTimeline::oneStepForward() {
 		current_time = animator.getTotalDuration();
 	}
 	else {
-		generateAnimation(list_states[current_operation_index], records[current_operation_index]);
+		generateAnimation(states[current_operation_index], records[current_operation_index]);
 		current_operation_index++;
 		current_time = animator.getTotalDuration();
 	}
@@ -194,7 +194,7 @@ void LinkedListTimeline::oneStepBackward() {
 	else {
 		current_operation_index--;
 		if (current_operation_index > 0)
-			generateAnimation(list_states[current_operation_index - 1], records[current_operation_index - 1]);
+			generateAnimation(states[current_operation_index - 1], records[current_operation_index - 1]);
 		else
 			animator.clear();
 		current_time = 0.f;
@@ -205,9 +205,9 @@ void LinkedListTimeline::oneStepBackward() {
 void LinkedListTimeline::toLast() {
 	if (!running) return;
 	direction = 1;
-	if (list_states.empty()) return;
-	generateAnimation(list_states.back(), records.back());
-	current_operation_index = list_states.size();
+	if (states.empty()) return;
+	generateAnimation(states.back(), records.back());
+	current_operation_index = states.size();
 	current_time = animator.getTotalDuration();
 }
 

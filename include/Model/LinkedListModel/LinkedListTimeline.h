@@ -47,8 +47,8 @@ public:
 private:
 	const AssetManager& a_manager;
 	LinkedListRenderer renderer;
-	std::vector<ListOperation> list_operations;
-	std::vector<LinkedListState> list_states;
+	std::vector<ListOperation> operations;
+	std::vector<LinkedListState> states;
 	std::vector<LinkedListRecorder> records;
 
 	LinkedListAnimator animator;
