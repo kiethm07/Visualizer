@@ -2,7 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <AssetManager/AssetManager.h>
 #include <Model/Button.h>
-#include <Model/TimelineConfig.h>
+#include <Model/Timeline/TimelineConfig.h>
 #include <UI/Camera.h>
 #include <optional>
 
