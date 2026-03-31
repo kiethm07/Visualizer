@@ -36,6 +36,6 @@ private:
     void clear(Node*& pHead, LinkedListRecorder& recorder);
     void insertFirst(Node*& pHead, int x, LinkedListRecorder& recorder);
     void remove(Node*& pHead, int k, LinkedListRecorder& recorder);
-    void removeFirst(Node*& pHead, LinkedListRecorder& recorder);
+    void search(Node*& pHead, int x, LinkedListRecorder& recorder);
 	void clearWithoutRecorder(Node*& pHead);
 };

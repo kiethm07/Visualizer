@@ -17,6 +17,7 @@ LinkedListPanel::LinkedListPanel(const sf::Font& BUTTON_FONT) :
 	insert_button(BUTTON_FONT, "insert", {}, {}, 20),
 	remove_button(BUTTON_FONT, "remove", {}, {}, 20),
 	update_button(BUTTON_FONT, "update", {}, {}, 20),
+	search_button(BUTTON_FONT, "search", {}, {}, 20),
 	reset_button(BUTTON_FONT, "reset", {}, {}, 20)
 {
 	background.setFillColor(sf::Color::White);
@@ -40,6 +41,7 @@ void LinkedListPanel::updateButtonState(const sf::RenderWindow& window, const sf
 	insert_button.update(window, view);
 	remove_button.update(window, view);
 	update_button.update(window, view);
+	search_button.update(window, view);
 	reset_button.update(window, view);
 }
 
@@ -52,7 +54,7 @@ void LinkedListPanel::updateWindowState(const sf::RenderWindow& window, const sf
 	background.setSize(background_size);
 
 	const float center_x = background_size.x / 2.f;
-	const float start_y = background_size.y * 0.15f;
+	const float start_y = background_size.y * 0.1f;
 	const float gap = background_size.y * 0.13f;
 
 	auto place_button = [&](auto& btn, int index) {
@@ -66,7 +68,8 @@ void LinkedListPanel::updateWindowState(const sf::RenderWindow& window, const sf
 	place_button(insert_button, 2);
 	place_button(remove_button, 3);
 	place_button(update_button, 4);
-	place_button(reset_button, 5);
+	place_button(search_button, 5);
+	place_button(reset_button, 6);
 }
 
 std::optional<ListOperation> LinkedListPanel::handleEvent(
@@ -123,6 +126,17 @@ std::optional<ListOperation> LinkedListPanel::handleEvent(
 				}
 
 				return std::nullopt;
+			}
+
+			if (search_button.contains(window, view, mouse_pos)) {
+				std::optional<int> value = input_value.getValueAsInt();
+				if (value.has_value()) {
+					input_value.setFocused(0);
+					input_value.reset();
+					input_position.setFocused(0);
+					input_position.reset();
+					return ListOperation::search(*value);
+				}
 			}
 
 			if (reset_button.contains(window, view, mouse_pos)) {

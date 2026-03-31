@@ -58,6 +58,11 @@ void LinkedList::applyOperation(const ListOperation& operation, LinkedListRecord
         update(pHead, x, k, recorder);
         return;
     }
+    if (operation.type == ListOperationType::Search) {
+        int x = operation.value;
+        search(pHead, x, recorder);
+        return;
+    }
     if (operation.type == ListOperationType::Reset) {
         clear(pHead, recorder);
         return;
@@ -264,4 +269,29 @@ void LinkedList::update(Node*& pHead, const int& x, const int& k, LinkedListReco
     recorder.addCommand(Command(Target::Node, Type::FadeIn, cur->ui_id));
     recorder.addNewPhase();
     recorder.addCommand(Command(Target::Node, Type::HighlightOff, cur->ui_id));
+}
+
+void LinkedList::search(Node*& pHead, int x, LinkedListRecorder& recorder) {
+    using Command = LinkedListAnimationCommand;
+    using Target = LinkedListAnimationTarget;
+    using Type = LinkedListAnimationType;
+    Node* cur = pHead;
+    Node* pre = nullptr;
+    while (cur != nullptr) {
+        recorder.addNewPhase();
+        recorder.addCommand(Command(Target::Node, Type::HighlightOn, cur->ui_id));
+        if (pre) recorder.addCommand(Command(Target::Node, Type::HighlightOff, pre->ui_id));
+        if (cur->val == x) {
+            std::cout << "Found " << x << "\n";
+            recorder.addNewPhase();
+            recorder.addCommand(Command(Target::Node, Type::Wait, cur->ui_id));
+            recorder.addNewPhase();
+            recorder.addCommand(Command(Target::Node, Type::HighlightOff, cur->ui_id));
+            return;
+        }
+        pre = cur;
+        cur = cur->pNext;
+    }
+    std::cout << "No " << x << "!\n";
+    if (pre) recorder.addCommand(Command(Target::Node, Type::HighlightOff, pre->ui_id));
 }

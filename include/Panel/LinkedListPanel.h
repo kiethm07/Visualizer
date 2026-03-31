@@ -23,6 +23,7 @@ private:
 	Button insert_button;
 	Button remove_button;
 	Button update_button;
+	Button search_button;
 	Button reset_button;
 
 	void updateButtonState(const sf::RenderWindow& window, const sf::View& view);
@@ -35,6 +36,7 @@ private:
 		target.draw(insert_button, states);
 		target.draw(remove_button, states);
 		target.draw(update_button, states);
+		target.draw(search_button, states);
 		target.draw(reset_button, states);
 	}
 };
