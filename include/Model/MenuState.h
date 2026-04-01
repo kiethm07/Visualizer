@@ -1,2 +1,2 @@
 #pragma once
-enum class MenuState { MainMenu, DSMenu, Setting, LinkedList, HashTable, Trie, AVL, Dijkstra, MinimumSpanningTree };
+enum class MenuState { MainMenu, DSMenu, Setting, LinkedList, Hashmap, Trie, AVL, Dijkstra, MST };

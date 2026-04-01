@@ -27,4 +27,4 @@ private:
 	sf::Clock clock;
 	Button test;
 	TimelinePanel timeline_panel;
-};
+};  
