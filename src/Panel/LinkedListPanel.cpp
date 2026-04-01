@@ -48,7 +48,7 @@ void LinkedListPanel::updateButtonState(const sf::RenderWindow& window, const sf
 void LinkedListPanel::updateWindowState(const sf::RenderWindow& window, const sf::View& view) {
 	sf::Vector2u size = window.getSize();
 
-	sf::Vector2f background_size = { size.x * 0.20f, size.y * 0.85f };
+	sf::Vector2f background_size = { size.x * 0.15f, size.y * 0.85f };
 	sf::Vector2f button_size = { background_size.x * 0.75f, background_size.y * 0.09f };
 
 	background.setSize(background_size);

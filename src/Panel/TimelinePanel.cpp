@@ -82,7 +82,7 @@ void TimelinePanel::updateWindowState(const sf::RenderWindow& window, const sf::
 
     sf::Vector2f background_size = {
         static_cast<float>(size.x),
-        static_cast<float>(size.y) * 0.2f
+        static_cast<float>(size.y) * 0.15f
     };
 
     background.setSize(background_size);
