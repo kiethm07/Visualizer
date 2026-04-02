@@ -284,9 +284,11 @@ void LinkedList::search(Node*& pHead, int x, LinkedListRecorder& recorder) {
         if (cur->val == x) {
             std::cout << "Found " << x << "\n";
             recorder.addNewPhase();
+            recorder.addCommand(Command(Target::Node, Type::FoundedOn, cur->ui_id));
+            recorder.addNewPhase();
             recorder.addCommand(Command(Target::Node, Type::Wait, cur->ui_id));
             recorder.addNewPhase();
-            recorder.addCommand(Command(Target::Node, Type::HighlightOff, cur->ui_id));
+            recorder.addCommand(Command(Target::Node, Type::FoundedOff, cur->ui_id));
             return;
         }
         pre = cur;

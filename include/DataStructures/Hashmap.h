@@ -1,10 +1,33 @@
 #pragma once
 #include <Model/Hashmap/HashmapState.h>
+#include <Model/Hashmap/HashmapOperation.h>
+#include <Animation/Hashmap/HashmapRecorder.h>
+#include <vector>
 
 class Hashmap {
 public:
-	Hashmap();
-	~Hashmap();
-	HashmapState getState();
+	Hashmap(int n);
+	HashmapState getState() const;
+	void loadState(const HashmapState& state);
+	void applyOperation(const HashmapOperation& operation, HashmapRecorder& recorder);
+	int getHash(int x) const {
+		x %= bucket_count;
+		if (x < 0) x += bucket_count;
+		return x;
+	}
 private:
+	struct Node {
+		int val;
+		int ui_id;
+		Node(int val, int ui_id) :
+			val(val), ui_id(ui_id) {
+		}
+	};
+	int bucket_count;
+	std::vector<std::vector<Node>> buckets;
+	int next_ui_id = 0;
+	void insert(int x, HashmapRecorder& recorder);
+	void remove(int x, HashmapRecorder& recorder);
+	void clear(HashmapRecorder& recorder);
+	void search(int x, HashmapRecorder& recorder);
 };

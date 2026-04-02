@@ -37,5 +37,6 @@ private:
 	const sf::Color DEFAULT_NODE_COLOR = sf::Color(89, 145, 46);
 	const sf::Color DEFAULT_EDGE_COLOR = sf::Color(255, 255, 255);
 	const sf::Color HIGHLIGHT_NODE_COLOR = sf::Color(209, 70, 38);
+	const sf::Color FOUNDED_NODE_COLOR = sf::Color::Blue;
 	int move_distance = NODE_GAP;
 };

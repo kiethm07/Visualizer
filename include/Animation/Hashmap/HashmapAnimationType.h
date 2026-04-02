@@ -2,3 +2,4 @@
 #include <vector>
 
 enum class HashmapAnimationType { HighlightOn, HighlightOff, FadeIn, FadeOut, Wait, Move, Spawn, Remove };
+enum class HashmapAnimationTarget { Node, Edge, Bucket};
