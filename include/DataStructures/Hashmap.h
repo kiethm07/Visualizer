@@ -1,13 +1,14 @@
 #pragma once
-#include <Model/Hashmap/HashmapState.h>
-#include <Model/Hashmap/HashmapOperation.h>
+#include <Model/HashmapModel/HashmapState.h>
+#include <Model/HashmapModel/HashmapOperation.h>
 #include <Animation/Hashmap/HashmapRecorder.h>
 #include <vector>
 
 class Hashmap {
 public:
-	Hashmap(int n);
+	Hashmap() {}
 	HashmapState getState() const;
+	void init(int n);
 	void loadState(const HashmapState& state);
 	void applyOperation(const HashmapOperation& operation, HashmapRecorder& recorder);
 	int getHash(int x) const {

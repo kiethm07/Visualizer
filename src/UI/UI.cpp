@@ -5,7 +5,8 @@ UI::UI(const AssetManager& a_manager) :
     asset_manager(a_manager),
     main_menu(asset_manager.getFont("Roboto-Regular")),
     ds_menu(asset_manager.getFont("Roboto-Regular")),
-    linked_list_ui(asset_manager)
+    linked_list_ui(asset_manager),
+    hashmap_ui(asset_manager)
 {
     settings.antiAliasingLevel = 8;
 
@@ -83,6 +84,14 @@ void UI::run() {
                 }
                 linked_list_ui.handleEvent(window, fixed_view, cam_view, cam, *ev);
             }
+            if (current_state == MenuState::Hashmap) {
+                if (changed_state) {
+                    cam.reset(window, cam_view);
+                    cam.setEnable(1);
+                    changed_state = 0;
+                }
+                hashmap_ui.handleEvent(window, fixed_view, cam_view, cam, *ev);
+            }
         }
         window.clear();
         if (current_state == MenuState::MainMenu) {
@@ -98,6 +107,10 @@ void UI::run() {
         if (current_state == MenuState::LinkedList) {
             linked_list_ui.update(window, fixed_view, cam_view);
             linked_list_ui.draw(window, fixed_view, cam_view);
+        }
+        if (current_state == MenuState::Hashmap) {
+            hashmap_ui.update(window, fixed_view, cam_view);
+            hashmap_ui.draw(window, fixed_view, cam_view);
         }
         window.display();
     }

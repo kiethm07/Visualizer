@@ -3,7 +3,7 @@
 #include <chrono>
 #include <random>
 
-std::mt19937 rng(6969);
+static std::mt19937 rng(6969);
 
 static int rand(int l, int r) {
 	if (l > r) std::swap(l, r);

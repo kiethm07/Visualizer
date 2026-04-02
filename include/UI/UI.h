@@ -7,6 +7,7 @@
 #include <Model/MenuState.h>
 #include <AssetManager/AssetManager.h>
 #include <DSUI/LinkedListUI.h>
+#include <DSUI/HashmapUI.h>
 
 class UI{
 public:
@@ -23,6 +24,7 @@ private:
 	MainMenu main_menu;
 	DSMenu ds_menu;
 	LinkedListUI linked_list_ui;
+	HashmapUI hashmap_ui;
 	MenuState current_state = MenuState::MainMenu;
 	bool changed_state = 1;
 	const unsigned int DEFAULT_WIDTH = 1280;

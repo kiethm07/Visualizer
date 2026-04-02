@@ -1,8 +1,11 @@
 #include <DataStructures/Hashmap.h>
 #include <iostream>
 
-Hashmap::Hashmap(int n) :
-	bucket_count(n), buckets(std::vector<std::vector<Node>>(n)) {
+void Hashmap::init(int n) {
+	bucket_count = n;
+	next_ui_id = 0;
+	buckets.clear();
+	buckets.resize(n);
 }
 
 HashmapState Hashmap::getState() const {
@@ -71,7 +74,7 @@ void Hashmap::search(int x, HashmapRecorder& recorder) {
 	//Not found
 }
 
-void Hashmap::clear(int x, HashmapRecorder& recorder) {
+void Hashmap::clear(HashmapRecorder& recorder) {
 	for (int i = 0; i < bucket_count; i++) {
 		buckets[i].clear();
 	}
