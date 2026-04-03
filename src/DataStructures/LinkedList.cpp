@@ -11,11 +11,31 @@ LinkedListState LinkedList::getState() {
     return state;
 }
 
+void LinkedList::rawInit(const std::vector<int>& values) {
+    clearWithoutRecorder(pHead);
+    next_ui_id = 0;
+    Node* cur = pHead;
+    for (int i : values) {
+        if (pHead == nullptr) {
+            pHead = new Node(i, next_ui_id++);
+            cur = pHead;
+        }
+        else {
+            cur->pNext = new Node(i, next_ui_id++);
+            cur = cur->pNext;
+        }
+    }
+}
+
 void LinkedList::clearWithoutRecorder(LinkedList::Node*& pHead) {
     if (pHead == nullptr) return;
-    clearWithoutRecorder(pHead->pNext);
-    delete pHead;
-    pHead = nullptr;
+    for (Node* cur = pHead; cur != nullptr;) {
+        Node* tmp = cur;
+        cur = cur->pNext;
+        delete tmp;
+        tmp = nullptr;
+    }
+    next_ui_id = 0;
 }
 
 void LinkedList::loadState(const LinkedListState& state) {

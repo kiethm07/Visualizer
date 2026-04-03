@@ -78,6 +78,7 @@ void UI::run() {
             }
             if (current_state == MenuState::LinkedList) {
                 if (changed_state) {
+                    linked_list_ui.setUIState(UIState::Init);
                     cam.reset(window, cam_view);
                     cam.setEnable(1);
                     changed_state = 0;
@@ -86,6 +87,7 @@ void UI::run() {
             }
             if (current_state == MenuState::Hashmap) {
                 if (changed_state) {
+                    hashmap_ui.setUIState(UIState::Init);
                     cam.reset(window, cam_view);
                     cam.setEnable(1);
                     changed_state = 0;

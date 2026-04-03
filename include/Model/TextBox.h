@@ -22,7 +22,7 @@ public:
     void setValue(const std::string& value);
     void setPlaceholder(const std::string& placeholder);
     void setFocused(bool focused);
-    void setMaxLength(std::size_t max_length);
+    void setMaxLength(int max_length);
 
     std::optional<int> getValueAsInt() const;
     const std::string& getValue() const;
@@ -43,7 +43,7 @@ private:
     std::string value;
     std::string placeholder;
     bool focused = false;
-    std::size_t max_length = 5;
+    int max_length = 5;
     sf::Vector2f caret_pos;
     sf::Clock caret_timer;
     bool caret_visible;

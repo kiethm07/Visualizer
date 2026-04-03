@@ -1,73 +1,127 @@
 #include <DSUI/LinkedListUI.h>
 #include <iostream>
 
+static std::mt19937 rng(6969);
+
+static int rand(int l, int r) {
+	if (l > r) std::swap(l, r);
+	return std::uniform_int_distribution<int>(l, r)(rng);
+}
+
 LinkedListUI::LinkedListUI(const AssetManager& a_manager) :
 	a_manager(a_manager),
 	NODE_FONT(a_manager.getFont("Roboto-Regular")),
 	panel(NODE_FONT),
 	test(NODE_FONT, "TEST", {}, {}, 30),
 	timeline(a_manager),
-	timeline_panel(a_manager)
+	timeline_panel(a_manager),
+	ui_state(UIState::Init),
+	init_panel(a_manager)
 {
 	test.setButtonSize({ 200.f,200.f });
+	init_panel.setPlaceHolderForManualInput("Input value manually, format : x y z");
 }
 
 void LinkedListUI::update(const sf::RenderWindow& window, const sf::View& fixed_view, const sf::View& cam_view) {
-	panel.update(window, fixed_view);
-	timeline_panel.update(window, fixed_view);
-	//test.setPosition(panel.getSize() + sf::Vector2f({ 100.f, -300.f }));
-	//test.update(window, cam_view);
-	//renderer.update(window, cam_view);
-	timeline.update(clock.restart().asSeconds());
+	if (ui_state == UIState::Init) {
+		init_panel.update(window, fixed_view);
+	}
+	else if (ui_state == UIState::Running){
+		panel.update(window, fixed_view);
+		timeline_panel.update(window, fixed_view);
+		//test.setPosition(panel.getSize() + sf::Vector2f({ 100.f, -300.f }));
+		//test.update(window, cam_view);
+		//renderer.update(window, cam_view);
+		timeline.update(clock.restart().asSeconds());
+	}
+}
+
+void LinkedListUI::Init(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const PanelData& data) {
+	ui_state = UIState::Running;
+	cam.reset(window, cam_view);
+	if (data.operation == PanelOperation::Empty) {
+		//Do nothing
+		list.rawInit(data.values);
+	}
+	else if (data.operation == PanelOperation::Random) {
+		std::vector<int> v;
+		int num = rand(5, 7);
+		for (int i = 0; i < num; i++) {
+			v.push_back(rand(-5, 20));
+		}
+		list.rawInit(v);
+	}
+	else if (data.operation == PanelOperation::Manual) {
+		list.rawInit(data.values);
+	}
+	else if (data.operation == PanelOperation::File) {
+		list.rawInit(data.values);
+	}
+	current_state = list.getState();
+	timeline.generateAnimation(current_state, LinkedListRecorder());
 }
 
 void LinkedListUI::handleEvent(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const sf::Event& ev) {
-	if (const auto op = panel.handleEvent(window, view, ev); op.has_value()) {
-		recorder.clear();
-		list.applyOperation(*op, recorder);
-		timeline.push(current_state, *op, recorder);
-		current_state = list.getState(); 
+	if (ui_state == UIState::Init) {
+		std::optional<PanelData> panel_data = init_panel.handleEvent(window, view, ev);
+		if (!panel_data.has_value()) return;
+		Init(window, view, cam_view, cam, *panel_data);
+		return;
 	}
-	if (const auto op = timeline_panel.handleEvent(window, view, cam_view, cam, ev)) {
-		if (op->type == TimelineOperation::Play) {
-			if (timeline.isRunning()) {
-				timeline.pause();
+	if (ui_state == UIState::Running) {
+		if (const auto op = panel.handleEvent(window, view, ev); op.has_value()) {
+			recorder.clear();
+			list.applyOperation(*op, recorder);
+			timeline.push(current_state, *op, recorder);
+			current_state = list.getState();
+		}
+		if (const auto op = timeline_panel.handleEvent(window, view, cam_view, cam, ev)) {
+			if (op->type == TimelineOperation::Play) {
+				if (timeline.isRunning()) {
+					timeline.pause();
+				}
+				else timeline.run();
 			}
-			else timeline.run();
-		}
-		else if (op->type == TimelineOperation::AutoPlay) {
-			bool flag = timeline.isAutoPlaying() ^ 1;
-			timeline.setAutoPlay(flag);
-		}
-		else if (op->type == TimelineOperation::OnePhaseForward) {
-			timeline.onePhaseForward();
-		}
-		else if (op->type == TimelineOperation::OnePhaseBackward) {
-			timeline.onePhaseBackward();
-		}
-		else if (op->type == TimelineOperation::OneStepForward) {
-			timeline.oneStepForward();
-		}
-		else if (op->type == TimelineOperation::OneStepBackward) {
-			timeline.oneStepBackward();
-		}
-		else if (op->type == TimelineOperation::LastState) {
-			timeline.toLast();
-		}
-		else if (op->type == TimelineOperation::InitState) {
-			timeline.toInit();
-		}
-		else if (op->type == TimelineOperation::ChangeSpeed) {
+			else if (op->type == TimelineOperation::AutoPlay) {
+				bool flag = timeline.isAutoPlaying() ^ 1;
+				timeline.setAutoPlay(flag);
+			}
+			else if (op->type == TimelineOperation::OnePhaseForward) {
+				timeline.onePhaseForward();
+			}
+			else if (op->type == TimelineOperation::OnePhaseBackward) {
+				timeline.onePhaseBackward();
+			}
+			else if (op->type == TimelineOperation::OneStepForward) {
+				timeline.oneStepForward();
+			}
+			else if (op->type == TimelineOperation::OneStepBackward) {
+				timeline.oneStepBackward();
+			}
+			else if (op->type == TimelineOperation::LastState) {
+				timeline.toLast();
+			}
+			else if (op->type == TimelineOperation::InitState) {
+				timeline.toInit();
+			}
+			else if (op->type == TimelineOperation::ChangeSpeed) {
 
+			}
 		}
 	}
 }
 
 void LinkedListUI::draw(sf::RenderWindow& window, const sf::View& fixed_view, const sf::View& cam_view) {
-	window.setView(cam_view);
-	//window.draw(test);
-	timeline.draw(window, cam_view);
-	window.setView(fixed_view);
-	window.draw(panel);
-	window.draw(timeline_panel);
+	if (ui_state == UIState::Init) {
+		window.setView(fixed_view);
+		window.draw(init_panel);
+	}
+	if (ui_state == UIState::Running) {
+		window.setView(cam_view);
+		//window.draw(test);
+		timeline.draw(window, cam_view);
+		window.setView(fixed_view);
+		window.draw(panel);
+		window.draw(timeline_panel);
+	}
 }

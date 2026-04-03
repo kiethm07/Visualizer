@@ -89,7 +89,8 @@ void TextBox::setFocused(bool focused) {
     refreshText();
 }
 
-void TextBox::setMaxLength(std::size_t max_length) {
+void TextBox::setMaxLength(int max_length) {
+    if (max_length < 0) max_length = 0;
     this->max_length = max_length;
     if (value.size() > this->max_length) {
         value.resize(this->max_length);

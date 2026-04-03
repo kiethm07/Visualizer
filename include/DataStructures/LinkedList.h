@@ -13,6 +13,7 @@ public:
     LinkedList();
     ~LinkedList();
     LinkedListState getState();
+    void rawInit(const std::vector<int>& values);
     void loadState(const LinkedListState& state);
     void applyOperation(const ListOperation& operation, LinkedListRecorder& recorder);
     ///Debug purpose

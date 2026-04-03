@@ -2,12 +2,16 @@
 #include <SFML/Graphics.hpp>
 #include <Panel/LinkedListPanel.h>
 #include <Panel/TimelinePanel.h>
+#include <Panel/InitPanel.h>
 #include <DataStructures/LinkedList.h>
 #include <Model/LinkedListModel/LinkedListTimeline.h>
 #include <Model/LinkedListModel/LinkedListRenderer.h>
 #include <Model/Button.h>
 #include <AssetManager/AssetManager.h>
 #include <UI/Camera.h>
+#include <DSUI/UIState.h>
+#include <chrono>
+#include <random>
 
 class LinkedListUI {
 public:
@@ -15,16 +19,22 @@ public:
 	void update(const sf::RenderWindow& window, const sf::View& fixed_view, const sf::View& cam_view);
 	void handleEvent(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const sf::Event& ev);
 	void draw(sf::RenderWindow& window, const sf::View& fixed_view, const sf::View& cam_view);
+	void setUIState(const UIState& state){
+		ui_state = state;
+	}
 private:
+	void Init(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const PanelData& data);
 	bool inAnimation = 0;
 	const AssetManager& a_manager;
 	const sf::Font& NODE_FONT;
 	LinkedListPanel panel;
-	LinkedListState current_state;
+	InitPanel init_panel;
+	TimelinePanel timeline_panel;
 	LinkedListTimeline timeline;
-	LinkedList list;
 	LinkedListRecorder recorder;
 	sf::Clock clock;
+	LinkedListState current_state;
+	UIState ui_state;
+	LinkedList list;
 	Button test;
-	TimelinePanel timeline_panel;
 };  
