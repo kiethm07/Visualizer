@@ -35,6 +35,7 @@ void LinkedList::clearWithoutRecorder(LinkedList::Node*& pHead) {
         delete tmp;
         tmp = nullptr;
     }
+    pHead = nullptr;
     next_ui_id = 0;
 }
 

@@ -19,8 +19,9 @@ public:
 	void update(const sf::RenderWindow& window, const sf::View& fixed_view, const sf::View& cam_view);
 	void handleEvent(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const sf::Event& ev);
 	void draw(sf::RenderWindow& window, const sf::View& fixed_view, const sf::View& cam_view);
-	void setUIState(const UIState& state){
-		ui_state = state;
+	void setInit() {
+		ui_state = UIState::Init;
+		init_panel.clearValueForManualInput();
 	}
 private:
 	void Init(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const PanelData& data);

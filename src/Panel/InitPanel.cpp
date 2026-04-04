@@ -121,7 +121,24 @@ std::optional<PanelData> InitPanel::handleEvent(const sf::RenderWindow& window, 
 		return data;
 	}
 	else if (from_file.mousePressed(window, view, ev)) {
-
+		std::string path = cr::utils::SimpleFileDialog::dialog();
+		if (path.empty()) {
+			std::cout << "No file selected\n";
+			return std::nullopt;
+		}
+		PanelData data;
+		data.operation = PanelOperation::File;
+		std::ifstream cin(path);
+		if (!cin.is_open()) {
+			std::cout << "Cannot open file!\n";
+			return std::nullopt;
+		}
+		std::string line;
+		while (std::getline(cin, line)) {
+			std::vector<int> values = parseInput(line);
+			for (int& i : values) data.values.push_back(i);
+		}
+		return data;
 	}
 	return std::nullopt;
 }

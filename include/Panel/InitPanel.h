@@ -4,8 +4,10 @@
 #include <Model/Button.h>
 #include <Model/TextBox.h>
 #include <Panel/PanelData.h>
+#include <External/SimpleFileDialog.h>
 #include <optional>
 #include <iostream>
+#include <fstream>
 
 class InitPanel : public sf::Drawable {
 public:
@@ -13,6 +15,9 @@ public:
 	void update(const sf::RenderWindow& window, const sf::View& view);
 	std::optional<PanelData> handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
 	void setPlaceHolderForManualInput(const std::string& s);
+	void clearValueForManualInput() {
+		manual_input.setValue("");
+	}
 private:
 	void updateButtonState(const sf::RenderWindow& window, const sf::View& view);
 	void updateWindowState(const sf::RenderWindow& window, const sf::View& view);

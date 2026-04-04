@@ -39,6 +39,7 @@ void LinkedListUI::update(const sf::RenderWindow& window, const sf::View& fixed_
 void LinkedListUI::Init(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const PanelData& data) {
 	ui_state = UIState::Running;
 	cam.reset(window, cam_view);
+	for (int i : data.values) std::cout << i << " "; std::cout << "\n";
 	if (data.operation == PanelOperation::Empty) {
 		//Do nothing
 		list.rawInit(data.values);
