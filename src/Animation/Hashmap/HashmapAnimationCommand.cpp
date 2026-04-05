@@ -22,4 +22,3 @@ float getCommandDuration(const HashmapAnimationType& type) {
 	}
 	return 1.f; //Default duration is 1 second
 }
-}
