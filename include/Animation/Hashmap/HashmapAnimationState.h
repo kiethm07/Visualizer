@@ -18,10 +18,15 @@ struct HashmapAnimationEdge {
 	sf::Color fill_color;
 };
 
+struct HashmapAnimationBucket {
+	sf::Vector2f position;
+	sf::Color fill_color;
+};
+
 class HashmapAnimationState {
 public:
 	HashmapAnimationState() :
-		edge_list(), node_list() {
+		edge_list(), node_list(), bucket_list() {
 	}
 	const std::vector<HashmapAnimationEdge>& getEdgeList() const {
 		return edge_list;
@@ -29,15 +34,22 @@ public:
 	const std::vector<HashmapAnimationNode>& getNodeList() const {
 		return node_list;
 	}
+	const std::vector<HashmapAnimationBucket>& getBucketList() const {
+		return bucket_list;
+	}
 	void setEdgeList(const std::vector<HashmapAnimationEdge>& edge_list) {
 		this->edge_list = edge_list;
 	}
 	void setNodeList(const std::vector<HashmapAnimationNode>& node_list) {
 		this->node_list = node_list;
 	}
+	void setBucketList(const std::vector<HashmapAnimationBucket>& bucket_list) {
+		this->bucket_list = bucket_list;
+	}
 	void clear() {
 		edge_list.clear();
 		node_list.clear();
+		bucket_list.clear();
 	}
 	void modifyEdge(const HashmapAnimationEdge& new_edge, int index) {
 		if (index < 0 || index >= edge_list.size()) {
@@ -52,6 +64,13 @@ public:
 			return;
 		}
 		node_list[index] = new_node;
+	}
+	void modifyBucket(const HashmapAnimationBucket& new_bucket, int index) {
+		if (index < 0 || index >= bucket_list.size()) {
+			std::cout << "Bucket index " << index << " out of range" << std::endl;
+			return;
+		}
+		bucket_list[index] = new_bucket;
 	}
 	void insertNode(const HashmapAnimationNode& new_node, int index) {
 		if (index < 0 || index > node_list.size()) {
@@ -73,7 +92,11 @@ public:
 	void insertEdge(const HashmapAnimationEdge& new_edge) {
 		edge_list.push_back(new_edge);
 	}
+	void insertBucket(const HashmapAnimationBucket& new_bucket) {
+		bucket_list.push_back(new_bucket);
+	}
 private:
 	std::vector<HashmapAnimationEdge> edge_list;
 	std::vector<HashmapAnimationNode> node_list;
+	std::vector<HashmapAnimationBucket> bucket_list;
 };

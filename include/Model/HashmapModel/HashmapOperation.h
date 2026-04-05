@@ -30,6 +30,7 @@ struct HashmapOperation {
         HashmapOperation op;
         op.type = HashmapOperationType::Remove;
         op.key = key;
+        op.value = key;
         return op;
     }
 
@@ -37,6 +38,7 @@ struct HashmapOperation {
         HashmapOperation op;
         op.type = HashmapOperationType::Search;
         op.key = key;
+        op.value = key;
         return op;
     }
 

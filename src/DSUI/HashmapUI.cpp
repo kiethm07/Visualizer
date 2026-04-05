@@ -28,7 +28,7 @@ void HashmapUI::update(const sf::RenderWindow& window, const sf::View& fixed_vie
 	else if (ui_state == UIState::Running) {
 		panel.update(window, fixed_view);
 		timeline_panel.update(window, fixed_view);
-		//timeline.update(clock.restart().asSeconds());
+		timeline.update(clock.restart().asSeconds());
 	}
 }
 
@@ -58,7 +58,7 @@ void HashmapUI::handleEvent(const sf::RenderWindow& window, const sf::View& view
 			hashmap.rawInit(bucket_count, panel_data->values);
 		}
 		current_state = hashmap.getState();
-		//timeline.generateAnimation(current_state, HashmapRecorder());
+		timeline.generateAnimation(current_state, HashmapRecorder());
 		clock.restart();
 		return;
 	}
@@ -67,45 +67,45 @@ void HashmapUI::handleEvent(const sf::RenderWindow& window, const sf::View& view
 		if (const auto op = panel.handleEvent(window, view, ev); op.has_value()) {
 			recorder.clear();
 			hashmap.applyOperation(*op, recorder);
-			//timeline.push(current_state, *op, recorder);
+			timeline.push(current_state, *op, recorder);
 			current_state = hashmap.getState();
 		}
 
-		//if (const auto op = timeline_panel.handleEvent(window, view, cam_view, cam, ev)) {
-		//	if (op->type == TimelineOperation::Play) {
-		//		if (timeline.isRunning()) {
-		//			timeline.pause();
-		//		}
-		//		else {
-		//			timeline.run();
-		//		}
-		//	}
-		//	else if (op->type == TimelineOperation::AutoPlay) {
-		//		bool flag = timeline.isAutoPlaying() ^ 1;
-		//		timeline.setAutoPlay(flag);
-		//	}
-		//	else if (op->type == TimelineOperation::OnePhaseForward) {
-		//		timeline.onePhaseForward();
-		//	}
-		//	else if (op->type == TimelineOperation::OnePhaseBackward) {
-		//		timeline.onePhaseBackward();
-		//	}
-		//	else if (op->type == TimelineOperation::OneStepForward) {
-		//		timeline.oneStepForward();
-		//	}
-		//	else if (op->type == TimelineOperation::OneStepBackward) {
-		//		timeline.oneStepBackward();
-		//	}
-		//	else if (op->type == TimelineOperation::LastState) {
-		//		timeline.toLast();
-		//	}
-		//	else if (op->type == TimelineOperation::InitState) {
-		//		timeline.toInit();
-		//	}
-		//	else if (op->type == TimelineOperation::ChangeSpeed) {
+		if (const auto op = timeline_panel.handleEvent(window, view, cam_view, cam, ev)) {
+			if (op->type == TimelineOperation::Play) {
+				if (timeline.isRunning()) {
+					timeline.pause();
+				}
+				else {
+					timeline.run();
+				}
+			}
+			else if (op->type == TimelineOperation::AutoPlay) {
+				bool flag = timeline.isAutoPlaying() ^ 1;
+				timeline.setAutoPlay(flag);
+			}
+			else if (op->type == TimelineOperation::OnePhaseForward) {
+				timeline.onePhaseForward();
+			}
+			else if (op->type == TimelineOperation::OnePhaseBackward) {
+				timeline.onePhaseBackward();
+			}
+			else if (op->type == TimelineOperation::OneStepForward) {
+				timeline.oneStepForward();
+			}
+			else if (op->type == TimelineOperation::OneStepBackward) {
+				timeline.oneStepBackward();
+			}
+			else if (op->type == TimelineOperation::LastState) {
+				timeline.toLast();
+			}
+			else if (op->type == TimelineOperation::InitState) {
+				timeline.toInit();
+			}
+			else if (op->type == TimelineOperation::ChangeSpeed) {
 
-		//	}
-		//}
+			}
+		}
 	}
 }
 
@@ -117,7 +117,7 @@ void HashmapUI::draw(sf::RenderWindow& window, const sf::View& fixed_view, const
 
 	if (ui_state == UIState::Running) {
 		window.setView(cam_view);
-		//timeline.draw(window, cam_view);
+		timeline.draw(window, cam_view);
 
 		window.setView(fixed_view);
 		window.draw(panel);

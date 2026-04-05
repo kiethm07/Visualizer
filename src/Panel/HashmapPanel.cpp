@@ -106,6 +106,7 @@ std::optional<HashmapOperation> HashmapPanel::handleEvent(
 				if (value.has_value()) {
 					input_value.setFocused(0);
 					input_value.reset();
+					std::cout << (*value) << "\n";
 					return HashmapOperation::search(*value);
 				}
 			}

@@ -53,7 +53,7 @@ std::optional<TimelineConfig> TimelinePanel::handleEvent(const sf::RenderWindow&
             cam.setEnable(flag);
         }
         if (reset_camera.contains(window, view, mouse_pos)) {
-            cam_view = view;
+            cam.reset(window, cam_view);
         }
     }
     return std::nullopt;
