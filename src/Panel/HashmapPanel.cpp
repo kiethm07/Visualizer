@@ -13,7 +13,6 @@ static int rand(int l, int r) {
 HashmapPanel::HashmapPanel(const sf::Font& BUTTON_FONT) :
 	BUTTON_FONT(BUTTON_FONT),
 	input_value(BUTTON_FONT, "value", {}, {}, 20, 0),
-	input_position(BUTTON_FONT, "position", {}, {}, 20, 0),
 	insert_button(BUTTON_FONT, "insert", {}, {}, 20),
 	remove_button(BUTTON_FONT, "remove", {}, {}, 20),
 	search_button(BUTTON_FONT, "search", {}, {}, 20),
@@ -36,7 +35,6 @@ void HashmapPanel::update(const sf::RenderWindow& window, const sf::View& view) 
 
 void HashmapPanel::updateButtonState(const sf::RenderWindow& window, const sf::View& view) {
 	input_value.update(window, view);
-	input_position.update(window, view);
 	insert_button.update(window, view);
 	remove_button.update(window, view);
 	search_button.update(window, view);
@@ -62,11 +60,10 @@ void HashmapPanel::updateWindowState(const sf::RenderWindow& window, const sf::V
 		};
 
 	place_button(input_value, 0);
-	place_button(input_position, 1);
-	place_button(insert_button, 2);
-	place_button(remove_button, 3);
-	place_button(search_button, 4);
-	place_button(reset_button, 5);
+	place_button(insert_button, 1);
+	place_button(remove_button, 2);
+	place_button(search_button, 3);
+	place_button(reset_button, 4);
 }
 
 std::optional<HashmapOperation> HashmapPanel::handleEvent(
@@ -75,7 +72,6 @@ std::optional<HashmapOperation> HashmapPanel::handleEvent(
 	const sf::Event& ev
 ) {
 	input_value.handleEvent(window, view, ev);
-	input_position.handleEvent(window, view, ev);
 
 	if (const auto* mb = ev.getIf<sf::Event::MouseButtonReleased>()) {
 		if (mb->button == sf::Mouse::Button::Left) {
@@ -83,28 +79,23 @@ std::optional<HashmapOperation> HashmapPanel::handleEvent(
 
 			if (insert_button.contains(window, view, mouse_pos)) {
 				std::optional<int> value = input_value.getValueAsInt();
-				std::optional<int> position = input_position.getValueAsInt();
 
-				if (value.has_value() && position.has_value()) {
+				if (value.has_value()) {
 					input_value.setFocused(0);
 					input_value.reset();
-					input_position.setFocused(0);
-					input_position.reset();
-					return HashmapOperation::insert(*position, *value);
+					return HashmapOperation::insert(*value, *value);
 				}
 
 				return std::nullopt;
 			}
 
 			if (remove_button.contains(window, view, mouse_pos)) {
-				std::optional<int> position = input_position.getValueAsInt();
+				std::optional<int> value = input_value.getValueAsInt();
 
-				if (position.has_value()) {
+				if (value.has_value()) {
 					input_value.setFocused(0);
 					input_value.reset();
-					input_position.setFocused(0);
-					input_position.reset();
-					return HashmapOperation::remove(*position);
+					return HashmapOperation::remove(*value);
 				}
 
 				return std::nullopt;
@@ -115,8 +106,6 @@ std::optional<HashmapOperation> HashmapPanel::handleEvent(
 				if (value.has_value()) {
 					input_value.setFocused(0);
 					input_value.reset();
-					input_position.setFocused(0);
-					input_position.reset();
 					return HashmapOperation::search(*value);
 				}
 			}

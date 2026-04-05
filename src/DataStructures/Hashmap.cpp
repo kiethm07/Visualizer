@@ -38,6 +38,16 @@ void Hashmap::loadState(const HashmapState& state) {
 	}
 }
 
+void Hashmap::rawInit(const int& bucket_count, const std::vector<int>& values) {
+	this->bucket_count = bucket_count;
+	next_ui_id = 0;
+	buckets.assign(bucket_count, {});
+	for (const int& i : values) {
+		int x = getHash(i);
+		buckets[x].push_back(Node(i, next_ui_id++));
+	}
+}
+
 void Hashmap::applyOperation(const HashmapOperation& operation, HashmapRecorder& recorder) {
 
 }

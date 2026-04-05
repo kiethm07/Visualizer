@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <Panel/HashmapPanel.h>
 #include <Panel/TimelinePanel.h>
+#include <Panel/InitPanel.h>
 #include <DataStructures/Hashmap.h>
 #include <Model/HashmapModel/HashmapTimeline.h>
 #include <Model/HashmapModel/HashmapRenderer.h>
@@ -18,7 +19,7 @@ public:
 	void draw(sf::RenderWindow& window, const sf::View& fixed_view, const sf::View& cam_view);
 	void setInit() {
 		ui_state = UIState::Init;
-		//init_panel.clearValueForManualInput();
+		init_panel.clearValueForManualInput();
 	}
 private:
 	bool inAnimation = 0;
@@ -32,5 +33,6 @@ private:
 	sf::Clock clock;
 	TimelinePanel timeline_panel;
 	UIState ui_state;
-	int bucket_count = 10; //fixed until initial page is finished
+	InitPanel init_panel;
+	int bucket_count = 13; //fixed
 };

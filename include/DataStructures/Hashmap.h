@@ -16,6 +16,7 @@ public:
 		if (x < 0) x += bucket_count;
 		return x;
 	}
+	void rawInit(const int& bucket_count, const std::vector<int>& values);
 private:
 	struct Node {
 		int val;

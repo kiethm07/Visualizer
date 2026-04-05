@@ -19,7 +19,6 @@ private:
 	sf::RectangleShape background;
 
 	TextBox input_value;
-	TextBox input_position;
 
 	Button insert_button;
 	Button remove_button;
@@ -32,7 +31,6 @@ private:
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
 		target.draw(background, states);
 		target.draw(input_value, states);
-		target.draw(input_position, states);
 		target.draw(insert_button, states);
 		target.draw(remove_button, states);
 		target.draw(search_button, states);
