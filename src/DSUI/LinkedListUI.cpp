@@ -59,6 +59,7 @@ void LinkedListUI::Init(const sf::RenderWindow& window, const sf::View& view, sf
 		list.rawInit(data.values);
 	}
 	current_state = list.getState();
+	timeline.setInitialState(current_state);
 	timeline.generateAnimation(current_state, LinkedListRecorder());
 }
 

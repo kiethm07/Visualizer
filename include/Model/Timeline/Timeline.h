@@ -32,6 +32,9 @@ public:
     void setDirection(int dir) {
         controller.setDirection(dir);
     }
+    void setInitialState(const State& state) {
+        data.setInitialState(state);
+    }
     void push(const State& current_state, const Operation& operation, const Record& record) {
         data.push(current_state, operation, record);
     }
@@ -44,7 +47,7 @@ public:
     void clear() {
         controller.reset();
         data.clear();
-        animator.clear();
+        generateAnimation(data.getInitialState, Record());
     }
     void generateAnimation(const State& initial_state, const Record& record) {
         animator.generateBaseStates(initial_state, record);
@@ -102,7 +105,7 @@ public:
         }
         else if (controller.current_time < 0 && controller.current_operation_index == 0) {
             controller.current_time = 0;
-            animator.clear();
+            generateAnimation(data.getInitialState(), Record());
         }
         else if (controller.current_time < 0) {
             while (controller.current_operation_index > 0) {
@@ -124,7 +127,7 @@ public:
 
             if (controller.current_operation_index == 0) {
                 controller.current_time = 0;
-                animator.clear();
+                generateAnimation(data.getInitialState(), Record());
             }
         }
 
@@ -178,7 +181,7 @@ public:
         if (prev_phase_timer == -1) {
             if (controller.current_operation_index == 0) {
                 prev_phase_timer = 0;
-                animator.clear();
+                generateAnimation(data.getInitialState(), Record());
             }
             else {
                 controller.current_operation_index--;
@@ -228,7 +231,7 @@ public:
 
         if (controller.current_operation_index == 0) {
             controller.current_time = 0.f;
-            animator.clear();
+            generateAnimation(data.getInitialState(), Record());
             return;
         }
 
@@ -245,7 +248,7 @@ public:
                 );
             }
             else {
-                animator.clear();
+                generateAnimation(data.getInitialState(), Record());
             }
 
             controller.current_time = 0.f;
@@ -269,7 +272,7 @@ public:
         if (!controller.isRunning()) return;
 
         controller.direction = -1;
-        animator.clear();
+        generateAnimation(data.getInitialState(), Record());
         controller.current_operation_index = 0;
         controller.current_time = 0.f;
     }

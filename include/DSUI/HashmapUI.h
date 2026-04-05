@@ -10,6 +10,8 @@
 #include <AssetManager/AssetManager.h>
 #include <UI/Camera.h>
 #include <DSUI/UIState.h>
+#include <chrono>
+#include <random>
 
 class HashmapUI {
 public:
@@ -22,6 +24,7 @@ public:
 		init_panel.clearValueForManualInput();
 	}
 private:
+	void Init(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const PanelData& data);
 	bool inAnimation = 0;
 	const AssetManager& a_manager;
 	const sf::Font& NODE_FONT;
@@ -34,5 +37,5 @@ private:
 	TimelinePanel timeline_panel;
 	UIState ui_state;
 	InitPanel init_panel;
-	int bucket_count = 13; //fixed
+	const int DEFAULT_BUCKET_COUNT = 13;
 };

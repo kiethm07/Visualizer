@@ -92,6 +92,7 @@ void Hashmap::insert(int x, HashmapRecorder& recorder)
 
 	int k = getHash(x);
 	int bucket_ui_id = -(k + 1);
+
 	recorder.addNewPhase();
 	recorder.addCommand(Command(Target::Bucket, Type::HighlightOn, bucket_ui_id));
 
@@ -114,25 +115,23 @@ void Hashmap::insert(int x, HashmapRecorder& recorder)
 			recorder.addNewPhase();
 			recorder.addCommand(Command(Target::Node, Type::FoundedOff, buckets[k][i].ui_id));
 			recorder.addNewPhase();
-			recorder.addCommand(Command(Target::Node, Type::HighlightOff, buckets[k][i].ui_id));
-			recorder.addNewPhase();
+			//recorder.addCommand(Command(Target::Node, Type::HighlightOff, buckets[k][i].ui_id));
 			recorder.addCommand(Command(Target::Bucket, Type::HighlightOff, bucket_ui_id));
 			return;
 		}
 		pre_id = buckets[k][i].ui_id;
 	}
 
-	if (pre_id != -1)
-	{
-		recorder.addNewPhase();
-		recorder.addCommand(Command(Target::Node, Type::HighlightOff, pre_id));
-	}
-
 	Node tmp(x, next_ui_id++);
-	recorder.addNewPhase();
 	int spawn_source = (pre_id != -1) ? pre_id : bucket_ui_id;
+
+	recorder.addNewPhase();
 	recorder.addCommand(Command::createSpawnNodeCommand(tmp.ui_id, spawn_source, x, { 200, 0 }));
 	recorder.addCommand(Command(Target::Node, Type::FadeIn, tmp.ui_id));
+	if (pre_id != -1)
+	{
+		recorder.addCommand(Command(Target::Node, Type::HighlightOff, pre_id));
+	}
 
 	recorder.addNewPhase();
 	recorder.addCommand(Command::createSpawnEdgeCommand(spawn_source, tmp.ui_id));
@@ -152,6 +151,7 @@ void Hashmap::remove(int x, HashmapRecorder& recorder)
 
 	int k = getHash(x);
 	int bucket_ui_id = -(k + 1);
+
 	recorder.addNewPhase();
 	recorder.addCommand(Command(Target::Bucket, Type::HighlightOn, bucket_ui_id));
 
@@ -173,17 +173,19 @@ void Hashmap::remove(int x, HashmapRecorder& recorder)
 
 		recorder.addNewPhase();
 		recorder.addCommand(Command(Target::Node, Type::FadeOut, buckets[k][i].ui_id));
-
+		int from_id = (pre_id != -1) ? pre_id : bucket_ui_id;
+		recorder.addCommand(Command(Target::Edge, Type::FadeOut, from_id, buckets[k][i].ui_id));
 		int next_id = (i + 1 < (int)buckets[k].size()) ? buckets[k][i + 1].ui_id : -1;
 		if (next_id != -1)
 		{
 			recorder.addCommand(Command(Target::Edge, Type::FadeOut, buckets[k][i].ui_id, next_id));
 		}
 
-		int from_id = (pre_id != -1) ? pre_id : bucket_ui_id;
-		recorder.addCommand(Command(Target::Edge, Type::FadeOut, from_id, buckets[k][i].ui_id));
-
 		recorder.addNewPhase();
+		if (pre_id != -1)
+		{
+			recorder.addCommand(Command(Target::Node, Type::HighlightOff, pre_id));
+		}
 		for (int j = i + 1; j < (int)buckets[k].size(); j++)
 		{
 			recorder.addCommand(Command(Target::Node, Type::Move, HashmapMoveDirection::Left, buckets[k][j].ui_id));
@@ -212,14 +214,15 @@ void Hashmap::remove(int x, HashmapRecorder& recorder)
 	recorder.addCommand(Command(Target::Bucket, Type::HighlightOff, bucket_ui_id));
 }
 
-void Hashmap::search(int x, HashmapRecorder& recorder){
-	std::cout << x << "\n";
+void Hashmap::search(int x, HashmapRecorder& recorder)
+{
 	using Command = HashmapAnimationCommand;
 	using Target = HashmapAnimationTarget;
 	using Type = HashmapAnimationType;
 
 	int k = getHash(x);
 	int bucket_ui_id = -(k + 1);
+
 	recorder.addNewPhase();
 	recorder.addCommand(Command(Target::Bucket, Type::HighlightOn, bucket_ui_id));
 
@@ -233,23 +236,20 @@ void Hashmap::search(int x, HashmapRecorder& recorder){
 			recorder.addCommand(Command(Target::Node, Type::HighlightOff, pre_id));
 		}
 
-		if (buckets[k][i].val != x)
+		if (buckets[k][i].val == x)
 		{
-			pre_id = buckets[k][i].ui_id;
-			continue;
+			recorder.addNewPhase();
+			recorder.addCommand(Command(Target::Node, Type::FoundedOn, buckets[k][i].ui_id));
+			recorder.addNewPhase();
+			recorder.addCommand(Command(Target::Node, Type::Wait, buckets[k][i].ui_id));
+			recorder.addNewPhase();
+			recorder.addCommand(Command(Target::Node, Type::FoundedOff, buckets[k][i].ui_id));
+			recorder.addNewPhase();
+			//recorder.addCommand(Command(Target::Node, Type::HighlightOff, buckets[k][i].ui_id));
+			recorder.addCommand(Command(Target::Bucket, Type::HighlightOff, bucket_ui_id));
+			return;
 		}
-
-		recorder.addNewPhase();
-		recorder.addCommand(Command(Target::Node, Type::FoundedOn, buckets[k][i].ui_id));
-		recorder.addNewPhase();
-		recorder.addCommand(Command(Target::Node, Type::Wait, buckets[k][i].ui_id));
-		recorder.addNewPhase();
-		recorder.addCommand(Command(Target::Node, Type::FoundedOff, buckets[k][i].ui_id));
-		recorder.addNewPhase();
-		recorder.addCommand(Command(Target::Node, Type::HighlightOff, buckets[k][i].ui_id));
-		recorder.addNewPhase();
-		recorder.addCommand(Command(Target::Bucket, Type::HighlightOff, bucket_ui_id));
-		return;
+		pre_id = buckets[k][i].ui_id;
 	}
 
 	if (pre_id != -1)
@@ -282,11 +282,9 @@ void Hashmap::clear(HashmapRecorder& recorder)
 		for (int j = 0; j < (int)buckets[i].size(); j++)
 		{
 			recorder.addCommand(Command(Target::Node, Type::FadeOut, buckets[i][j].ui_id));
-
 			int from_id = (j == 0) ? bucket_ui_id : buckets[i][j - 1].ui_id;
 			recorder.addCommand(Command(Target::Edge, Type::FadeOut, from_id, buckets[i][j].ui_id));
 		}
-
 		buckets[i].clear();
 	}
 }

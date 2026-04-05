@@ -32,34 +32,45 @@ void HashmapUI::update(const sf::RenderWindow& window, const sf::View& fixed_vie
 	}
 }
 
+void HashmapUI::Init(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const PanelData& data) {
+	ui_state = UIState::Running;
+	cam.reset(window, cam_view);
+	//for (int i : data.values) std::cout << i << " "; std::cout << "\n";
+	if (data.operation == PanelOperation::Empty) {
+		//Do nothing
+		hashmap.rawInit(DEFAULT_BUCKET_COUNT, {});
+	}
+	else if (data.operation == PanelOperation::Random) {
+		std::vector<int> v;
+		int num = rand(5, 7);
+		int bucket_count = rand(13, 23);
+		for (int i = 0; i < num; i++) {
+			v.push_back(rand(-5, 20));
+		}
+		hashmap.rawInit(bucket_count, v);
+	}
+	else if (data.operation == PanelOperation::Manual) {
+		std::vector<int> values = data.values;
+		int bucket_count = values[0];
+		values.erase(values.begin());
+		hashmap.rawInit(bucket_count, values);
+	}
+	else if (data.operation == PanelOperation::File) {
+		std::vector<int> values = data.values;
+		int bucket_count = values[0];
+		values.erase(values.begin());
+		hashmap.rawInit(bucket_count, values);
+	}
+	current_state = hashmap.getState();
+	timeline.setInitialState(current_state);
+	timeline.generateAnimation(current_state, HashmapRecorder());
+}
+
 void HashmapUI::handleEvent(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const sf::Event& ev) {
 	if (ui_state == UIState::Init) {
 		std::optional<PanelData> panel_data = init_panel.handleEvent(window, view, ev);
 		if (!panel_data.has_value()) return;
-		ui_state = UIState::Running;
-		cam.reset(window, cam_view);
-		//for (int i : panel_data->values) std::cout << i << " ";
-		//std::cout << "\n";
-		if (panel_data->operation == PanelOperation::Empty) {
-			hashmap.rawInit(bucket_count, panel_data->values);
-		}
-		else if (panel_data->operation == PanelOperation::Random) {
-			std::vector<int> v;
-			int num = rand(5, 10);
-			for (int i = 0; i < num; i++) {
-				v.push_back(rand(-20, 50));
-			}
-			hashmap.rawInit(bucket_count, v);
-		}
-		else if (panel_data->operation == PanelOperation::Manual) {
-			hashmap.rawInit(bucket_count, panel_data->values);
-		}
-		else if (panel_data->operation == PanelOperation::File) {
-			hashmap.rawInit(bucket_count, panel_data->values);
-		}
-		current_state = hashmap.getState();
-		timeline.generateAnimation(current_state, HashmapRecorder());
-		clock.restart();
+		Init(window, view, cam_view, cam, *panel_data);
 		return;
 	}
 
