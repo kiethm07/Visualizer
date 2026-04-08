@@ -1,8 +1,66 @@
 #include <DataStructures/Trie.h>
+#include <map>
 
 Trie::Trie() :
 	next_ui_id(0), root(nullptr){
 	root = new Node("root", next_ui_id++);
+}
+
+Trie::~Trie() {
+	clearWithoutRecorder(root);
+}
+
+TrieState Trie::getState() const {
+	TrieState state;
+	if (!root) return state;
+	std::vector<Node*> all_nodes;
+	std::map<Node*, int> node_to_idx;
+	auto collect = [&](auto self, Node* u) -> void {
+		node_to_idx[u] = (int)all_nodes.size();
+		all_nodes.push_back(u);
+		for (int i = 0; i < 26; i++) {
+			if (u->child[i]) self(self, u->child[i]);
+		}
+		};
+	collect(collect, root);
+	for (Node* u : all_nodes) {
+		TrieNodeSnapshot snp;
+		snp.label = u->label;
+		snp.ui_id = u->ui_id;
+		snp.cnt = u->cnt;
+		snp.isEnd = u->isEnd;
+		for (int i = 0; i < 26; i++) {
+			snp.child[i] = u->child[i] ? node_to_idx[u->child[i]] : -1;
+		}
+		state.nodes.push_back(snp);
+	}
+	state.next_ui_id = this->next_ui_id;
+	return state;
+}
+
+void Trie::loadState(const TrieState& state) {
+	if (state.nodes.empty()) {
+		root = nullptr;
+		return;
+	}
+	int n = (int)state.nodes.size();
+	std::vector<Node*> new_nodes(n);
+	for (int i = 0; i < n; i++) {
+		const auto& snp = state.nodes[i];
+		new_nodes[i] = new Node(snp.label, snp.ui_id);
+		new_nodes[i]->cnt = snp.cnt;
+		new_nodes[i]->isEnd = snp.isEnd;
+	}
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < 26; j++) {
+			int child_idx = state.nodes[i].child[j];
+			if (child_idx != -1 && child_idx < n) {
+				new_nodes[i]->child[j] = new_nodes[child_idx];
+			}
+		}
+	}
+	root = new_nodes[0];
+	this->next_ui_id = state.next_ui_id;
 }
 
 void Trie::clearWithoutRecorder(Node*& root) {
@@ -12,10 +70,6 @@ void Trie::clearWithoutRecorder(Node*& root) {
 	}
 	delete root;
 	root = nullptr;
-}
-
-Trie::~Trie() {
-	clearWithoutRecorder(root);
 }
 
 void Trie::applyOperation(const TrieOperation& operation, TrieRecorder& recorder){

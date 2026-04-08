@@ -7,6 +7,7 @@
 struct TrieNodeSnapshot {
 	std::string label;
 	int ui_id;
+	int cnt;
 	int child[26];
 	bool isEnd;
 	TrieNodeSnapshot() {
