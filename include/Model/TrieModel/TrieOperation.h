@@ -5,47 +5,32 @@ enum class TrieOperationType { Insert, InsertMultiple, Remove, Update, Reset, Se
 struct TrieOperation {
     TrieOperationType type;
 
-    int key = 0;
-    int value = 0;
-    std::vector<int> keys;
-    std::vector<int> values;
+    std::string value;
 
-    static TrieOperation insert(int key, int value) {
+    static TrieOperation insert(const std::string& value) {
         TrieOperation op;
         op.type = TrieOperationType::Insert;
-        op.key = key;
         op.value = value;
         return op;
     }
 
-    static TrieOperation insertMultiple(const std::vector<int>& keys, const std::vector<int>& values) {
-        TrieOperation op;
-        op.type = TrieOperationType::InsertMultiple;
-        op.keys = keys;
-        op.values = values;
-        return op;
-    }
-
-    static TrieOperation remove(int key) {
+    static TrieOperation remove(const std::string& key) {
         TrieOperation op;
         op.type = TrieOperationType::Remove;
-        op.key = key;
         op.value = key;
         return op;
     }
 
-    static TrieOperation search(int key) {
+    static TrieOperation search(const std::string& key) {
         TrieOperation op;
         op.type = TrieOperationType::Search;
-        op.key = key;
         op.value = key;
         return op;
     }
 
-    static TrieOperation update(int key, int value) {
+    static TrieOperation update(const std::string& value) {
         TrieOperation op;
         op.type = TrieOperationType::Update;
-        op.key = key;
         op.value = value;
         return op;
     }

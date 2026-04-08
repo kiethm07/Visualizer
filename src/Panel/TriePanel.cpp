@@ -77,37 +77,55 @@ std::optional<TrieOperation> TriePanel::handleEvent(
 		if (mb->button == sf::Mouse::Button::Left) {
 			const sf::Vector2f mouse_pos = sf::Vector2f(mb->position);
 
-			if (insert_button.contains(window, view, mouse_pos)) {
-				std::optional<int> value = input_value.getValueAsInt();
+			auto parser = [](const std::string& s) -> std::string {
+				std::string res = "";
+				for (int i = 0; i < s.size(); i++) {
+					char c = s[i];
+					if (c >= 'a' && c <= 'z') {
+						c = c - 'a' + 'A';
+					}
+					if (c >= 'A' && c <= 'Z') res += c;
+				}
+				return res;
+			};
 
+			if (insert_button.contains(window, view, mouse_pos)) {
+				std::optional<std::string> value = input_value.getValue();
+				
 				if (value.has_value()) {
+					std::string s = parser(*value);
+					if (s.empty()) return std::nullopt;
 					input_value.setFocused(0);
 					input_value.reset();
-					return TrieOperation::insert(*value, *value);
+					return TrieOperation::insert(s);
 				}
 
 				return std::nullopt;
 			}
 
 			if (remove_button.contains(window, view, mouse_pos)) {
-				std::optional<int> value = input_value.getValueAsInt();
+				std::optional<std::string> value = input_value.getValue();
 
 				if (value.has_value()) {
+					std::string s = parser(*value);
+					if (s.empty()) return std::nullopt;
 					input_value.setFocused(0);
 					input_value.reset();
-					return TrieOperation::remove(*value);
+					return TrieOperation::remove(s);
 				}
 
 				return std::nullopt;
 			}
 
 			if (search_button.contains(window, view, mouse_pos)) {
-				std::optional<int> value = input_value.getValueAsInt();
+				std::optional<std::string> value = input_value.getValue();
 				if (value.has_value()) {
+					std::string s = parser(*value);
+					if (s.empty()) return std::nullopt;
 					input_value.setFocused(0);
 					input_value.reset();
-					std::cout << (*value) << "\n";
-					return TrieOperation::search(*value);
+					//std::cout << (*value) << "\n";
+					return TrieOperation::search(s);
 				}
 			}
 

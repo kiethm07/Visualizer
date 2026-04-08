@@ -59,26 +59,22 @@ void Hashmap::rawInit(const int& bucket_count, const std::vector<int>& values)
 
 void Hashmap::applyOperation(const HashmapOperation& operation, HashmapRecorder& recorder)
 {
-	if (operation.type == HashmapOperationType::Insert)
-	{
+	if (operation.type == HashmapOperationType::Insert){
 		int x = operation.value;
 		insert(x, recorder);
 		return;
 	}
-	if (operation.type == HashmapOperationType::Remove)
-	{
+	if (operation.type == HashmapOperationType::Remove){
 		int x = operation.value;
 		remove(x, recorder);
 		return;
 	}
-	if (operation.type == HashmapOperationType::Search)
-	{
+	if (operation.type == HashmapOperationType::Search){
 		int x = operation.value;
 		search(x, recorder);
 		return;
 	}
-	if (operation.type == HashmapOperationType::Reset)
-	{
+	if (operation.type == HashmapOperationType::Reset){
 		clear(recorder);
 		return;
 	}
