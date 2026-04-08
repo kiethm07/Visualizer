@@ -8,6 +8,7 @@
 #include <AssetManager/AssetManager.h>
 #include <DSUI/LinkedListUI.h>
 #include <DSUI/HashmapUI.h>
+#include <DSUI/TrieUI.h>
 
 class UI{
 public:
@@ -25,6 +26,7 @@ private:
 	DSMenu ds_menu;
 	LinkedListUI linked_list_ui;
 	HashmapUI hashmap_ui;
+	TrieUI trie_ui;
 	MenuState current_state = MenuState::MainMenu;
 	bool changed_state = 1;
 	const unsigned int DEFAULT_WIDTH = 1280;

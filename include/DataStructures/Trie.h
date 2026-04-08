@@ -3,6 +3,7 @@
 #include <Model/TrieModel/TrieOperation.h>
 #include <Animation/Trie/TrieRecorder.h>
 #include <vector>
+#include <string>
 
 class Trie {
 public:
@@ -12,7 +13,7 @@ public:
 	void init(int n);
 	void loadState(const TrieState& state);
 	void applyOperation(const TrieOperation& operation, TrieRecorder& recorder);
-	void rawInit(const int& bucket_count, const std::vector<int>& values);
+	void rawInit(const std::vector<std::string>& values);
 private:
 	struct Node {
 		std::string label;

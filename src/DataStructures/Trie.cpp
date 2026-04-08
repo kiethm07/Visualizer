@@ -41,6 +41,23 @@ void Trie::applyOperation(const TrieOperation& operation, TrieRecorder& recorder
 	}
 }
 
+void Trie::rawInit(const std::vector<std::string>& values) {
+	for (const std::string& s : values) {
+		Node* tmp = root;
+		for (int i = 0; i < s.size(); i++) {
+			int nxt = s[i] - 'A';
+			if (tmp->child[nxt] == nullptr) {
+				std::string label = "";
+				label += s[i];
+				tmp->child[nxt] = new Node(label, next_ui_id++);
+			}
+			tmp = tmp->child[nxt];
+			tmp->cnt++;
+		}
+		tmp->isEnd = 1;
+	}
+}
+
 void Trie::insert(const std::string& s, TrieRecorder& recorder) {
 	Node* tmp = root;
 	for (int i = 0; i < s.size(); i++) {

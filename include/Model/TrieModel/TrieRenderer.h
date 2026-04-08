@@ -17,5 +17,6 @@ private:
 	const AssetManager& a_manager;
 	std::vector<ListNode> node_list;
 	std::vector<Arrow> edge_list;
-	std::vector<sf::Text> bucket_text_list;
+	const int NODE_RADIUS = 50;
+
 };
