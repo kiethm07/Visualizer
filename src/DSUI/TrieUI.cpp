@@ -24,7 +24,7 @@ void TrieUI::update(const sf::RenderWindow& window, const sf::View& fixed_view, 
 	else if (ui_state == UIState::Running) {
 		panel.update(window, fixed_view);
 		timeline_panel.update(window, fixed_view);
-		//timeline.update(clock.restart().asSeconds());
+		timeline.update(clock.restart().asSeconds());
 	}
 }
 void TrieUI::Init(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const PanelData& data) {
@@ -57,9 +57,9 @@ void TrieUI::Init(const sf::RenderWindow& window, const sf::View& view, sf::View
 		if (!current.empty()) v.push_back(current);
 		trie.rawInit(v);
 	}
-	//current_state = trie.getState();
-	//timeline.setInitialState(current_state);
-	//timeline.generateAnimation(current_state, TrieRecorder());
+	current_state = trie.getState();
+	timeline.setInitialState(current_state);
+	timeline.generateAnimation(current_state, current_state, TrieRecorder());
 }
 void TrieUI::handleEvent(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const sf::Event& ev) {
 	if (ui_state == UIState::Init) {
@@ -72,27 +72,28 @@ void TrieUI::handleEvent(const sf::RenderWindow& window, const sf::View& view, s
 		if (const auto op = panel.handleEvent(window, view, ev); op.has_value()) {
 			recorder.clear();
 			trie.applyOperation(*op, recorder);
-			//timeline.push(current_state, *op, recorder);
-			//current_state = trie.getState();
+			TrieState prev = current_state;
+			current_state = trie.getState();
+			timeline.push(prev, current_state, *op, recorder);
 		}
-		//if (const auto op = timeline_panel.handleEvent(window, view, cam_view, cam, ev)) {
-		//	if (op->type == TimelineOperation::Play) {
-		//		if (timeline.isRunning()) timeline.pause();
-		//		else timeline.run();
-		//	}
-		//	else if (op->type == TimelineOperation::AutoPlay) {
-		//		timeline.setAutoPlay(timeline.isAutoPlaying() ^ 1);
-		//	}
-		//	else if (op->type == TimelineOperation::OnePhaseForward) timeline.onePhaseForward();
-		//	else if (op->type == TimelineOperation::OnePhaseBackward) timeline.onePhaseBackward();
-		//	else if (op->type == TimelineOperation::OneStepForward) timeline.oneStepForward();
-		//	else if (op->type == TimelineOperation::OneStepBackward) timeline.oneStepBackward();
-		//	else if (op->type == TimelineOperation::LastState) timeline.toLast();
-		//	else if (op->type == TimelineOperation::InitState) timeline.toInit();
-		//	else if (op->type == TimelineOperation::ChangeSpeed) {
+		if (const auto op = timeline_panel.handleEvent(window, view, cam_view, cam, ev)) {
+			if (op->type == TimelineOperation::Play) {
+				if (timeline.isRunning()) timeline.pause();
+				else timeline.run();
+			}
+			else if (op->type == TimelineOperation::AutoPlay) {
+				timeline.setAutoPlay(timeline.isAutoPlaying() ^ 1);
+			}
+			else if (op->type == TimelineOperation::OnePhaseForward) timeline.onePhaseForward();
+			else if (op->type == TimelineOperation::OnePhaseBackward) timeline.onePhaseBackward();
+			else if (op->type == TimelineOperation::OneStepForward) timeline.oneStepForward();
+			else if (op->type == TimelineOperation::OneStepBackward) timeline.oneStepBackward();
+			else if (op->type == TimelineOperation::LastState) timeline.toLast();
+			else if (op->type == TimelineOperation::InitState) timeline.toInit();
+			else if (op->type == TimelineOperation::ChangeSpeed) {
 
-		//	}
-		//}
+			}
+		}
 	}
 }
 void TrieUI::draw(sf::RenderWindow& window, const sf::View& fixed_view, const sf::View& cam_view) {
@@ -102,7 +103,7 @@ void TrieUI::draw(sf::RenderWindow& window, const sf::View& fixed_view, const sf
 	}
 	if (ui_state == UIState::Running) {
 		window.setView(cam_view);
-		//timeline.draw(window, cam_view);
+		timeline.draw(window, cam_view);
 		window.setView(fixed_view);
 		window.draw(panel);
 		window.draw(timeline_panel);

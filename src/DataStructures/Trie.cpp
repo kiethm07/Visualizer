@@ -2,7 +2,7 @@
 #include <map>
 
 Trie::Trie() :
-	next_ui_id(0), root(nullptr){
+	next_ui_id(0), root(nullptr) {
 	root = new Node("root", next_ui_id++);
 }
 
@@ -72,7 +72,7 @@ void Trie::clearWithoutRecorder(Node*& root) {
 	root = nullptr;
 }
 
-void Trie::applyOperation(const TrieOperation& operation, TrieRecorder& recorder){
+void Trie::applyOperation(const TrieOperation& operation, TrieRecorder& recorder) {
 	using namespace std;
 	if (operation.type == TrieOperationType::Insert) {
 		string x = operation.value;
@@ -113,64 +113,189 @@ void Trie::rawInit(const std::vector<std::string>& values) {
 }
 
 void Trie::insert(const std::string& s, TrieRecorder& recorder) {
+	using Command = TrieAnimationCommand;
+	using Target = TrieAnimationTarget;
+	using Type = TrieAnimationType;
+
 	Node* tmp = root;
+	int pre_id = -1;
+
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::Node, Type::HighlightOn, root->ui_id));
+	pre_id = root->ui_id;
+
 	for (int i = 0; i < s.size(); i++) {
 		int nxt = s[i] - 'A';
+		bool is_new = false;
 		if (tmp->child[nxt] == nullptr) {
 			std::string label = "";
 			label += s[i];
 			tmp->child[nxt] = new Node(label, next_ui_id++);
+			is_new = true;
 		}
-		tmp = tmp->child[nxt];
+
+		Node* next_node = tmp->child[nxt];
+
+		if (is_new) {
+			recorder.addNewPhase();
+			recorder.addCommand(Command::createSpawnNodeCommand(next_node->ui_id, tmp->ui_id, next_node->label, { 0, 200 }));
+			recorder.addCommand(Command(Target::Node, Type::FadeIn, next_node->ui_id));
+
+			recorder.addNewPhase();
+			recorder.addCommand(Command::createSpawnEdgeCommand(tmp->ui_id, next_node->ui_id));
+			recorder.addCommand(Command(Target::Edge, Type::FadeIn, tmp->ui_id, next_node->ui_id));
+		}
+
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::Node, Type::HighlightOn, next_node->ui_id));
+		if (pre_id != -1) recorder.addCommand(Command(Target::Node, Type::HighlightOff, pre_id));
+
+		tmp = next_node;
 		tmp->cnt++;
+		pre_id = tmp->ui_id;
 	}
+
 	tmp->isEnd = 1;
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::Node, Type::FoundedOn, tmp->ui_id));
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::Node, Type::HighlightOff, tmp->ui_id));
+
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::All, Type::FadeOut, -1));
+
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::All, Type::Reconstruct, -1));
+
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::All, Type::FadeIn, -1));
 }
 
 void Trie::removeBranch(Node*& root, const std::string& s, int idx, TrieRecorder& recorder) {
-	if (root == nullptr || idx == s.size()) return;
-	root->cnt--;
+	using Command = TrieAnimationCommand;
+	using Target = TrieAnimationTarget;
+	using Type = TrieAnimationType;
+
+	if (root == nullptr) return;
+
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::Node, Type::HighlightOn, root->ui_id));
+
 	if (idx + 1 < s.size()) {
 		removeBranch(root->child[s[idx + 1] - 'A'], s, idx + 1, recorder);
 	}
 	if (idx + 1 == s.size()) {
 		root->isEnd = 0;
 	}
+
+	root->cnt--;
 	if (root->cnt == 0) {
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::Node, Type::FadeOut, root->ui_id));
+		delete root;
+		root = nullptr;
+	}
+	else {
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::Node, Type::HighlightOff, root->ui_id));
+	}
+}
+
+void Trie::remove(const std::string& s, TrieRecorder& recorder) {
+	using Command = TrieAnimationCommand;
+	using Target = TrieAnimationTarget;
+	using Type = TrieAnimationType;
+
+	Node* tmp = root;
+	for (int i = 0; i < s.size(); i++) {
+		int nxt = s[i] - 'A';
+		if (tmp->child[nxt] == nullptr) return;
+		tmp = tmp->child[nxt];
+	}
+	if (!tmp->isEnd) return;
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::Node, Type::HighlightOn, root->ui_id));
+
+	if (0 < s.size()) {
+		removeBranch(root->child[s[0] - 'A'], s, 0, recorder);
+	}
+
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::Node, Type::HighlightOff, root->ui_id));
+
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::All, Type::FadeOut, -1));
+
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::All, Type::Reconstruct, -1));
+
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::All, Type::FadeIn, -1));
+}
+
+void Trie::clear(Node*& root, TrieRecorder& recorder) {
+	using Command = TrieAnimationCommand;
+	using Target = TrieAnimationTarget;
+	using Type = TrieAnimationType;
+
+	if (root == nullptr) return;
+
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::Node, Type::HighlightOn, root->ui_id));
+
+	for (int i = 0; i < 26; i++) {
+		if (root->child[i]) {
+			clear(root->child[i], recorder);
+		}
+	}
+
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::Node, Type::FadeOut, root->ui_id));
+
+	if (root != this->root) {
 		delete root;
 		root = nullptr;
 	}
 }
 
-void Trie::remove(const std::string& s, TrieRecorder& recorder) {
-	//Validate query
-	//for (int i = 0; i < s.size(); i++) {
-	//	int nxt = s[i] - 'a';
-	//	if (tmp->child[nxt] == nullptr) {
-	//		//Not found!
-	//		return;
-	//	}
-	//	tmp = tmp->child[nxt];
-	//}
-	if (0 < s.size()) removeBranch(root->child[s[0] - 'A'], s, 0, recorder);
-}
-
-void Trie::clear(Node*& root, TrieRecorder& recorder) {
-	if (root == nullptr) return;
-	for (int i = 0; i < 26; i++) {
-		clear(root->child[i], recorder);
-	}
-	delete root;
-	root = nullptr;
-}
-
 void Trie::search(const std::string& s, TrieRecorder& recorder) {
+	using Command = TrieAnimationCommand;
+	using Target = TrieAnimationTarget;
+	using Type = TrieAnimationType;
+
 	Node* tmp = root;
+	int pre_id = -1;
+
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::Node, Type::HighlightOn, root->ui_id));
+	pre_id = root->ui_id;
+
 	for (int i = 0; i < s.size(); i++) {
 		int nxt = s[i] - 'A';
 		if (tmp->child[nxt] == nullptr) {
+			recorder.addNewPhase();
+			recorder.addCommand(Command(Target::Node, Type::HighlightOff, pre_id));
 			return;
 		}
-		tmp = tmp->child[nxt];
+
+		Node* next_node = tmp->child[nxt];
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::Node, Type::HighlightOn, next_node->ui_id));
+		recorder.addCommand(Command(Target::Node, Type::HighlightOff, pre_id));
+
+		tmp = next_node;
+		pre_id = tmp->ui_id;
 	}
+
+	if (tmp->isEnd) {
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::Node, Type::FoundedOn, tmp->ui_id));
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::Node, Type::Wait, tmp->ui_id));
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::Node, Type::FoundedOff, tmp->ui_id));
+	}
+
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::Node, Type::HighlightOff, pre_id));
 }

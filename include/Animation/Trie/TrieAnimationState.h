@@ -2,7 +2,7 @@
 #include <Model/TrieModel/TrieState.h>
 
 struct TrieAnimationNode {
-	int value;
+	std::string value;
 	int ui_id;
 	sf::Vector2f position;
 	int alpha;

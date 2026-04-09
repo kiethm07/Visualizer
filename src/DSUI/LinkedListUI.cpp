@@ -60,7 +60,7 @@ void LinkedListUI::Init(const sf::RenderWindow& window, const sf::View& view, sf
 	}
 	current_state = list.getState();
 	timeline.setInitialState(current_state);
-	timeline.generateAnimation(current_state, LinkedListRecorder());
+	timeline.generateAnimation(current_state, current_state, LinkedListRecorder());
 }
 
 void LinkedListUI::handleEvent(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const sf::Event& ev) {
@@ -74,8 +74,9 @@ void LinkedListUI::handleEvent(const sf::RenderWindow& window, const sf::View& v
 		if (const auto op = panel.handleEvent(window, view, ev); op.has_value()) {
 			recorder.clear();
 			list.applyOperation(*op, recorder);
-			timeline.push(current_state, *op, recorder);
+			LinkedListState prev = current_state;
 			current_state = list.getState();
+			timeline.push(prev, current_state, *op, recorder);
 		}
 		if (const auto op = timeline_panel.handleEvent(window, view, cam_view, cam, ev)) {
 			if (op->type == TimelineOperation::Play) {

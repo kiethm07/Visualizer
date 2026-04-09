@@ -1,6 +1,6 @@
 #include <Animation/LinkedList/LinkedListAnimator.h>
 
-void LinkedListAnimator::generateBaseStates(const LinkedListState& state, const LinkedListRecorder& record) {
+void LinkedListAnimator::generateBaseStates(const LinkedListState& state, const LinkedListState& fin_state, const LinkedListRecorder& record) {
 	generateAnimationState(initial_state, state);
 	phases = record.getPhases();
 	clear();

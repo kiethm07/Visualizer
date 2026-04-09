@@ -10,14 +10,16 @@ public:
     State getInitialState() const {
         return initial_state;
     }
-    void push(const State& state, const Operation& op, const Record& record) {
+    void push(const State& state, const State& f_state, const Operation& op, const Record& record) {
         states.push_back(state);
+        finish_states.push_back(f_state);
         operations.push_back(op);
         records.push_back(record);
     }
 
     void clear() {
         states.clear();
+        finish_states.clear();
         operations.clear();
         records.clear();
     }
@@ -34,6 +36,10 @@ public:
         return states[index];
     }
 
+    const State& getFinishState(std::size_t index) const {
+        return finish_states[index];
+    }
+
     const Operation& getOperation(std::size_t index) const {
         return operations[index];
     }
@@ -45,6 +51,7 @@ public:
 private:
     State initial_state;
     std::vector<State> states;
+    std::vector<State> finish_states;
     std::vector<Operation> operations;
     std::vector<Record> records;
 };

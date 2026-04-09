@@ -49,7 +49,7 @@ struct TrieAnimationCommand
     {
         duration = getCommandDuration(type);
     }
-    static TrieAnimationCommand createSpawnNodeCommand(int ui_id, int spawn_from_ui_id, char value, sf::Vector2f spawn_offset = { 0, 100 })
+    static TrieAnimationCommand createSpawnNodeCommand(int ui_id, int spawn_from_ui_id, std::string value, sf::Vector2f spawn_offset = { 0, 100 })
     {
         TrieAnimationCommand command;
         command.target = TrieAnimationTarget::Node;
@@ -78,6 +78,6 @@ struct TrieAnimationCommand
     int ui_id;
     int from_ui_id, to_ui_id;
     int spawn_from_ui_id;
-    char value = ' ';
+    std::string value = " ";
     float duration = 1.f;
 };

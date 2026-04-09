@@ -1,6 +1,6 @@
 #include <Animation/Hashmap/HashmapAnimator.h>
 
-void HashmapAnimator::generateBaseStates(const HashmapState& state, const HashmapRecorder& record) {
+void HashmapAnimator::generateBaseStates(const HashmapState& state, const HashmapState& fin_state, const HashmapRecorder& record) {
 	generateAnimationState(initial_state, state);
 	phases = record.getPhases();
 	clear();

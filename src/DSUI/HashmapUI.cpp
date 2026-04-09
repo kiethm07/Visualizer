@@ -63,7 +63,7 @@ void HashmapUI::Init(const sf::RenderWindow& window, const sf::View& view, sf::V
 	}
 	current_state = hashmap.getState();
 	timeline.setInitialState(current_state);
-	timeline.generateAnimation(current_state, HashmapRecorder());
+	timeline.generateAnimation(current_state, current_state, HashmapRecorder());
 }
 
 void HashmapUI::handleEvent(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const sf::Event& ev) {
@@ -78,8 +78,9 @@ void HashmapUI::handleEvent(const sf::RenderWindow& window, const sf::View& view
 		if (const auto op = panel.handleEvent(window, view, ev); op.has_value()) {
 			recorder.clear();
 			hashmap.applyOperation(*op, recorder);
-			timeline.push(current_state, *op, recorder);
+			HashmapState prev = current_state;
 			current_state = hashmap.getState();
+			timeline.push(prev, current_state, *op, recorder);
 		}
 
 		if (const auto op = timeline_panel.handleEvent(window, view, cam_view, cam, ev)) {

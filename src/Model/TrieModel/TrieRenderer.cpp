@@ -37,7 +37,7 @@ void TrieRenderer::loadState(const TrieAnimationState& animation_state) {
 	nodes = animation_state.getNodeList();
 	edges = animation_state.getEdgeList();
 	for (int i = 0; i < nodes.size(); i++) {
-		std::string label = int_to_string(nodes[i].value);
+		std::string label = nodes[i].value;
 		ListNode node(a_manager.getFont("Roboto-Regular"), label, nodes[i].position, NODE_RADIUS, 20);
 		sf::Color node_color = nodes[i].fill_color;
 		node_color.a = nodes[i].alpha;

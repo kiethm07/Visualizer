@@ -7,7 +7,7 @@
 
 class HashmapAnimator {
 public:
-	void generateBaseStates(const HashmapState& initial_state, const HashmapRecorder& record);
+	void generateBaseStates(const HashmapState& initial_state, const HashmapState& fin_state, const HashmapRecorder& record);
 	HashmapAnimationState getStateAtTime(float t); //Get the state of the animation at time t, used to draw the animation
 	float getTotalDuration() const {
 		return total_duration;

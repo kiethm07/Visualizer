@@ -7,7 +7,7 @@
 
 class LinkedListAnimator{
 public:
-	void generateBaseStates(const LinkedListState& initial_state, const LinkedListRecorder& record);
+	void generateBaseStates(const LinkedListState& initial_state, const LinkedListState& fin_state, const LinkedListRecorder& record);
 	LinkedListAnimationState getStateAtTime(float t); //Get the state of the animation at time t, used to draw the animation
 	float getTotalDuration() const {
 		return total_duration;

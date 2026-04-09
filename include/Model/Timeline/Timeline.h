@@ -35,8 +35,8 @@ public:
     void setInitialState(const State& state) {
         data.setInitialState(state);
     }
-    void push(const State& current_state, const Operation& operation, const Record& record) {
-        data.push(current_state, operation, record);
+    void push(const State& current_state, const State& next_state, const Operation& operation, const Record& record) {
+        data.push(current_state, next_state, operation, record);
     }
     void run() {
         controller.run();
@@ -47,10 +47,10 @@ public:
     void clear() {
         controller.reset();
         data.clear();
-        generateAnimation(data.getInitialState, Record());
+        generateAnimation(data.getInitialState(), data.getInitialState(), Record());
     }
-    void generateAnimation(const State& initial_state, const Record& record) {
-        animator.generateBaseStates(initial_state, record);
+    void generateAnimation(const State& initial_state, const State& finish_state, const Record& record) {
+        animator.generateBaseStates(initial_state, finish_state, record);
     }
     void update(const float& real_delta_time) {
         if (!controller.isRunning()) return;
@@ -87,6 +87,7 @@ public:
             while (controller.current_operation_index < static_cast<int>(data.size())) {
                 animator.generateBaseStates(
                     data.getState(controller.current_operation_index),
+                    data.getFinishState(controller.current_operation_index),
                     data.getRecord(controller.current_operation_index)
                 );
                 controller.current_operation_index++;
@@ -105,7 +106,7 @@ public:
         }
         else if (controller.current_time < 0 && controller.current_operation_index == 0) {
             controller.current_time = 0;
-            generateAnimation(data.getInitialState(), Record());
+            generateAnimation(data.getInitialState(), data.getInitialState(), Record());
         }
         else if (controller.current_time < 0) {
             while (controller.current_operation_index > 0) {
@@ -115,6 +116,7 @@ public:
 
                 animator.generateBaseStates(
                     data.getState(controller.current_operation_index - 1),
+                    data.getFinishState(controller.current_operation_index - 1),
                     data.getRecord(controller.current_operation_index - 1)
                 );
 
@@ -127,7 +129,7 @@ public:
 
             if (controller.current_operation_index == 0) {
                 controller.current_time = 0;
-                generateAnimation(data.getInitialState(), Record());
+                generateAnimation(data.getInitialState(), data.getInitialState(), Record());
             }
         }
 
@@ -153,6 +155,7 @@ public:
             else {
                 generateAnimation(
                     data.getState(controller.current_operation_index),
+                    data.getFinishState(controller.current_operation_index),
                     data.getRecord(controller.current_operation_index)
                 );
                 controller.current_operation_index++;
@@ -181,12 +184,13 @@ public:
         if (prev_phase_timer == -1) {
             if (controller.current_operation_index == 0) {
                 prev_phase_timer = 0;
-                generateAnimation(data.getInitialState(), Record());
+                generateAnimation(data.getInitialState(), data.getInitialState(), Record());
             }
             else {
                 controller.current_operation_index--;
                 generateAnimation(
                     data.getState(controller.current_operation_index),
+                    data.getFinishState(controller.current_operation_index),
                     data.getRecord(controller.current_operation_index)
                 );
                 prev_phase_timer = animator.getTotalDuration();
@@ -216,6 +220,7 @@ public:
         else {
             generateAnimation(
                 data.getState(controller.current_operation_index),
+                data.getFinishState(controller.current_operation_index),
                 data.getRecord(controller.current_operation_index)
             );
             controller.current_operation_index++;
@@ -231,7 +236,7 @@ public:
 
         if (controller.current_operation_index == 0) {
             controller.current_time = 0.f;
-            generateAnimation(data.getInitialState(), Record());
+            generateAnimation(data.getInitialState(), data.getInitialState(), Record());
             return;
         }
 
@@ -244,11 +249,12 @@ public:
             if (controller.current_operation_index > 0) {
                 generateAnimation(
                     data.getState(controller.current_operation_index - 1),
+                    data.getFinishState(controller.current_operation_index - 1),
                     data.getRecord(controller.current_operation_index - 1)
                 );
             }
             else {
-                generateAnimation(data.getInitialState(), Record());
+                generateAnimation(data.getInitialState(), data.getInitialState(), Record());
             }
 
             controller.current_time = 0.f;
@@ -262,6 +268,7 @@ public:
         controller.direction = 1;
         generateAnimation(
             data.getState(data.size() - 1),
+            data.getFinishState(data.size() - 1),
             data.getRecord(data.size() - 1)
         );
         controller.current_operation_index = static_cast<int>(data.size());
@@ -272,7 +279,7 @@ public:
         if (!controller.isRunning()) return;
 
         controller.direction = -1;
-        generateAnimation(data.getInitialState(), Record());
+        generateAnimation(data.getInitialState(), data.getInitialState(), Record());
         controller.current_operation_index = 0;
         controller.current_time = 0.f;
     }
