@@ -9,6 +9,7 @@
 #include <DSUI/LinkedListUI.h>
 #include <DSUI/HashmapUI.h>
 #include <DSUI/TrieUI.h>
+#include <DSUI/AVLUI.h>
 
 class UI{
 public:
@@ -27,6 +28,7 @@ private:
 	LinkedListUI linked_list_ui;
 	HashmapUI hashmap_ui;
 	TrieUI trie_ui;
+	AVLUI avl_ui;
 	MenuState current_state = MenuState::MainMenu;
 	bool changed_state = 1;
 	const unsigned int DEFAULT_WIDTH = 1280;

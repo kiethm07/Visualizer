@@ -27,7 +27,7 @@ private:
 	void updateState(Node*& u);
 	void rotateLeft(Node*& u);
 	void rotateRight(Node*& u);
-	void balance(Node*& u);
+	void balance(Node*& u, AVLRecorder& recorder);
 	void insert(Node*& root, int x, AVLRecorder& recorder);
 	void remove(Node*& root, int x, AVLRecorder& recorder);
 	void clear(Node*& root, AVLRecorder& recorder);

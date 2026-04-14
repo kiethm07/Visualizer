@@ -11,6 +11,8 @@
 #include <UI/Camera.h>
 #include <DSUI/UIState.h>
 #include <chrono>
+#include <random>
+
 class AVLUI
 {
 public:
@@ -31,7 +33,7 @@ private:
     AVLPanel panel;
     AVLState current_state;
     AVLTimeline timeline;
-    AVL trie;
+    AVL avl;
     AVLRecorder recorder;
     sf::Clock clock;
     TimelinePanel timeline_panel;

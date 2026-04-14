@@ -1,18 +1,35 @@
 #include <DataStructures/AVL.h>
+#include <map>
+#include <algorithm>
 
 AVL::AVL() : root(nullptr), next_ui_id(0) {}
 AVL::~AVL() { clearWithoutRecorder(root); }
 
 void AVL::applyOperation(const AVLOperation& operation, AVLRecorder& recorder) {
 	using namespace std;
+	using Command = AVLAnimationCommand;
+	using Target = AVLAnimationTarget;
+	using Type = AVLAnimationType;
 	if (operation.type == AVLOperationType::Insert) {
 		int x = operation.value;
 		insert(root, x, recorder);
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::All, Type::FadeOut, -1));
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::All, Type::Reconstruct, -1));
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::All, Type::FadeIn, -1));
 		return;
 	}
 	if (operation.type == AVLOperationType::Remove) {
 		int x = operation.value;
 		remove(root, x, recorder);
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::All, Type::FadeOut, -1));
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::All, Type::Reconstruct, -1));
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::All, Type::FadeIn, -1));
 		return;
 	}
 	if (operation.type == AVLOperationType::Search) {
@@ -80,13 +97,8 @@ void AVL::rawInit(const std::vector<int>& values) {
 	for (int x : values) insert(root, x, dummy);
 }
 
-int AVL::getHeight(Node* u) { 
-	return u == nullptr ? 0 : u->height; 
-}
-
-int AVL::getSize(Node* u) { 
-	return u == nullptr ? 0 : u->size; 
-}
+int AVL::getHeight(Node* u) { return u == nullptr ? 0 : u->height; }
+int AVL::getSize(Node* u) { return u == nullptr ? 0 : u->size; }
 
 void AVL::updateState(Node*& u) {
 	if (u == nullptr) return;
@@ -116,7 +128,7 @@ void AVL::rotateRight(Node*& u) {
 	u = tmp;
 }
 
-void AVL::balance(Node*& u) {
+void AVL::balance(Node*& u, AVLRecorder& recorder) {
 	if (u == nullptr) return;
 	int difference = getHeight(u->pLeft) - getHeight(u->pRight);
 	if (difference >= -1 && difference <= 1) return;
@@ -129,23 +141,73 @@ void AVL::balance(Node*& u) {
 	Node*& t = u->pRight;
 	if (t && getHeight(t->pRight) < getHeight(t->pLeft)) { rotateRight(t); }
 	rotateLeft(u);
+	using Target = AVLAnimationTarget;
+	using Type = AVLAnimationType;
+	using Command = AVLAnimationCommand;
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::All, Type::FadeOut, -1));
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::All, Type::Reconstruct, -1));
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::All, Type::FadeIn, -1));
 }
 
 void AVL::insert(Node*& root, int x, AVLRecorder& recorder) {
+	using Command = AVLAnimationCommand;
+	using Target = AVLAnimationTarget;
+	using Type = AVLAnimationType;
 	if (root == nullptr) {
 		root = new Node(x, next_ui_id++);
 		return;
 	}
-	if (root->val == x) return;
-	if (root->val < x) insert(root->pRight, x, recorder);
-	else insert(root->pLeft, x, recorder);
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::Node, Type::HighlightOn, root->ui_id));
+	if (root->val == x) {
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::Node, Type::HighlightOff, root->ui_id));
+		return;
+	}
+	int pre_id = root->ui_id;
+	if (root->val < x) {
+		if (root->pRight == nullptr) {
+			root->pRight = new Node(x, next_ui_id++);
+			recorder.addNewPhase();
+			recorder.addCommand(Command::createSpawnNodeCommand(root->pRight->ui_id, pre_id, std::to_string(x), { 100, 150 }));
+			recorder.addCommand(Command(Target::Node, Type::FadeIn, root->pRight->ui_id));
+			recorder.addNewPhase();
+			recorder.addCommand(Command::createSpawnEdgeCommand(pre_id, root->pRight->ui_id));
+			recorder.addCommand(Command(Target::Edge, Type::FadeIn, root->ui_id, root->pRight->ui_id));
+		}
+		else insert(root->pRight, x, recorder);
+	}
+	else {
+		if (root->pLeft == nullptr) {
+			root->pLeft = new Node(x, next_ui_id++);
+			recorder.addNewPhase();
+			recorder.addCommand(Command::createSpawnNodeCommand(root->pLeft->ui_id, pre_id, std::to_string(x), { -100, 150 }));
+			recorder.addCommand(Command(Target::Node, Type::FadeIn, root->pLeft->ui_id));
+			recorder.addNewPhase();
+			recorder.addCommand(Command::createSpawnEdgeCommand(pre_id, root->pLeft->ui_id));
+			recorder.addCommand(Command(Target::Edge, Type::FadeIn, root->ui_id, root->pLeft->ui_id));
+		}
+		else insert(root->pLeft, x, recorder);
+	}
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::Node, Type::HighlightOff, root->ui_id));
 	updateState(root);
-	balance(root);
+	balance(root, recorder);
 }
 
 void AVL::remove(Node*& root, int x, AVLRecorder& recorder) {
+	using Command = AVLAnimationCommand;
+	using Target = AVLAnimationTarget;
+	using Type = AVLAnimationType;
 	if (root == nullptr) return;
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::Node, Type::HighlightOn, root->ui_id));
 	if (root->val == x) {
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::Node, Type::FadeOut, root->ui_id));
 		if (root->pRight == nullptr && root->pLeft == nullptr) {
 			delete root;
 			root = nullptr;
@@ -164,30 +226,59 @@ void AVL::remove(Node*& root, int x, AVLRecorder& recorder) {
 			return;
 		}
 		Node* tmp = root->pRight;
-		while (tmp->pLeft != nullptr) tmp = tmp->pLeft;
+		while (tmp->pLeft != nullptr) {
+			recorder.addNewPhase();
+			recorder.addCommand(Command(Target::Node, Type::HighlightOn, tmp->ui_id));
+			tmp = tmp->pLeft;
+		}
 		root->val = tmp->val;
 		remove(root->pRight, tmp->val, recorder);
-		updateState(root);
-		balance(root);
-		return;
 	}
-	if (root->val < x) remove(root->pRight, x, recorder);
+	else if (root->val < x) remove(root->pRight, x, recorder);
 	else remove(root->pLeft, x, recorder);
-	updateState(root);
-	balance(root);
+	if (root) {
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::Node, Type::HighlightOff, root->ui_id));
+		updateState(root);
+		balance(root, recorder);
+	}
 }
 
 bool AVL::search(Node* root, int x, AVLRecorder& recorder) {
+	using Command = AVLAnimationCommand;
+	using Target = AVLAnimationTarget;
+	using Type = AVLAnimationType;
 	if (root == nullptr) return false;
-	if (root->val == x) return true;
-	if (root->val < x) return search(root->pRight, x, recorder);
-	return search(root->pLeft, x, recorder);
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::Node, Type::HighlightOn, root->ui_id));
+	bool found = false;
+	if (root->val == x) {
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::Node, Type::FoundedOn, root->ui_id));
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::Node, Type::Wait, root->ui_id));
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::Node, Type::FoundedOff, root->ui_id));
+		found = true;
+	}
+	else if (root->val < x) found = search(root->pRight, x, recorder);
+	else found = search(root->pLeft, x, recorder);
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::Node, Type::HighlightOff, root->ui_id));
+	return found;
 }
 
 void AVL::clear(Node*& root, AVLRecorder& recorder) {
+	using Command = AVLAnimationCommand;
+	using Target = AVLAnimationTarget;
+	using Type = AVLAnimationType;
 	if (root == nullptr) return;
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::Node, Type::HighlightOn, root->ui_id));
 	clear(root->pLeft, recorder);
 	clear(root->pRight, recorder);
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::Node, Type::FadeOut, root->ui_id));
 	delete root;
 	root = nullptr;
 }
