@@ -21,11 +21,11 @@ public:
     void clear();
 
 private:
-    float calculateSubtreeWidth(int u_idx, const AVLState& state, std::unordered_map<int, float>& subtree_width);
-    void reconstructTree(int u_idx, const AVLState& state, float x, float y, std::unordered_map<int, float>& subtree_width, std::vector<AVLAnimationNode>& node_list, std::vector<AVLAnimationEdge>& edge_list);
-    void normalizeEdgeLists(AVLAnimationState& animation_state);
-    void generateAnimationState(AVLAnimationState& animation_state, const AVLState& state);
-    void applyCommand(const AVLAnimationCommand& command, const AVLAnimationState& base_state, AVLAnimationState& state, const float& progress) const;
+    float calculateSubtreeWidth(int u_idx, const AVLState& state, std::unordered_map<int, float>& subtree_width) const;
+    void reconstructTree(int u_idx, const AVLState& state, float x, float y, std::unordered_map<int, float>& subtree_width, std::vector<AVLAnimationNode>& node_list, std::vector<AVLAnimationEdge>& edge_list) const;
+    void normalizeEdgeLists(AVLAnimationState& animation_state) const;
+    void generateAnimationState(AVLAnimationState& animation_state, const AVLState& state) const;
+    void applyCommand(const AVLAnimationCommand& command, const AVLAnimationState& base_state, AVLAnimationState& state, const std::optional<AVLState>& snapshot, const float& progress) const;
     void applySpawnCommand(const AVLAnimationCommand& command, AVLAnimationState& state, const AVLAnimationState& base_state) const;
     void applyCommandOnNode(AVLAnimationNode& node, const AVLAnimationCommand& command, const float& progress) const;
     void applyCommandOnEdge(AVLAnimationEdge& edge, const AVLAnimationCommand& comamnd, const float& progress) const;

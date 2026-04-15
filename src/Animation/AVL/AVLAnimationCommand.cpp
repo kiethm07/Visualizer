@@ -21,7 +21,7 @@ float getCommandDuration(const AVLAnimationType& type) {
 		return 1.f;
 	}
 	if (type == Type::Reconstruct) {
-		return 0.f;
+		return 1.f;
 	}
 	return 1.f; //Default duration is 1 second
 }

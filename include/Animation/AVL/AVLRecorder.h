@@ -8,6 +8,9 @@ public:
 	void addCommand(const AVLAnimationCommand& command) {
 		phases.back().commands.push_back(command);
 	}
+	void addState(const AVLState& snapshot) {
+		phases.back().snapshot = snapshot;
+	}
 	void addNewPhase() {
 		phases.push_back(AVLAnimationPhase());
 	}

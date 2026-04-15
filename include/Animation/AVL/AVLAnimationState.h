@@ -2,7 +2,7 @@
 #include <Model/AVLModel/AVLState.h>
 
 struct AVLAnimationNode {
-	std::string value;
+	int value;
 	int ui_id;
 	sf::Vector2f position;
 	int alpha;

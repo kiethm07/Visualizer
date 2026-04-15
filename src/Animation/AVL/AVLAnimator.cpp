@@ -2,6 +2,32 @@
 #include <cmath>
 #include <algorithm>
 
+static int string_to_int(const std::string& s) {
+	if (s.empty()) return 0;
+	bool sign = s[0] == '-';
+	int res = 0;
+	for (int i = sign; i < s.size(); i++) {
+		res = res * 10 + s[i] - '0';
+	}
+	if (sign) res = -res;
+	return res;
+}
+
+static std::string int_to_string(int n) {
+	std::string res = "";
+	bool sign = n < 0;
+	if (sign) n = -n;
+	while (n) {
+		char c = n % 10 + '0';
+		res += c;
+		n /= 10;
+	}
+	if (res.empty()) res += '0';
+	if (sign) res += '-';
+	reverse(res.begin(), res.end());
+	return res;
+}
+
 void AVLAnimator::generateBaseStates(const AVLState& state, const AVLState& fin_state, const AVLRecorder& record) {
 	generateAnimationState(initial_state, state);
 	phases = record.getPhases();
@@ -33,26 +59,21 @@ void AVLAnimator::generateBaseStates(const AVLState& state, const AVLState& fin_
 		AVLAnimationState new_state = base_state;
 		std::vector<AVLAnimationCommand> commands = phases[i].commands;
 		float phase_duration = 0.f;
-		bool trigger_reconstruct = false;
 		for (int j = 0; j < (int)commands.size(); j++) {
 			if (commands[j].type == AVLAnimationType::Spawn) continue;
-			if (commands[j].type == AVLAnimationType::Reconstruct) {
-				trigger_reconstruct = true;
-				continue;
-			}
-			applyCommand(commands[j], base_state, new_state, 1.0f);
+			applyCommand(commands[j], base_state, new_state, phases[i].snapshot, 1.0f);
 			phase_duration = std::max(phase_duration, commands[j].duration);
 		}
-		if (trigger_reconstruct && !fin_state.nodes.empty()) {
-			std::vector<AVLAnimationNode> node_list;
-			std::vector<AVLAnimationEdge> edge_list;
-			std::unordered_map<int, float> subtree_width;
-			calculateSubtreeWidth(0, fin_state, subtree_width);
-			reconstructTree(0, fin_state, (float)X_MARGIN, (float)Y_MARGIN, subtree_width, node_list, edge_list);
-			new_state.setNodeList(node_list);
-			new_state.setEdgeList(edge_list);
-		}
-		if (phase_duration == 0.f) phase_duration = 0.5f;
+		//if (trigger_reconstruct && !fin_state.nodes.empty()) {
+		//	std::vector<AVLAnimationNode> node_list;
+		//	std::vector<AVLAnimationEdge> edge_list;
+		//	std::unordered_map<int, float> subtree_width;
+		//	calculateSubtreeWidth(0, fin_state, subtree_width);
+		//	reconstructTree(0, fin_state, (float)X_MARGIN, (float)Y_MARGIN, subtree_width, node_list, edge_list);
+		//	new_state.setNodeList(node_list);
+		//	new_state.setEdgeList(edge_list);
+		//}
+		//if (phase_duration == 0.f) phase_duration = 0.5f;
 		start_time.push_back(start_time.back() + phase_duration);
 		normalizeEdgeLists(new_state);
 		base_states.push_back(new_state);
@@ -60,8 +81,8 @@ void AVLAnimator::generateBaseStates(const AVLState& state, const AVLState& fin_
 	}
 }
 
-float AVLAnimator::calculateSubtreeWidth(int u_idx, const AVLState& state, std::unordered_map<int, float>& subtree_width) {
-	if (u_idx == -1) return 0.f;
+float AVLAnimator::calculateSubtreeWidth(int u_idx, const AVLState& state, std::unordered_map<int, float>& subtree_width) const {
+	if (u_idx == -1 || u_idx >= state.nodes.size()) return 0.f;
 	const auto& snp = state.nodes[u_idx];
 	float left_w = calculateSubtreeWidth(snp.leftChild, state, subtree_width);
 	float right_w = calculateSubtreeWidth(snp.rightChild, state, subtree_width);
@@ -70,11 +91,11 @@ float AVLAnimator::calculateSubtreeWidth(int u_idx, const AVLState& state, std::
 	return width;
 }
 
-void AVLAnimator::reconstructTree(int u_idx, const AVLState& state, float x, float y, std::unordered_map<int, float>& subtree_width, std::vector<AVLAnimationNode>& node_list, std::vector<AVLAnimationEdge>& edge_list) {
-	if (u_idx == -1) return;
+void AVLAnimator::reconstructTree(int u_idx, const AVLState& state, float x, float y, std::unordered_map<int, float>& subtree_width, std::vector<AVLAnimationNode>& node_list, std::vector<AVLAnimationEdge>& edge_list) const {
+	if (u_idx == -1 || u_idx >= state.nodes.size()) return;
 	const auto& snp = state.nodes[u_idx];
 	AVLAnimationNode node;
-	node.value = snp.label;
+	node.value = snp.value;
 	node.ui_id = snp.ui_id;
 	node.position = { x, y };
 	node.alpha = 255;
@@ -107,10 +128,9 @@ void AVLAnimator::reconstructTree(int u_idx, const AVLState& state, float x, flo
 	}
 }
 
-void AVLAnimator::generateAnimationState(AVLAnimationState& animation_state, const AVLState& state) {
+void AVLAnimator::generateAnimationState(AVLAnimationState& animation_state, const AVLState& state) const {
 	std::vector<AVLAnimationNode> node_list;
 	std::vector<AVLAnimationEdge> edge_list;
-	if (state.nodes.empty()) return;
 	std::unordered_map<int, float> subtree_width;
 	calculateSubtreeWidth(0, state, subtree_width);
 	reconstructTree(0, state, (float)X_MARGIN, (float)Y_MARGIN, subtree_width, node_list, edge_list);
@@ -135,7 +155,7 @@ AVLAnimationState AVLAnimator::getStateAtTime(float t) {
 	float progress = (duration > 0.f) ? (phase_time / duration) : 1.f;
 	for (int i = 0; i < (int)commands.size(); i++) {
 		if (commands[i].type == AVLAnimationType::Spawn) continue;
-		applyCommand(commands[i], base_state, new_state, progress);
+		applyCommand(commands[i], base_state, new_state, phases[phase_index].snapshot, progress);
 	}
 	normalizeEdgeLists(new_state);
 	return new_state;
@@ -192,21 +212,44 @@ void AVLAnimator::applySpawnCommand(const AVLAnimationCommand& command, AVLAnima
 	}
 }
 
-void AVLAnimator::applyCommand(const AVLAnimationCommand& command, const AVLAnimationState& base_state, AVLAnimationState& state, const float& progress) const {
+void AVLAnimator::applyCommand(const AVLAnimationCommand& command, const AVLAnimationState& base_state, AVLAnimationState& state, const std::optional<AVLState>& snapshot, const float& progress) const {
 	if (command.target == AVLAnimationTarget::All) {
-		const auto& nodes = base_state.getNodeList();
-		for (int i = 0; i < (int)nodes.size(); i++) {
-			AVLAnimationNode n = nodes[i];
-			applyCommandOnNode(n, command, progress);
-			state.modifyNode(n, i);
+		if (command.type == AVLAnimationType::Reconstruct) {
+			if (!snapshot.has_value()) return;
+			AVLAnimationState tmp_state;
+			AVLState AVL_snapshot = snapshot.value();
+			generateAnimationState(tmp_state, AVL_snapshot);
+			const auto& base_nodes = base_state.getNodeList();
+			const auto& new_nodes = tmp_state.getNodeList();
+			std::unordered_map<int, sf::Vector2f> new_pos;
+			for (int i = 0; i < new_nodes.size(); i++) {
+				int ui_id = new_nodes[i].ui_id;
+				new_pos[ui_id] = new_nodes[i].position;
+			}
+			for (int i = 0; i < base_nodes.size(); i++) {
+				int ui_id = base_nodes[i].ui_id;
+				AVLAnimationNode n = base_nodes[i];
+				n.position = lerpVector2f(n.position, new_pos[ui_id], progress);
+				state.modifyNode(n, i);
+			}
+			normalizeEdgeLists(state);
+			return;
 		}
-		const auto& edges = base_state.getEdgeList();
-		for (int i = 0; i < (int)edges.size(); i++) {
-			AVLAnimationEdge e = edges[i];
-			applyCommandOnEdge(e, command, progress);
-			state.modifyEdge(e, i);
+		else {
+			const auto& nodes = base_state.getNodeList();
+			for (int i = 0; i < (int)nodes.size(); i++) {
+				AVLAnimationNode n = nodes[i];
+				applyCommandOnNode(n, command, progress);
+				state.modifyNode(n, i);
+			}
+			const auto& edges = base_state.getEdgeList();
+			for (int i = 0; i < (int)edges.size(); i++) {
+				AVLAnimationEdge e = edges[i];
+				applyCommandOnEdge(e, command, progress);
+				state.modifyEdge(e, i);
+			}
+			return;
 		}
-		return;
 	}
 	if (command.target == AVLAnimationTarget::Node) {
 		const auto& nodes = base_state.getNodeList();
@@ -232,7 +275,7 @@ void AVLAnimator::applyCommand(const AVLAnimationCommand& command, const AVLAnim
 	}
 }
 
-void AVLAnimator::normalizeEdgeLists(AVLAnimationState& animation_state) {
+void AVLAnimator::normalizeEdgeLists(AVLAnimationState& animation_state) const {
 	std::vector<AVLAnimationEdge> edge_list = animation_state.getEdgeList();
 	const std::vector<AVLAnimationNode>& node_list = animation_state.getNodeList();
 	std::unordered_map<int, sf::Vector2f> pos_map;

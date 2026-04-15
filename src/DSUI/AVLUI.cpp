@@ -27,6 +27,9 @@ void AVLUI::update(const sf::RenderWindow& window, const sf::View& fixed_view, c
 	else if (ui_state == UIState::Running) {
 		panel.update(window, fixed_view);
 		timeline_panel.update(window, fixed_view);
+		//test.setPosition(panel.getSize() + sf::Vector2f({ 100.f, -300.f }));
+		//test.update(window, cam_view);
+		//renderer.update(window, cam_view);
 		timeline.update(clock.restart().asSeconds());
 	}
 }

@@ -17,7 +17,7 @@ public:
 private:
 	struct Node {
 		int val, height, size, ui_id;
-		Node* pLeft, * pRight;
+		Node* pLeft, * pRight, * pParent;
 		Node(int x, int id) : val(x), height(1), size(1), ui_id(id), pLeft(nullptr), pRight(nullptr) {}
 	};
 	Node* root = nullptr;
@@ -25,8 +25,8 @@ private:
 	int getHeight(Node* u);
 	int getSize(Node* u);
 	void updateState(Node*& u);
-	void rotateLeft(Node*& u);
-	void rotateRight(Node*& u);
+	void rotateLeft(Node*& u, AVLRecorder& recorder);
+	void rotateRight(Node*& u, AVLRecorder& recorder);
 	void balance(Node*& u, AVLRecorder& recorder);
 	void insert(Node*& root, int x, AVLRecorder& recorder);
 	void remove(Node*& root, int x, AVLRecorder& recorder);

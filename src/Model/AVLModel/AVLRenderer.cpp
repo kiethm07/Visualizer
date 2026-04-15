@@ -4,13 +4,39 @@ AVLRenderer::AVLRenderer(const AssetManager& a_manager) :
 	a_manager(a_manager) {
 }
 
+static int string_to_int(const std::string& s) {
+	if (s.empty()) return 0;
+	bool sign = s[0] == '-';
+	int res = 0;
+	for (int i = sign; i < s.size(); i++) {
+		res = res * 10 + s[i] - '0';
+	}
+	if (sign) res = -res;
+	return res;
+}
+
+static std::string int_to_string(int n) {
+	std::string res = "";
+	bool sign = n < 0;
+	if (sign) n = -n;
+	while (n) {
+		char c = n % 10 + '0';
+		res += c;
+		n /= 10;
+	}
+	if (res.empty()) res += '0';
+	if (sign) res += '-';
+	reverse(res.begin(), res.end());
+	return res;
+}
+
 void AVLRenderer::loadState(const AVLAnimationState& animation_state) {
 	node_list.clear();
 	edge_list.clear();
 	const std::vector<AVLAnimationNode>& nodes = animation_state.getNodeList();
 	const std::vector<AVLAnimationEdge>& edges = animation_state.getEdgeList();
 	for (int i = 0; i < nodes.size(); i++) {
-		ListNode node(a_manager.getFont("Roboto-Regular"), nodes[i].value, nodes[i].position, NODE_RADIUS, 20);
+		ListNode node(a_manager.getFont("Roboto-Regular"), int_to_string(nodes[i].value), nodes[i].position, NODE_RADIUS, 20);
 		sf::Color node_color = nodes[i].fill_color;
 		node_color.a = nodes[i].alpha;
 		node.setListNodeColor(node_color);

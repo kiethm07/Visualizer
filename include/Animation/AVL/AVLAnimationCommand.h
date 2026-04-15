@@ -49,7 +49,7 @@ struct AVLAnimationCommand
     {
         duration = getCommandDuration(type);
     }
-    static AVLAnimationCommand createSpawnNodeCommand(int ui_id, int spawn_from_ui_id, std::string value, sf::Vector2f spawn_offset = { 0, 100 })
+    static AVLAnimationCommand createSpawnNodeCommand(int ui_id, int spawn_from_ui_id, int value, sf::Vector2f spawn_offset = { 0, 100 })
     {
         AVLAnimationCommand command;
         command.target = AVLAnimationTarget::Node;
@@ -78,6 +78,6 @@ struct AVLAnimationCommand
     int ui_id;
     int from_ui_id, to_ui_id;
     int spawn_from_ui_id;
-    std::string value = " ";
+    int value = 0;
     float duration = 1.f;
 };
