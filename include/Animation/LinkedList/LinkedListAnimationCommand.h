@@ -70,7 +70,6 @@ struct LinkedListAnimationCommand {
 		command.ui_id = ui_id;
 		command.value = value;
 		command.duration = getCommandDuration(command.type);
-		std::cout << command.duration << "\n";
 		return command;
 	}
 	LinkedListAnimationTarget target;

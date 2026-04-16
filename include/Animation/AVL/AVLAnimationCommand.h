@@ -71,6 +71,15 @@ struct AVLAnimationCommand
         command.duration = getCommandDuration(command.type);
         return command;
     }
+    static AVLAnimationCommand createChangeValueCommand(int ui_id, int value) {
+		AVLAnimationCommand command;
+		command.target = AVLAnimationTarget::Node;
+		command.type = AVLAnimationType::UpdateValue;
+        command.value = value;
+		command.ui_id = ui_id;
+        command.duration = getCommandDuration(command.type);
+        return command;
+    }
     AVLAnimationTarget target;
     AVLAnimationType type;
     AVLMoveDirection direction;

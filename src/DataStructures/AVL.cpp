@@ -108,6 +108,7 @@ void AVL::rotateLeft(Node*& u, AVLRecorder& recorder) {
 	if (tmp->pLeft) recorder.addCommand(Command(Target::Edge, Type::FadeOut, tmp->ui_id, tmp->pLeft->ui_id));
 	if (u->pParent) recorder.addCommand(Command(Target::Edge, Type::FadeOut, u->pParent->ui_id, u->ui_id));
 	u->pRight = tmp->pLeft;
+	if (u->pRight != nullptr) u->pRight->pParent = u;
 	tmp->pLeft = u;
 	tmp->pParent = u->pParent;
 	u->pParent = tmp;
@@ -145,6 +146,7 @@ void AVL::rotateRight(Node*& u, AVLRecorder& recorder) {
 	if (tmp->pRight) recorder.addCommand(Command(Target::Edge, Type::FadeOut, tmp->ui_id, tmp->pRight->ui_id));
 	if (u->pParent) recorder.addCommand(Command(Target::Edge, Type::FadeOut, u->pParent->ui_id, u->ui_id));
 	u->pLeft = tmp->pRight;
+	if (u->pLeft != nullptr) u->pLeft->pParent = u;
 	tmp->pRight = u;
 	tmp->pParent = u->pParent;
 	u->pParent = tmp;
@@ -278,33 +280,84 @@ void AVL::remove(Node*& root, int x, AVLRecorder& recorder) {
 	recorder.addNewPhase();
 	recorder.addCommand(Command(Target::Node, Type::HighlightOn, root->ui_id));
 	if (root->val == x) {
-		recorder.addNewPhase();
-		recorder.addCommand(Command(Target::Node, Type::FadeOut, root->ui_id));
+		std::cout << root->val << " removed !\n";
+		std::cout << (root->pParent ? (root->pParent->val) : -1) << " parent! \n";
+		std::cout << getHeight(root) << " height!\n";
 		if (root->pRight == nullptr && root->pLeft == nullptr) {
+			recorder.addNewPhase();
+			recorder.addCommand(Command(Target::Node, Type::FadeOut, root->ui_id));
+			if (root->pParent) recorder.addCommand(Command(Target::Edge, Type::FadeOut, root->pParent->ui_id, root->ui_id));
 			delete root;
 			root = nullptr;
-			return;
-		}
-		if (root->pRight == nullptr) {
-			Node* tmp = root->pLeft;
-			delete root;
-			root = tmp;
-			return;
-		}
-		if (root->pLeft == nullptr) {
-			Node* tmp = root->pRight;
-			delete root;
-			root = tmp;
-			return;
-		}
-		Node* tmp = root->pRight;
-		while (tmp->pLeft != nullptr) {
 			recorder.addNewPhase();
-			recorder.addCommand(Command(Target::Node, Type::HighlightOn, tmp->ui_id));
-			tmp = tmp->pLeft;
+			recorder.addCommand(Command(Target::All, Type::Reconstruct, -1));
+			recorder.addState(getState());
+			return;
 		}
-		root->val = tmp->val;
-		remove(root->pRight, tmp->val, recorder);
+		else if (root->pRight == nullptr) {
+			recorder.addNewPhase();
+			recorder.addCommand(Command(Target::Node, Type::FadeOut, root->ui_id));
+			recorder.addCommand(Command(Target::Edge, Type::FadeOut, root->ui_id, root->pLeft->ui_id));
+			if (root->pParent) recorder.addCommand(Command(Target::Edge, Type::FadeOut, root->pParent->ui_id, root->ui_id));
+			Node* tmp = root->pLeft;
+			tmp->pParent = root->pParent;
+			delete root;
+			root = tmp;
+			if (root->pParent) {
+				recorder.addNewPhase();
+				recorder.addCommand(Command::createSpawnEdgeCommand(root->pParent->ui_id, root->ui_id));
+				recorder.addCommand(Command(Target::Edge, Type::FadeIn, root->pParent->ui_id, root->ui_id));
+			}
+			recorder.addNewPhase();
+			recorder.addCommand(Command(Target::All, Type::Reconstruct, -1));
+			recorder.addState(getState());
+			return;
+		}
+		else if (root->pLeft == nullptr) {
+			recorder.addNewPhase();
+			recorder.addCommand(Command(Target::Node, Type::FadeOut, root->ui_id));
+			recorder.addCommand(Command(Target::Edge, Type::FadeOut, root->ui_id, root->pRight->ui_id));
+			if (root->pParent) recorder.addCommand(Command(Target::Edge, Type::FadeOut, root->pParent->ui_id, root->ui_id));
+			Node* tmp = root->pRight;
+			tmp->pParent = root->pParent;
+			delete root;
+			root = tmp;
+			if (root->pParent) {
+				recorder.addNewPhase();
+				recorder.addCommand(Command::createSpawnEdgeCommand(root->pParent->ui_id, root->ui_id));
+				recorder.addCommand(Command(Target::Edge, Type::FadeIn, root->pParent->ui_id, root->ui_id));
+			}
+			recorder.addNewPhase();
+			recorder.addCommand(Command(Target::All, Type::Reconstruct, -1));
+			recorder.addState(getState());
+			return;
+		}
+		else {
+			Node* tmp = root->pRight;
+			while (tmp->pLeft != nullptr) {
+				tmp = tmp->pLeft;
+			}
+			recorder.addNewPhase();
+			recorder.addCommand(Command(Target::Node, Type::HighlightOn, root->ui_id));
+			recorder.addCommand(Command(Target::Node, Type::HighlightOn, tmp->ui_id));
+			recorder.addNewPhase();
+			recorder.addCommand(Command(Target::Node, Type::FadeOut, root->ui_id));
+			recorder.addNewPhase();
+			recorder.addCommand(Command::createChangeValueCommand(root->ui_id, tmp->val));
+			recorder.addNewPhase();
+			recorder.addCommand(Command(Target::Node, Type::FadeIn, root->ui_id));
+			recorder.addNewPhase();
+			recorder.addCommand(Command(Target::Node, Type::HighlightOff, root->ui_id));
+			recorder.addCommand(Command(Target::Node, Type::HighlightOff, tmp->ui_id));
+			root->val = tmp->val;
+			remove(root->pRight, tmp->val, recorder);
+			recorder.addNewPhase();
+			recorder.addCommand(Command(Target::All, Type::Reconstruct, -1));
+			recorder.addState(getState());
+			updateState(root);
+			balance(root, recorder);
+			return;
+		}
 	}
 	else if (root->val < x) remove(root->pRight, x, recorder);
 	else remove(root->pLeft, x, recorder);
@@ -351,6 +404,7 @@ void AVL::clear(Node*& root, AVLRecorder& recorder) {
 	clear(root->pRight, recorder);
 	recorder.addNewPhase();
 	recorder.addCommand(Command(Target::Node, Type::FadeOut, root->ui_id));
+	if (root->pParent) recorder.addCommand(Command(Target::Edge, Type::FadeOut, root->pParent->ui_id, root->ui_id));
 	delete root;
 	root = nullptr;
 }
