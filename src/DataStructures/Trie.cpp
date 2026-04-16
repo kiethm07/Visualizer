@@ -138,6 +138,10 @@ void Trie::insert(const std::string& s, TrieRecorder& recorder) {
 
 		if (is_new) {
 			recorder.addNewPhase();
+			recorder.addCommand(Command(Target::All, Type::Reconstruct, -1));
+			recorder.addState(getState());
+
+			recorder.addNewPhase();
 			recorder.addCommand(Command::createSpawnNodeCommand(next_node->ui_id, tmp->ui_id, next_node->label, { 0, 200 }));
 			recorder.addCommand(Command(Target::Node, Type::FadeIn, next_node->ui_id));
 
@@ -154,21 +158,13 @@ void Trie::insert(const std::string& s, TrieRecorder& recorder) {
 		tmp->cnt++;
 		pre_id = tmp->ui_id;
 	}
-
-	tmp->isEnd = 1;
-	recorder.addNewPhase();
-	recorder.addCommand(Command(Target::Node, Type::FoundedOn, tmp->ui_id));
 	recorder.addNewPhase();
 	recorder.addCommand(Command(Target::Node, Type::HighlightOff, tmp->ui_id));
-
-	recorder.addNewPhase();
-	recorder.addCommand(Command(Target::All, Type::FadeOut, -1));
-
-	recorder.addNewPhase();
-	recorder.addCommand(Command(Target::All, Type::Reconstruct, -1));
-
-	recorder.addNewPhase();
-	recorder.addCommand(Command(Target::All, Type::FadeIn, -1));
+	if (tmp->isEnd == 0){
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::Node, Type::SetEndMark, tmp->ui_id));
+	}
+	tmp->isEnd = 1;
 }
 
 void Trie::removeBranch(Node*& root, const std::string& s, int idx, TrieRecorder& recorder) {

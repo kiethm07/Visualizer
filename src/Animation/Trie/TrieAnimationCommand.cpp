@@ -9,7 +9,7 @@ float getCommandDuration(const TrieAnimationType& type) {
 		return 0.5f;
 	}
 	if (type == Type::Wait) {
-		return 1.f;
+		return 0.5f;
 	}
 	if (type == Type::Move) {
 		return 1.f;
@@ -18,10 +18,10 @@ float getCommandDuration(const TrieAnimationType& type) {
 		return 0.0f;
 	}
 	if (type == Type::FoundedOn || type == Type::FoundedOff) {
-		return 1.f;
+		return 0.75f;
 	}
 	if (type == Type::Reconstruct) {
-		return 0.f;
+		return 0.75f;
 	}
 	return 1.f; //Default duration is 1 second
 }

@@ -7,6 +7,7 @@ struct TrieAnimationNode {
 	sf::Vector2f position;
 	int alpha;
 	sf::Color fill_color;
+	bool is_end = 0;
 };
 
 struct TrieAnimationEdge {

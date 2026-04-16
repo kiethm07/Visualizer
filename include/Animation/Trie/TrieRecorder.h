@@ -8,6 +8,9 @@ public:
 	void addCommand(const TrieAnimationCommand& command) {
 		phases.back().commands.push_back(command);
 	}
+	void addState(const TrieState& snapshot) {
+		phases.back().snapshot = snapshot;
+	}
 	void addNewPhase() {
 		phases.push_back(TrieAnimationPhase());
 	}

@@ -9,7 +9,7 @@ float getCommandDuration(const AVLAnimationType& type) {
 		return 0.5f;
 	}
 	if (type == Type::Wait) {
-		return 1.f;
+		return 0.5f;
 	}
 	if (type == Type::Move) {
 		return 1.f;
@@ -18,7 +18,7 @@ float getCommandDuration(const AVLAnimationType& type) {
 		return 0.0f;
 	}
 	if (type == Type::FoundedOn || type == Type::FoundedOff) {
-		return 1.f;
+		return 0.75f;
 	}
 	if (type == Type::Reconstruct) {
 		return 1.f;

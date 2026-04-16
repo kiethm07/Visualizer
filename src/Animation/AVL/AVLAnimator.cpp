@@ -224,6 +224,12 @@ void AVLAnimator::applyCommandOnNode(AVLAnimationNode& node, const AVLAnimationC
 	else if (command.type == Type::FadeOut) node.alpha = lerpByte(255, 0, progress);
 	else if (command.type == Type::HighlightOn) node.fill_color = lerpColor(DEFAULT_NODE_COLOR, HIGHLIGHT_NODE_COLOR, progress);
 	else if (command.type == Type::HighlightOff) node.fill_color = lerpColor(HIGHLIGHT_NODE_COLOR, DEFAULT_NODE_COLOR, progress);
+	else if (command.type == Type::FoundedOn) {
+		node.fill_color = lerpColor(DEFAULT_NODE_COLOR, FOUNDED_NODE_COLOR, progress);
+	}
+	else if (command.type == Type::FoundedOff) {
+		node.fill_color = lerpColor(FOUNDED_NODE_COLOR, DEFAULT_NODE_COLOR, progress);
+	}
 	else if (command.type == Type::UpdateValue) {
 		node.value = command.value;
 	}

@@ -72,10 +72,13 @@ void AVL::loadState(const AVLState& state) {
 		new_nodes[i] = new Node(snp.value, snp.ui_id);
 		new_nodes[i]->height = snp.height;
 		new_nodes[i]->size = snp.size;
+		new_nodes[i]->pLeft = new_nodes[i]->pRight = new_nodes[i]->pParent = nullptr;
 	}
 	for (int i = 0; i < n; i++) {
 		if (state.nodes[i].leftChild != -1) new_nodes[i]->pLeft = new_nodes[state.nodes[i].leftChild];
 		if (state.nodes[i].rightChild != -1) new_nodes[i]->pRight = new_nodes[state.nodes[i].rightChild];
+		if (new_nodes[i]->pLeft) new_nodes[i]->pLeft->pParent = new_nodes[i];
+		if (new_nodes[i]->pRight) new_nodes[i]->pRight->pParent = new_nodes[i];
 	}
 	root = new_nodes[0];
 	this->next_ui_id = state.next_ui_id;
@@ -280,9 +283,9 @@ void AVL::remove(Node*& root, int x, AVLRecorder& recorder) {
 	recorder.addNewPhase();
 	recorder.addCommand(Command(Target::Node, Type::HighlightOn, root->ui_id));
 	if (root->val == x) {
-		std::cout << root->val << " removed !\n";
-		std::cout << (root->pParent ? (root->pParent->val) : -1) << " parent! \n";
-		std::cout << getHeight(root) << " height!\n";
+		//std::cout << root->val << " removed !\n";
+		//std::cout << (root->pParent ? (root->pParent->val) : -1) << " parent! \n";
+		//std::cout << getHeight(root) << " height!\n";
 		if (root->pRight == nullptr && root->pLeft == nullptr) {
 			recorder.addNewPhase();
 			recorder.addCommand(Command(Target::Node, Type::FadeOut, root->ui_id));
@@ -374,8 +377,6 @@ bool AVL::search(Node* root, int x, AVLRecorder& recorder) {
 	using Target = AVLAnimationTarget;
 	using Type = AVLAnimationType;
 	if (root == nullptr) return false;
-	recorder.addNewPhase();
-	recorder.addCommand(Command(Target::Node, Type::HighlightOn, root->ui_id));
 	bool found = false;
 	if (root->val == x) {
 		recorder.addNewPhase();
@@ -384,9 +385,11 @@ bool AVL::search(Node* root, int x, AVLRecorder& recorder) {
 		recorder.addCommand(Command(Target::Node, Type::Wait, root->ui_id));
 		recorder.addNewPhase();
 		recorder.addCommand(Command(Target::Node, Type::FoundedOff, root->ui_id));
-		found = true;
+		return true;
 	}
-	else if (root->val < x) found = search(root->pRight, x, recorder);
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::Node, Type::HighlightOn, root->ui_id));
+	if (root->val < x) found = search(root->pRight, x, recorder);
 	else found = search(root->pLeft, x, recorder);
 	recorder.addNewPhase();
 	recorder.addCommand(Command(Target::Node, Type::HighlightOff, root->ui_id));

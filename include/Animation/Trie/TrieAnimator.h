@@ -21,11 +21,11 @@ public:
     void clear();
 
 private:
-    float calculateSubtreeWidth(int u_idx, const TrieState& state, std::unordered_map<int, float>& subtree_width);
-    void reconstructTree(int u_idx, const TrieState& state, float x, float y, std::unordered_map<int, float>& subtree_width, std::vector<TrieAnimationNode>& node_list, std::vector<TrieAnimationEdge>& edge_list);
-    void normalizeEdgeLists(TrieAnimationState& animation_state);
-    void generateAnimationState(TrieAnimationState& animation_state, const TrieState& state);
-    void applyCommand(const TrieAnimationCommand& command, const TrieAnimationState& base_state, TrieAnimationState& state, const float& progress) const;
+    float calculateSubtreeWidth(int u_idx, const TrieState& state, std::unordered_map<int, float>& subtree_width) const;
+    void reconstructTree(int u_idx, const TrieState& state, float x, float y, std::unordered_map<int, float>& subtree_width, std::vector<TrieAnimationNode>& node_list, std::vector<TrieAnimationEdge>& edge_list) const;
+    void normalizeEdgeLists(TrieAnimationState& animation_state) const;
+    void generateAnimationState(TrieAnimationState& animation_state, const TrieState& state) const;
+    void applyCommand(const TrieAnimationCommand& command, const TrieAnimationState& base_state, TrieAnimationState& state, const std::optional<TrieState>& snapshot, const float& progress) const;
     void applySpawnCommand(const TrieAnimationCommand& command, TrieAnimationState& state, const TrieAnimationState& base_state) const;
     void applyCommandOnNode(TrieAnimationNode& node, const TrieAnimationCommand& command, const float& progress) const;
     void applyCommandOnEdge(TrieAnimationEdge& edge, const TrieAnimationCommand& comamnd, const float& progress) const;
