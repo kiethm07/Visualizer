@@ -81,11 +81,62 @@ void AVLAnimator::generateBaseStates(const AVLState& state, const AVLState& fin_
 	}
 }
 
+//float AVLAnimator::calculateSubtreeWidth(int u_idx, const AVLState& state, std::unordered_map<int, float>& subtree_width) const {
+//	if (u_idx == -1 || u_idx >= state.nodes.size()) return 0.f;
+//	const auto& snp = state.nodes[u_idx];
+//	float left_w = calculateSubtreeWidth(snp.leftChild, state, subtree_width);
+//	float right_w = calculateSubtreeWidth(snp.rightChild, state, subtree_width);
+//	float width = std::max(left_w + right_w, (float)NODE_RADIUS * 2.5f);
+//	subtree_width[snp.ui_id] = width;
+//	return width;
+//}
+
+//void AVLAnimator::reconstructTree(int u_idx, const AVLState& state, float x, float y, std::unordered_map<int, float>& subtree_width, std::vector<AVLAnimationNode>& node_list, std::vector<AVLAnimationEdge>& edge_list) const {
+//	if (u_idx == -1 || u_idx >= state.nodes.size()) return;
+//	const auto& snp = state.nodes[u_idx];
+//	AVLAnimationNode node;
+//	node.value = snp.value;
+//	node.ui_id = snp.ui_id;
+//	node.position = { x, y };
+//	node.alpha = 255;
+//	node.fill_color = DEFAULT_NODE_COLOR;
+//	node_list.push_back(node);
+//	float total_w = subtree_width[snp.ui_id];
+//	if (snp.leftChild != -1) {
+//		float child_w = subtree_width[state.nodes[snp.leftChild].ui_id];
+//		float child_x = x - (total_w / 2.f) + (child_w / 2.f);
+//		float child_y = y + LEVEL_GAP;
+//		reconstructTree(snp.leftChild, state, child_x, child_y, subtree_width, node_list, edge_list);
+//		AVLAnimationEdge edge;
+//		edge.from_ui_id = snp.ui_id;
+//		edge.to_ui_id = state.nodes[snp.leftChild].ui_id;
+//		edge.alpha = 255;
+//		edge.fill_color = DEFAULT_EDGE_COLOR;
+//		edge_list.push_back(edge);
+//	}
+//	if (snp.rightChild != -1) {
+//		float child_w = subtree_width[state.nodes[snp.rightChild].ui_id];
+//		float child_x = x + (total_w / 2.f) - (child_w / 2.f);
+//		float child_y = y + LEVEL_GAP;
+//		reconstructTree(snp.rightChild, state, child_x, child_y, subtree_width, node_list, edge_list);
+//		AVLAnimationEdge edge;
+//		edge.from_ui_id = snp.ui_id;
+//		edge.to_ui_id = state.nodes[snp.rightChild].ui_id;
+//		edge.alpha = 255;
+//		edge.fill_color = DEFAULT_EDGE_COLOR;
+//		edge_list.push_back(edge);
+//	}
+//}
+
 float AVLAnimator::calculateSubtreeWidth(int u_idx, const AVLState& state, std::unordered_map<int, float>& subtree_width) const {
 	if (u_idx == -1 || u_idx >= state.nodes.size()) return 0.f;
 	const auto& snp = state.nodes[u_idx];
 	float left_w = calculateSubtreeWidth(snp.leftChild, state, subtree_width);
 	float right_w = calculateSubtreeWidth(snp.rightChild, state, subtree_width);
+	
+	if (snp.leftChild != -1 && snp.rightChild == -1) right_w = (float)NODE_RADIUS * 1.5f;
+	if (snp.rightChild != -1 && snp.leftChild == -1) left_w = (float)NODE_RADIUS * 1.5f;
+
 	float width = std::max(left_w + right_w, (float)NODE_RADIUS * 2.5f);
 	subtree_width[snp.ui_id] = width;
 	return width;

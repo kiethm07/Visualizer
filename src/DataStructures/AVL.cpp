@@ -107,14 +107,10 @@ void AVL::rotateLeft(Node*& u, AVLRecorder& recorder) {
 	recorder.addCommand(Command(Target::Edge, Type::FadeOut, u->ui_id, tmp->ui_id));
 	if (tmp->pLeft) recorder.addCommand(Command(Target::Edge, Type::FadeOut, tmp->ui_id, tmp->pLeft->ui_id));
 	if (u->pParent) recorder.addCommand(Command(Target::Edge, Type::FadeOut, u->pParent->ui_id, u->ui_id));
-	std::cout << u->val << "\n";
-
 	u->pRight = tmp->pLeft;
-	if (u->pRight) u->pRight->pParent = u;
 	tmp->pLeft = u;
 	tmp->pParent = u->pParent;
 	u->pParent = tmp;
-
 	updateState(u);
 	updateState(tmp);
 	u = tmp;
@@ -125,17 +121,16 @@ void AVL::rotateLeft(Node*& u, AVLRecorder& recorder) {
 	recorder.addNewPhase();
 	recorder.addCommand(Command::createSpawnEdgeCommand(u->ui_id, u->pLeft->ui_id));
 	recorder.addCommand(Command(Target::Edge, Type::FadeIn, u->ui_id, u->pLeft->ui_id));
-
 	if (u->pParent) {
-		recorder.addNewPhase();
 		recorder.addCommand(Command::createSpawnEdgeCommand(u->pParent->ui_id, u->ui_id));
 		recorder.addCommand(Command(Target::Edge, Type::FadeIn, u->pParent->ui_id, u->ui_id));
 	}
-	//if (u->pRight) {
-	//	recorder.addNewPhase();
-	//	recorder.addCommand(Command::createSpawnEdgeCommand(u->ui_id, u->pRight->ui_id));
-	//	recorder.addCommand(Command(Target::Edge, Type::FadeIn, u->ui_id, u->pRight->ui_id));
-	//}
+	if (Node* tmp = u->pLeft) {
+		if (tmp->pRight) {
+			recorder.addCommand(Command::createSpawnEdgeCommand(tmp->ui_id, tmp->pRight->ui_id));
+			recorder.addCommand(Command(Target::Edge, Type::FadeIn, tmp->ui_id, tmp->pRight->ui_id));
+		}
+	}
 }
 
 void AVL::rotateRight(Node*& u, AVLRecorder& recorder) {
@@ -164,15 +159,17 @@ void AVL::rotateRight(Node*& u, AVLRecorder& recorder) {
 	recorder.addCommand(Command::createSpawnEdgeCommand(u->ui_id, u->pRight->ui_id));
 	recorder.addCommand(Command(Target::Edge, Type::FadeIn, u->ui_id, u->pRight->ui_id));
 	if (u->pParent) {
-		recorder.addNewPhase();
+		//recorder.addNewPhase();
 		recorder.addCommand(Command::createSpawnEdgeCommand(u->pParent->ui_id, u->ui_id));
 		recorder.addCommand(Command(Target::Edge, Type::FadeIn, u->pParent->ui_id, u->ui_id));
 	}
-	//if (u->pLeft) {
-	//	recorder.addNewPhase();
-	//	recorder.addCommand(Command::createSpawnEdgeCommand(u->ui_id, u->pLeft->ui_id));
-	//	recorder.addCommand(Command(Target::Edge, Type::FadeIn, u->ui_id, u->pLeft->ui_id));
-	//}
+	if (Node* tmp = u->pRight) {
+		//recorder.addNewPhase();
+		if (tmp->pLeft) {
+			recorder.addCommand(Command::createSpawnEdgeCommand(tmp->ui_id, tmp->pLeft->ui_id));
+			recorder.addCommand(Command(Target::Edge, Type::FadeIn, tmp->ui_id, tmp->pLeft->ui_id));
+		}
+	}
 }
 
 //void AVL::rotateRight(Node*& u, AVLRecorder& recorder) {
@@ -228,6 +225,7 @@ void AVL::insert(Node*& root, int x, AVLRecorder& recorder) {
 	}
 	recorder.addNewPhase();
 	recorder.addCommand(Command(Target::Node, Type::HighlightOn, root->ui_id));
+	//if (root->pParent) recorder.addCommand(Command(Target::Node, Type::HighlightOff, root->pParent->ui_id));
 	if (root->val == x) {
 		recorder.addNewPhase();
 		recorder.addCommand(Command(Target::Node, Type::HighlightOff, root->ui_id));
