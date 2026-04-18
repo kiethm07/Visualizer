@@ -519,6 +519,7 @@ void TrieAnimator::applyCommandOnNode(TrieAnimationNode& node, const TrieAnimati
 		node.fill_color = lerpColor(FOUNDED_NODE_COLOR, node.is_end ? END_NODE_COLOR : DEFAULT_NODE_COLOR, progress);
 	}
 	else if (command.type == Type::SetEndMark) node.fill_color = lerpColor(DEFAULT_NODE_COLOR, END_NODE_COLOR, progress);
+	else if (command.type == Type::UnsetEndMark) node.fill_color = lerpColor(END_NODE_COLOR, DEFAULT_NODE_COLOR, progress);
 	else if (command.type == Type::Move) {
 		sf::Vector2f offset = { 0.f, 0.f };
 		if (command.direction == TrieMoveDirection::Right) offset.x = (float)move_distance;

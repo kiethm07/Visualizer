@@ -167,36 +167,6 @@ void Trie::insert(const std::string& s, TrieRecorder& recorder) {
 	tmp->isEnd = 1;
 }
 
-void Trie::removeBranch(Node*& root, const std::string& s, int idx, TrieRecorder& recorder) {
-	using Command = TrieAnimationCommand;
-	using Target = TrieAnimationTarget;
-	using Type = TrieAnimationType;
-
-	if (root == nullptr) return;
-
-	recorder.addNewPhase();
-	recorder.addCommand(Command(Target::Node, Type::HighlightOn, root->ui_id));
-
-	if (idx + 1 < s.size()) {
-		removeBranch(root->child[s[idx + 1] - 'A'], s, idx + 1, recorder);
-	}
-	if (idx + 1 == s.size()) {
-		root->isEnd = 0;
-	}
-
-	root->cnt--;
-	if (root->cnt == 0) {
-		recorder.addNewPhase();
-		recorder.addCommand(Command(Target::Node, Type::FadeOut, root->ui_id));
-		delete root;
-		root = nullptr;
-	}
-	else {
-		recorder.addNewPhase();
-		recorder.addCommand(Command(Target::Node, Type::HighlightOff, root->ui_id));
-	}
-}
-
 void Trie::remove(const std::string& s, TrieRecorder& recorder) {
 	using Command = TrieAnimationCommand;
 	using Target = TrieAnimationTarget;
@@ -208,25 +178,54 @@ void Trie::remove(const std::string& s, TrieRecorder& recorder) {
 		if (tmp->child[nxt] == nullptr) return;
 		tmp = tmp->child[nxt];
 	}
-	if (!tmp->isEnd) return;
-	recorder.addNewPhase();
-	recorder.addCommand(Command(Target::Node, Type::HighlightOn, root->ui_id));
-
-	if (0 < s.size()) {
-		removeBranch(root->child[s[0] - 'A'], s, 0, recorder);
+	if (!tmp->isEnd) {
+		search(s, recorder);
+		return;
 	}
-
-	recorder.addNewPhase();
-	recorder.addCommand(Command(Target::Node, Type::HighlightOff, root->ui_id));
-
-	recorder.addNewPhase();
-	recorder.addCommand(Command(Target::All, Type::FadeOut, -1));
-
-	recorder.addNewPhase();
-	recorder.addCommand(Command(Target::All, Type::Reconstruct, -1));
-
-	recorder.addNewPhase();
-	recorder.addCommand(Command(Target::All, Type::FadeIn, -1));
+	std::vector<Node*> v;
+	std::vector<bool> will_delete;
+	tmp = root;
+	v.push_back(tmp);
+	will_delete.push_back(0);
+	for (int i = 0; i < s.size(); i++) {
+		int nxt = s[i] - 'A';
+		if (tmp->child[nxt] == nullptr) return;
+		tmp = tmp->child[nxt];
+		tmp->cnt--;
+		v.push_back(tmp);
+		will_delete.push_back(tmp->cnt == 0);
+	}
+	std::cout << v.size() << " " << will_delete.size() << "\n";
+	for (int i = 0; i < int(v.size()); i++) {
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::Node, Type::HighlightOn, v[i]->ui_id));
+	}
+	bool set_not_end = tmp->isEnd == 1;
+	tmp->isEnd = 0;
+	for (int i = 0; i < v.size(); i++) {
+		std::cout << i << " " << will_delete[i] << "\n";
+	}
+	for (int i = int(v.size()) - 1; i >= 0; i--) {
+		if (will_delete[i]) {
+			recorder.addNewPhase();
+			recorder.addCommand(Command(Target::Node, Type::FadeOut, v[i]->ui_id));
+			recorder.addCommand(Command(Target::Edge, Type::FadeOut, v[i - 1]->ui_id, v[i]->ui_id));
+			v[i - 1]->child[s[i - 1] - 'A'] = nullptr;
+			delete v[i];
+			v[i] = nullptr;
+			recorder.addNewPhase();
+			recorder.addCommand(Command(Target::All, Type::Reconstruct, -1));
+			recorder.addState(getState());
+		}
+		else {
+			recorder.addNewPhase();
+			recorder.addCommand(Command(Target::Node, Type::HighlightOff, v[i]->ui_id));
+			if (i == int(v.size()) - 1 && set_not_end) {
+				recorder.addNewPhase();
+				recorder.addCommand(Command(Target::Node, Type::UnsetEndMark, v[i]->ui_id));
+			}
+		}
+	}
 }
 
 void Trie::clear(Node*& root, TrieRecorder& recorder) {

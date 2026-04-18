@@ -23,7 +23,7 @@ float getCommandDuration(const TrieAnimationType& type) {
 	if (type == Type::Reconstruct) {
 		return 0.75f;
 	}
-	if (type == Type::SetEndMark) {
+	if (type == Type::SetEndMark || type == Type::UnsetEndMark) {
 		return 0.5f;
 	}
 	return 1.f; //Default duration is 1 second
