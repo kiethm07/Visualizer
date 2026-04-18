@@ -39,10 +39,37 @@ void LinkedListUI::update(const sf::RenderWindow& window, const sf::View& fixed_
 void LinkedListUI::Init(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const PanelData& data) {
 	ui_state = UIState::Running;
 	cam.reset(window, cam_view);
+	auto parseValues = [](const std::vector<std::string>& v) -> std::vector<int> {
+		auto parseString = [](const std::string& s) -> std::optional<int> {
+			if (s.empty()) return std::nullopt;
+			std::string t = "";
+			bool sign = 0;
+			if (s[0] == '-') sign = 1;
+			for (int i = 0; i < s.size(); i++) {
+				if (s[i] > '9' || s[i] < '0') continue;
+				t += s[i];
+				if (t.size() >= 5) break;
+			}
+			int res = 0;
+			if (t.empty()) return std::nullopt;
+			for (int i = 0; i < t.size(); i++) {
+				res = res * 10 + t[i] - '0';
+			}
+			if (sign) res = -res;
+			return res;
+		};
+		std::vector<int> res;
+		for (const std::string& s : v) {
+			std::optional<int> val = parseString(s);
+			if (val.has_value()) res.push_back(*val);
+		}
+		return res;
+	};
+	std::vector<int> values = parseValues(data.values);
 	//for (int i : data.values) std::cout << i << " "; std::cout << "\n";
 	if (data.operation == PanelOperation::Empty) {
 		//Do nothing
-		list.rawInit(data.values);
+		list.rawInit(values);
 	}
 	else if (data.operation == PanelOperation::Random) {
 		std::vector<int> v;
@@ -53,10 +80,10 @@ void LinkedListUI::Init(const sf::RenderWindow& window, const sf::View& view, sf
 		list.rawInit(v);
 	}
 	else if (data.operation == PanelOperation::Manual) {
-		list.rawInit(data.values);
+		list.rawInit(values);
 	}
 	else if (data.operation == PanelOperation::File) {
-		list.rawInit(data.values);
+		list.rawInit(values);
 	}
 	current_state = list.getState();
 	timeline.setInitialState(current_state);

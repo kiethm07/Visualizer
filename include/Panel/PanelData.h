@@ -4,5 +4,5 @@ enum class PanelOperation {Empty, Random, Manual, File};
 
 struct PanelData {
 	PanelOperation operation;
-	std::vector<int> values;
+	std::vector<std::string> values;
 };

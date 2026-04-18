@@ -54,20 +54,22 @@ void InitPanel::update(const sf::RenderWindow& window, const sf::View& view) {
 	updateWindowState(window, view);
 }
 
-static std::vector<int> parseInput(const std::string& s) {
-	std::vector<int> v;
+static std::vector<std::string> parseInput(const std::string& s) {
+	std::vector<std::string> v;
 	std::string token;
 	auto isValidToken = [](const std::string& s) {
 		if (s.empty()) return 0;
-		if (s.size() > 5) return 0;
-		int start = 0;
-		if (s[0] == '-') {
-			if (s.size() == 1) return 0;
-			start = 1;
-		}
-		for (int i = start; i < s.size(); i++) {
-			if (s[i] > '9' || s[i] < '0') return 0;;
-		}
+		////if (s.size() > 5) return 0;
+		//int start = 0;
+		//if (s[0] == '-') {
+		//	if (s.size() == 1) return 0;
+		//	start = 1;
+		//}
+		//for (int i = start; i < s.size(); i++) {
+		//	if ((s[i] > '9' || s[i] < '0') &&
+		//		(s[i] > 'z' || s[i] < 'a') &&
+		//		(s[i] > 'Z' || s[i] < 'A')) return 0;
+		//}
 		return 1;
 		};
 	auto toInt = [](const std::string& s) {
@@ -86,9 +88,10 @@ static std::vector<int> parseInput(const std::string& s) {
 
 	auto flush_token = [&]() {
 		if (token.empty()) return;
-		if (token.size() <= 5 && isValidToken(token)) {
-			v.push_back(toInt(token));
-		}
+		//if (token.size() <= 5 && isValidToken(token)) {
+		//	v.push_back(toInt(token));
+		//}
+		if (isValidToken(token)) v.push_back(token);
 		token.clear();
 		};
 
@@ -135,8 +138,8 @@ std::optional<PanelData> InitPanel::handleEvent(const sf::RenderWindow& window, 
 		}
 		std::string line;
 		while (std::getline(cin, line)) {
-			std::vector<int> values = parseInput(line);
-			for (int& i : values) data.values.push_back(i);
+			std::vector<std::string> values = parseInput(line);
+			for (const std::string& i : values) data.values.push_back(i);
 		}
 		return data;
 	}

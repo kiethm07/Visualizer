@@ -96,6 +96,7 @@ void Trie::applyOperation(const TrieOperation& operation, TrieRecorder& recorder
 }
 
 void Trie::rawInit(const std::vector<std::string>& values) {
+	for (int i = 0; i < 26; i++) clearWithoutRecorder(root->child[i]);
 	for (const std::string& s : values) {
 		Node* tmp = root;
 		for (int i = 0; i < s.size(); i++) {

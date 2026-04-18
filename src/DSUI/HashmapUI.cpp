@@ -36,6 +36,33 @@ void HashmapUI::Init(const sf::RenderWindow& window, const sf::View& view, sf::V
 	ui_state = UIState::Running;
 	cam.reset(window, cam_view);
 	//for (int i : data.values) std::cout << i << " "; std::cout << "\n";
+	auto parseValues = [](const std::vector<std::string>& v) -> std::vector<int> {
+		auto parseString = [](const std::string& s) -> std::optional<int> {
+			if (s.empty()) return std::nullopt;
+			std::string t = "";
+			bool sign = 0;
+			if (s[0] == '-') sign = 1;
+			for (int i = 0; i < s.size(); i++) {
+				if (s[i] > '9' || s[i] < '0') continue;
+				t += s[i];
+				if (t.size() >= 5) break;
+			}
+			int res = 0;
+			if (t.empty()) return std::nullopt;
+			for (int i = 0; i < t.size(); i++) {
+				res = res * 10 + t[i] - '0';
+			}
+			if (sign) res = -res;
+			return res;
+		};
+		std::vector<int> res;
+		for (const std::string& s : v) {
+			std::optional<int> val = parseString(s);
+			if (val.has_value()) res.push_back(*val);
+		}
+		return res;
+	};
+	std::vector<int> values = parseValues(data.values);
 	if (data.operation == PanelOperation::Empty) {
 		//Do nothing
 		hashmap.rawInit(DEFAULT_BUCKET_COUNT, {});
@@ -50,13 +77,13 @@ void HashmapUI::Init(const sf::RenderWindow& window, const sf::View& view, sf::V
 		hashmap.rawInit(bucket_count, v);
 	}
 	else if (data.operation == PanelOperation::Manual) {
-		std::vector<int> values = data.values;
+		if (values[0] < 0) values[0] = -values[0];
 		int bucket_count = values[0];
 		values.erase(values.begin());
 		hashmap.rawInit(bucket_count, values);
 	}
 	else if (data.operation == PanelOperation::File) {
-		std::vector<int> values = data.values;
+		if (values[0] < 0) values[0] = -values[0];
 		int bucket_count = values[0];
 		values.erase(values.begin());
 		hashmap.rawInit(bucket_count, values);

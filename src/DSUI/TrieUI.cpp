@@ -30,32 +30,40 @@ void TrieUI::update(const sf::RenderWindow& window, const sf::View& fixed_view, 
 void TrieUI::Init(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const PanelData& data) {
 	ui_state = UIState::Running;
 	cam.reset(window, cam_view);
+	auto parseValues = [](const std::vector<std::string>& v) -> std::vector<std::string> {
+		auto parseString = [](const std::string& s) -> std::optional<std::string> {
+			std::string t = "";
+			for (const char& c : s) {
+				if (c >= 'a' && c <= 'z') t += c - 'a' + 'A';
+				else if (c >= 'A' && c <= 'Z') t += c;
+			}
+			if (t.empty()) return std::nullopt;
+			return t;
+		};
+		std::vector<std::string> res;
+		for (const std::string& s : v) {
+			std::optional<std::string> val = parseString(s);
+			if (val.has_value()) res.push_back(*val);
+		}
+		return res;
+	};
+	std::vector<std::string> values = parseValues(data.values);
 	if (data.operation == PanelOperation::Empty) {
 		trie.rawInit({});
 	}
 	else if (data.operation == PanelOperation::Random) {
 		std::vector<std::string> v;
-		int num = rand(3, 6);
+		int num = rand(6, 9);
 		for (int i = 0; i < num; i++) {
 			std::string s = "";
-			int len = rand(2, 5);
+			int len = rand(3, 6);
 			for (int j = 0; j < len; j++) s += (char)('A' + rand(0, 25));
 			v.push_back(s);
 		}
 		trie.rawInit(v);
 	}
 	else if (data.operation == PanelOperation::Manual || data.operation == PanelOperation::File) {
-		std::vector<std::string> v;
-		std::string current = "";
-		for (int x : data.values) {
-			if (x == (int)',') {
-				if (!current.empty()) v.push_back(current);
-				current = "";
-			}
-			else current += (char)x;
-		}
-		if (!current.empty()) v.push_back(current);
-		trie.rawInit(v);
+		trie.rawInit(values);
 	}
 	current_state = trie.getState();
 	timeline.setInitialState(current_state);
