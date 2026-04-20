@@ -1,5 +1,6 @@
 #include <UI/UI.h>
 #include <iostream>
+#include <Model/CodeLine.h>
 
 UI::UI(const AssetManager& a_manager) :
     asset_manager(a_manager),
@@ -120,6 +121,12 @@ void UI::run() {
             main_menu.update(window, fixed_view);
             window.setView(fixed_view);
             window.draw(main_menu);
+			//sf::Font font = asset_manager.getFont("Roboto-Regular");
+			//CodeLine title("Data Structure Visualizer", font, 20);
+			//title.setPosition(sf::Vector2f(window.getSize().x / 2.f, window.getSize().y / 4.f));
+			//title.setSize(sf::Vector2f(400, 100));
+			//title.setColor(sf::Color(89, 145, 46));
+			//window.draw(title);
         }
         if (current_state == MenuState::DSMenu) {
             ds_menu.update(window, fixed_view);
