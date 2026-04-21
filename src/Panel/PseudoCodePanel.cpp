@@ -124,16 +124,50 @@ void PseudoCodePanel::setTextColor(const sf::Color& color) {
 	}
 }
 
-bool PseudoCodePanel::handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev, const sf::Vector2f& mouse_pos) {
-	if (minimize_button.contains(window, view, mouse_pos)) {
-		minimized = 1;
-		return 0;
+int PseudoCodePanel::handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev) {
+	if (const auto* mb_pressed = ev.getIf<sf::Event::MouseButtonPressed>()) {
+		if (mb_pressed->button == sf::Mouse::Button::Left) {
+			sf::Vector2f mouse_pos = window.mapPixelToCoords(mb_pressed->position, view);
+			if (title.contains(window, view, mouse_pos) ||
+				minimize_button.contains(window, view, mouse_pos) ||
+				maximize_button.contains(window, view, mouse_pos)) {
+				is_dragging = true;
+				drag_offset = position - mouse_pos;
+			}
+		}
 	}
-	if (maximize_button.contains(window, view, mouse_pos)) {
-		minimized = 0;
-		return 1;
+	else if (const auto* mm = ev.getIf<sf::Event::MouseMoved>()) {
+		if (is_dragging) {
+			sf::Vector2f mouse_pos = window.mapPixelToCoords(mm->position, view);
+			sf::Vector2f new_pos = mouse_pos + drag_offset;
+
+			float max_x = window.getSize().x - background.getSize().x;
+			float max_y = window.getSize().y - background.getSize().y;
+
+			if (new_pos.x < 0.f) new_pos.x = 0.f;
+			else if (new_pos.x > max_x) new_pos.x = max_x;
+
+			if (new_pos.y < 0.f) new_pos.y = 0.f;
+			else if (new_pos.y > max_y) new_pos.y = max_y;
+
+			setPosition(new_pos);
+		}
 	}
-	return false;
+	else if (const auto* mb = ev.getIf<sf::Event::MouseButtonReleased>()) {
+		if (mb->button == sf::Mouse::Button::Left) {
+			is_dragging = false;
+			sf::Vector2f mouse_pos = window.mapPixelToCoords(mb->position, view);
+			if (minimize_button.contains(window, view, mouse_pos)) {
+				minimized = 1;
+				return 0;
+			}
+			if (maximize_button.contains(window, view, mouse_pos)) {
+				minimized = 0;
+				return 1;
+			}
+		}
+	}
+	return -1;
 }
 
 void PseudoCodePanel::animateHighlight(float progress, bool isHighlight, int index) {

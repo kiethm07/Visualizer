@@ -16,9 +16,8 @@ public:
 	void setBackgroundColor(const sf::Color& color);
 	void setTextColor(const sf::Color& color);
     void animateHighlight(float progress, bool isHighlight, int index);
-    void handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
 	void update(const sf::RenderWindow& window, const sf::View& view);
-	bool handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev, const sf::Vector2f& mouse_pos); //0 is minimize, 1 is maximize
+	int handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev); //-1 is nothing, 0 is minimize, 1 is maximize
 private:
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
     void updateButtonPosition(); //Update the button position based on the code lines
@@ -27,7 +26,9 @@ private:
     std::vector<CodeLine> code_lines;
     int current_highlight;
     bool minimized;
+    bool is_dragging = false;
 
+    sf::Vector2f drag_offset;
     sf::RectangleShape background;
     Button title; 
     //Use Button class but not actually a button, just display

@@ -16,8 +16,11 @@ LinkedListUI::LinkedListUI(const AssetManager& a_manager) :
 	timeline(a_manager),
 	timeline_panel(a_manager),
 	ui_state(UIState::Init),
-	init_panel(a_manager)
+	init_panel(a_manager),
+	code_panel(a_manager)
 {
+	code_panel.setCode({ "Helloasdjasdkjahsdkjhads", "World", "1 2 3", "abc" });
+	code_panel.setPosition({ 500.f, 500.f });
 	test.setButtonSize({ 200.f,200.f });
 	init_panel.setPlaceHolderForManualInput("Input value manually, format : x y z");
 }
@@ -34,6 +37,7 @@ void LinkedListUI::update(const sf::RenderWindow& window, const sf::View& fixed_
 		//renderer.update(window, cam_view);
 		timeline.update(clock.restart().asSeconds());
 	}
+	code_panel.update(window, fixed_view);
 }
 
 void LinkedListUI::Init(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const PanelData& data) {
@@ -98,6 +102,7 @@ void LinkedListUI::handleEvent(const sf::RenderWindow& window, const sf::View& v
 		return;
 	}
 	if (ui_state == UIState::Running) {
+		code_panel.handleEvent(window, view, ev);
 		if (const auto op = panel.handleEvent(window, view, ev); op.has_value()) {
 			recorder.clear();
 			list.applyOperation(*op, recorder);
@@ -153,11 +158,7 @@ void LinkedListUI::draw(sf::RenderWindow& window, const sf::View& fixed_view, co
 		window.setView(fixed_view);
 		window.draw(panel);
 		window.draw(timeline_panel);
-		PseudoCodePanel test_panel(a_manager);
-		//test_panel.setCode({ "Helloasdjasdkjahsdkjhads", "World", "1 2 3", "abc" });
-		//test_panel.setCode({ "abcdef" });
-		test_panel.setPosition({ 500.f, 500.f });
 		//test_panel.setSize({ 300.f, 200.f });
-		window.draw(test_panel);
+		window.draw(code_panel);
 	}
 }

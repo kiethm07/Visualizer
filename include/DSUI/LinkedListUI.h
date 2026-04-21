@@ -32,6 +32,7 @@ private:
 	LinkedListPanel panel;
 	InitPanel init_panel;
 	TimelinePanel timeline_panel;
+	PseudoCodePanel code_panel;
 	LinkedListTimeline timeline;
 	LinkedListRecorder recorder;
 	sf::Clock clock;
