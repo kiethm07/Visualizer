@@ -4,11 +4,12 @@ PseudoCodePanel::PseudoCodePanel(const AssetManager& asset_manager, const std::s
 	asset_manager(asset_manager), 
 	current_highlight(-1), 
 	minimized(false),
-	minimize_button(asset_manager.getFont("Roboto-Regular"), "-", { 0, 0 }, { 30, 30 }, 20),
-	maximize_button(asset_manager.getFont("Roboto-Regular"), "+", { 0, 0 }, { 30, 30 }, 20)
+	title(asset_manager.getFont(font_name), "Placeholder", { 0, 0 }, BUTTON_SIZE, 20),
+	minimize_button(asset_manager.getFont(font_name), "-", { 0, 0 }, BUTTON_SIZE, 20),
+	maximize_button(asset_manager.getFont(font_name), "+", { 0, 0 }, BUTTON_SIZE, 20)
 {
-	position = {600, 600};
-	size = {400, 300};
+	//position = {600, 600};
+	//size = {400, 300};
 }
 
 static sf::Color lerpColor(const sf::Color& a, const sf::Color& b, float t) {
@@ -21,51 +22,97 @@ static sf::Color lerpColor(const sf::Color& a, const sf::Color& b, float t) {
 }
 
 void PseudoCodePanel::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+	//std::cout << title.getSize().x << " " << title.getSize().y << "\n";
+	//std::cout << title.getPosition().x << " " << title.getPosition().y << "\n";
+	//std::cout << position.x << " " << position.y << "\n";
+	//target.draw(background, states);
+	target.draw(title, states);
+	//std::cout << minimize_button.getSize().x << " " << minimize_button.getSize().y << "\n";
+	//std::cout << minimize_button.getPosition().x << " " << minimize_button.getPosition().y << "\n";
 	target.draw(minimize_button, states);
 	target.draw(maximize_button, states);
 	if (minimized) return;
-	target.draw(background, states);
 	for (int i = 0; i < code_lines.size(); i++) {
 		target.draw(code_lines[i], states);
+		//std::cout << i << "\n";
+		//std::cout << code_lines[i].getPosition().x << " " << code_lines[i].getPosition().y << "\n";
+		//std::cout << code_lines[i].getSize().x << " " << code_lines[i].getSize().y << "\n";
 	}
 }
 
 void PseudoCodePanel::setCode(const std::vector<std::string>& new_lines) {
-	lines = new_lines;
-	const sf::Font& code_font = asset_manager.getFont("Consolas-Regular");
+	lines.clear();
+	auto int2string = [](int x) -> std::string {
+		std::string res = "";
+		if (x == 0) return "0";
+		while (x > 0) {
+			res = char('0' + x % 10) + res;
+			x /= 10;
+		}
+		return res;
+		};
+	for (int i = 0; i < new_lines.size(); i++) {
+		std::string num = int2string(i);
+		lines.push_back(num + ". " + new_lines[i]);
+	}
+	const sf::Font& code_font = asset_manager.getFont("Consola");
+	code_lines.clear();
 
 	sf::Vector2f line_size = { 0,0 };
 	for (int i = 0; i < lines.size(); i++) {
 		std::string label = lines[i];
 		CodeLine line(label, code_font, CHAR_SIZE);
-		line.setColor(DEFAULT_TEXT_COLOR);
-		line.setPosition(sf::Vector2f(position.x + PADDING, position.y + PADDING + i * (LINE_HEIGHT + PADDING)));
+		line.setSize(sf::Vector2f(0, LINE_HEIGHT));
+		line.setTextColor(DEFAULT_TEXT_COLOR);
+		line.setPosition(sf::Vector2f(position.x, position.y + PADDING + i * (LINE_HEIGHT + PADDING) + BUTTON_SIZE.y));
 		line_size.x = std::max(line_size.x, line.getSize().x);
 		line_size.y = std::max(line_size.y, line.getSize().y);
 		code_lines.push_back(line);
 	}
 	for (int i = 0; i < code_lines.size(); i++) {
 		code_lines[i].setSize(line_size);
+		//std::cout << i << "\n";
+		//std::cout << code_lines[i].getPosition().x << " " << code_lines[i].getPosition().y << "\n";
+		//std::cout << code_lines[i].getSize().x << " " << code_lines[i].getSize().y << "\n";
 	}
+	updateButtonPosition();
+	background.setSize(sf::Vector2f(line_size.x + 2 * PADDING, line_size.y * lines.size() + 2 * PADDING + BUTTON_SIZE.y));
 
 }
 
 void PseudoCodePanel::setHighlight(int index) {
 	current_highlight = index;
-}
+} 
 
 void PseudoCodePanel::setPosition(const sf::Vector2f& pos) {
 	position = pos;
 	background.setPosition(pos);
 	for (int i = 0; i < code_lines.size(); i++) {
-		code_lines[i].setPosition(sf::Vector2f(position.x + PADDING, position.y + PADDING + i * (LINE_HEIGHT + PADDING)));
+		code_lines[i].setPosition(sf::Vector2f(position.x + PADDING, position.y + BUTTON_SIZE.y + i * (LINE_HEIGHT + PADDING)));
 	}
+	updateButtonPosition();
 }
 
-void PseudoCodePanel::setSize(const sf::Vector2f& size) {
-	this->size = size;
-	background.setSize(size);
+void PseudoCodePanel::updateButtonPosition() {
+	//title.x + min.x + max.x = max(lines_size.x + 2 * PADDING)
+	sf::Vector2f lines_size = sf::Vector2f( 0, BUTTON_SIZE.y );
+	for (int i = 0; i < code_lines.size(); i++) {
+		lines_size.x = std::max(lines_size.x, code_lines[i].getSize().x);
+	}
+	title.setPosition(sf::Vector2f(position.x, position.y));
+	title.setButtonSize(sf::Vector2f(lines_size.x + 2 * PADDING - 2 * BUTTON_SIZE.x, BUTTON_SIZE.y));
+	//std::cout << title.getSize().x << " " << title.getSize().y << "\n";
+	//std::cout << title.getPosition().x << " " << title.getPosition().y << "\n";
+	minimize_button.setPosition(sf::Vector2f(position.x + title.getSize().x, position.y));
+	maximize_button.setPosition(sf::Vector2f(position.x + title.getSize().x + BUTTON_SIZE.x, position.y));
+	minimize_button.setButtonSize(BUTTON_SIZE);
+	maximize_button.setButtonSize(BUTTON_SIZE);
 }
+
+//void PseudoCodePanel::setSize(const sf::Vector2f& size) {
+//	this->size = size;
+//	background.setSize(size);
+//}
 
 void PseudoCodePanel::setBackgroundColor(const sf::Color& color) {
 	background.setFillColor(color);
@@ -73,11 +120,11 @@ void PseudoCodePanel::setBackgroundColor(const sf::Color& color) {
 
 void PseudoCodePanel::setTextColor(const sf::Color& color) {
 	for (int i = 0; i < code_lines.size(); i++) {
-		code_lines[i].setColor(color);
+		code_lines[i].setTextColor(color);
 	}
 }
 
-bool handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev, const sf::Vector2f& mouse_pos) {
+bool PseudoCodePanel::handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev, const sf::Vector2f& mouse_pos) {
 	if (minimize_button.contains(window, view, mouse_pos)) {
 		minimized = 1;
 		return 0;
@@ -94,7 +141,7 @@ void PseudoCodePanel::animateHighlight(float progress, bool isHighlight, int ind
 		sf::Color target_color = isHighlight ? HIGHLIGHT_TEXT_COLOR : DEFAULT_TEXT_COLOR;
 		sf::Color current_color = isHighlight ? DEFAULT_TEXT_COLOR : HIGHLIGHT_TEXT_COLOR;
 		sf::Color new_color = lerpColor(current_color, target_color, progress);
-		code_lines[index].setColor(new_color);
+		code_lines[index].setTextColor(new_color);
 	}
 }
 

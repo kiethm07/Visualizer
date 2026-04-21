@@ -153,5 +153,11 @@ void LinkedListUI::draw(sf::RenderWindow& window, const sf::View& fixed_view, co
 		window.setView(fixed_view);
 		window.draw(panel);
 		window.draw(timeline_panel);
+		PseudoCodePanel test_panel(a_manager);
+		test_panel.setCode({ "Helloasdjasdkjahsdkjhads", "World", "1 2 3", "abc" });
+		//test_panel.setCode({ "abcdef" });
+		test_panel.setPosition({ 500.f, 500.f });
+		//test_panel.setSize({ 300.f, 200.f });
+		window.draw(test_panel);
 	}
 }

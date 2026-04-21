@@ -16,7 +16,7 @@ void Button::setPosition(const sf::Vector2f& pos) {
 	centerText();
 }
 
-sf::Vector2f Button::getPosition() {
+sf::Vector2f Button::getPosition() const {
 	return container.getPosition();
 }
 
@@ -25,12 +25,12 @@ void Button::setButtonSize(const sf::Vector2f& size) {
 	centerText();
 }
 
-sf::Vector2f Button::getCenter() {
+sf::Vector2f Button::getCenter() const {
 	sf::Vector2f upper_left = container.getPosition() - container.getOrigin();
 	return upper_left + container.getSize() / 2.f;
 }
 
-sf::Vector2f Button::getSize() {
+sf::Vector2f Button::getSize() const {
 	return container.getSize();
 }
 
@@ -39,7 +39,7 @@ void Button::setOrigin(const sf::Vector2f& origin) {
 	centerText();
 }
 
-sf::Vector2f Button::getOrigin() {
+sf::Vector2f Button::getOrigin() const {
 	return container.getOrigin();
 }
 
@@ -57,11 +57,11 @@ void Button::setCharacterColor(const sf::Color& color) {
 	text.setFillColor(color);
 }
 
-std::string Button::getLabel() {
+std::string Button::getLabel() const {
 	return text.getString();
 }
 
-sf::FloatRect Button::getGlobalBounds() {
+sf::FloatRect Button::getGlobalBounds() const {
 	return container.getGlobalBounds();
 }
 

@@ -17,12 +17,12 @@ public:
 	bool mousePressed(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
 	bool contains(const sf::RenderWindow& window, const sf::View& view, const sf::Vector2f& position);
 
-	sf::Vector2f getPosition();
-	sf::Vector2f getCenter();
-	sf::Vector2f getOrigin();
-	sf::Vector2f getSize();
-	sf::FloatRect getGlobalBounds();
-	std::string getLabel();
+	sf::Vector2f getPosition() const;
+	sf::Vector2f getCenter() const;
+	sf::Vector2f getOrigin() const;
+	sf::Vector2f getSize() const;
+	sf::FloatRect getGlobalBounds() const;
+	std::string getLabel() const;
 protected:
 	sf::RectangleShape container;
 	sf::Text text;
