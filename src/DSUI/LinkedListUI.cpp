@@ -20,6 +20,7 @@ LinkedListUI::LinkedListUI(const AssetManager& a_manager) :
 	code_panel(a_manager)
 {
 	code_panel.setCode({ "Helloasdjasdkjahsdkjhads", "World", "1 2 3", "abc" });
+	code_panel.setHighlight(2);
 	code_panel.setPosition({ 500.f, 500.f });
 	test.setButtonSize({ 200.f,200.f });
 	init_panel.setPlaceHolderForManualInput("Input value manually, format : x y z");

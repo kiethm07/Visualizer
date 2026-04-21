@@ -86,6 +86,10 @@ void PseudoCodePanel::setCode(const std::vector<std::string>& new_lines) {
 
 void PseudoCodePanel::setHighlight(int index) {
 	current_highlight = index;
+	int i = current_highlight;
+	if (i >= 0 && i < code_lines.size()) {
+		code_lines[i].setTextColor(HIGHLIGHT_TEXT_COLOR);
+	}
 } 
 
 void PseudoCodePanel::setPosition(const sf::Vector2f& pos) {
