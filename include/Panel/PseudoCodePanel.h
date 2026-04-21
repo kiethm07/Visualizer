@@ -25,7 +25,7 @@ private:
     const AssetManager& asset_manager;
     std::vector<std::string> lines;
     std::vector<CodeLine> code_lines;
-    int current_highlight;
+    int current_highlight = -1;
     bool minimized;
     bool is_dragging = false;
 

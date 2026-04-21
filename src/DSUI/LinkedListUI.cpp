@@ -17,11 +17,8 @@ LinkedListUI::LinkedListUI(const AssetManager& a_manager) :
 	timeline_panel(a_manager),
 	ui_state(UIState::Init),
 	init_panel(a_manager),
-	code_panel(a_manager)
+	code_panel(a_manager, "Consola")
 {
-	code_panel.setCode({ "Helloasdjasdkjahsdkjhads", "World", "1 2 3", "abc" });
-	code_panel.setHighlight(2);
-	code_panel.setPosition({ 500.f, 500.f });
 	test.setButtonSize({ 200.f,200.f });
 	init_panel.setPlaceHolderForManualInput("Input value manually, format : x y z");
 }
@@ -37,8 +34,14 @@ void LinkedListUI::update(const sf::RenderWindow& window, const sf::View& fixed_
 		//test.update(window, cam_view);
 		//renderer.update(window, cam_view);
 		timeline.update(clock.restart().asSeconds());
+		std::optional<ListOperation> current_operation = timeline.getCurrentOperation();
+		std::optional<ListOperationType> type = std::nullopt;
+		if (current_operation.has_value()) type = current_operation->type;
+		int highlighted_line = timeline.getHighlightedLine();
+		//std::cout << highlighted_line << "\n";
+		code_panel.sync(type, highlighted_line);
+		code_panel.update(window, fixed_view);
 	}
-	code_panel.update(window, fixed_view);
 }
 
 void LinkedListUI::Init(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const PanelData& data) {

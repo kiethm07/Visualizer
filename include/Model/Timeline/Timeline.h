@@ -52,6 +52,12 @@ public:
     void generateAnimation(const State& initial_state, const State& finish_state, const Record& record) {
         animator.generateBaseStates(initial_state, finish_state, record);
     }
+    int getHighlightedLine() const {
+        return highlighted_line;
+    }
+    std::optional<Operation> getCurrentOperation() const {
+        return current_operation;
+    }
     void update(const float& real_delta_time) {
         if (!controller.isRunning()) return;
 
@@ -134,6 +140,17 @@ public:
         }
 
         current_animation_state = animator.getStateAtTime(controller.current_time);
+        highlighted_line = animator.getHighlightedLine(controller.current_time);
+        //std::cout << highlighted_line << " " << controller.current_time << " " << controller.current_operation_index << "\n";
+        if (controller.current_operation_index == 0 && controller.current_time == 0) {
+            current_operation = std::nullopt;
+        }
+        else if (controller.current_operation_index == data.size() && controller.current_time == animator.getTotalDuration()) {
+            current_operation = std::nullopt;
+        }
+        else {
+            current_operation = data.getOperation(controller.current_operation_index - 1);
+		}
     }
 
     void onePhaseForward() {
@@ -296,4 +313,8 @@ private:
     Animator animator;
     Renderer renderer;
     AnimationState current_animation_state;
+
+    //For pseudocode highlight
+    int highlighted_line = -1;
+    std::optional<Operation> current_operation;
 };

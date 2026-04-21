@@ -31,6 +31,7 @@ public:
 			if (current_operation_type.has_value()) {
 				current_operation_type = std::nullopt;
 				panel.setCode({});
+				panel.setTitle("No Operation");
 				panel.setHighlight(-1);
 			}
 			return;

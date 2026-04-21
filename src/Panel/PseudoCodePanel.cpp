@@ -4,12 +4,12 @@ PseudoCodePanel::PseudoCodePanel(const AssetManager& asset_manager, const std::s
 	asset_manager(asset_manager), 
 	current_highlight(-1), 
 	minimized(false),
-	title(asset_manager.getFont(font_name), "Placeholder", { 0, 0 }, BUTTON_SIZE, 20),
+	title(asset_manager.getFont(font_name), "No Operation", { 0, 0 }, TITLE_SIZE, 20),
 	minimize_button(asset_manager.getFont(font_name), "-", { 0, 0 }, BUTTON_SIZE, 20),
 	maximize_button(asset_manager.getFont(font_name), "+", { 0, 0 }, BUTTON_SIZE, 20)
 {
-	//position = {600, 600};
-	//size = {400, 300};
+	position = { 600, 600 };
+	updateButtonPosition();
 }
 
 void PseudoCodePanel::setTitle(const std::string& title) {
@@ -37,6 +37,12 @@ void PseudoCodePanel::draw(sf::RenderTarget& target, sf::RenderStates states) co
 	target.draw(maximize_button, states);
 	if (minimized) return;
 	for (int i = 0; i < code_lines.size(); i++) {
+		if (i == current_highlight) {
+			CodeLine highlighted_code = code_lines[i];
+			highlighted_code.setTextColor(HIGHLIGHT_TEXT_COLOR);
+			target.draw(highlighted_code);
+			continue;
+		}
 		target.draw(code_lines[i], states);
 		//std::cout << i << "\n";
 		//std::cout << code_lines[i].getPosition().x << " " << code_lines[i].getPosition().y << "\n";
@@ -86,10 +92,10 @@ void PseudoCodePanel::setCode(const std::vector<std::string>& new_lines) {
 
 void PseudoCodePanel::setHighlight(int index) {
 	current_highlight = index;
-	int i = current_highlight;
-	if (i >= 0 && i < code_lines.size()) {
-		code_lines[i].setTextColor(HIGHLIGHT_TEXT_COLOR);
-	}
+	//int i = current_highlight;
+	//if (i >= 0 && i < code_lines.size()) {
+	//	code_lines[i].setTextColor(HIGHLIGHT_TEXT_COLOR);
+	//}
 } 
 
 void PseudoCodePanel::setPosition(const sf::Vector2f& pos) {

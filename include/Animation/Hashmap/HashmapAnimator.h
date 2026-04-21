@@ -9,6 +9,7 @@ class HashmapAnimator {
 public:
 	void generateBaseStates(const HashmapState& initial_state, const HashmapState& fin_state, const HashmapRecorder& record);
 	HashmapAnimationState getStateAtTime(float t); //Get the state of the animation at time t, used to draw the animation
+	int getHighlightedLine(float t) const;
 	float getTotalDuration() const {
 		return total_duration;
 	}
@@ -30,6 +31,7 @@ private:
 	std::vector<HashmapAnimationState> base_states; //The base state of each phase
 	std::vector<float> start_time; //The start time of each phase, used to calculate the current animation state
 	std::vector<HashmapAnimationPhase> phases;
+	std::vector<int> highlighted_lines;
 	float total_duration = 0.f;
 	const int NODE_RADIUS = 50;
 	const int NODE_GAP = 2 * NODE_RADIUS + 100;

@@ -3,6 +3,7 @@
 void HashmapAnimator::generateBaseStates(const HashmapState& state, const HashmapState& fin_state, const HashmapRecorder& record) {
 	generateAnimationState(initial_state, state);
 	phases = record.getPhases();
+	highlighted_lines = record.getHighlightedLines();
 	clear();
 	start_time.push_back(0.f);
 	HashmapAnimationState base_state_after_spawn = initial_state;
@@ -127,6 +128,25 @@ float HashmapAnimator::getRightBound(float t) const {
 		if (start_time[i] >= t) return start_time[i];
 	}
 	return -1;
+}
+
+int HashmapAnimator::getHighlightedLine(float t) const {
+	if (highlighted_lines.empty()) {
+		return -1;
+	}
+	if (t >= total_duration) return -1;
+
+	int index = 0;
+	for (int i = 0; i < start_time.size(); i++) {
+		if (start_time[i] < t) {
+			index = i;
+		}
+		else break;
+	}
+
+	if (index == start_time.size()) return -1;
+
+	return highlighted_lines[index];
 }
 
 HashmapAnimationState HashmapAnimator::getStateAtTime(float t) {

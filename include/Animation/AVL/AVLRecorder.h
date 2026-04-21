@@ -16,10 +16,18 @@ public:
 	}
 	void clear() {
 		phases.clear();
+		highlighted_lines.clear();
 	}
 	std::vector<AVLAnimationPhase> getPhases() const {
 		return phases;
 	}
+	void setHighlightedLine(int index) {
+		highlighted_lines.back() = index;
+	}
+	std::vector<int> getHighlightedLines() const {
+		return highlighted_lines;
+	}
 private:
 	std::vector<AVLAnimationPhase> phases;
+	std::vector<int> highlighted_lines;
 };

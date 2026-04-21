@@ -9,6 +9,7 @@
 class AVLAnimator {
 public:
     void generateBaseStates(const AVLState& state, const AVLState& fin_state, const AVLRecorder& record);
+    int getHighlightedLine(float t) const;
     AVLAnimationState getStateAtTime(float t);
     float getTotalDuration() const {
         return total_duration;
@@ -34,6 +35,7 @@ private:
     std::vector<AVLAnimationState> base_states;
     std::vector<float> start_time;
     std::vector<AVLAnimationPhase> phases;
+    std::vector<int> highlighted_lines;
     float total_duration = 0.f;
 
     const int NODE_RADIUS = 50;

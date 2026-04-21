@@ -10,6 +10,7 @@ class TrieAnimator {
 public:
     void generateBaseStates(const TrieState& state, const TrieState& fin_state, const TrieRecorder& record);
     TrieAnimationState getStateAtTime(float t);
+    int getHighlightedLine(float t) const;
     float getTotalDuration() const {
         return total_duration;
     }
@@ -19,7 +20,6 @@ public:
     float getRightBound(float t) const;
     bool isPhaseBoundary(float t) const;
     void clear();
-
 private:
     float calculateSubtreeWidth(int u_idx, const TrieState& state, std::unordered_map<int, float>& subtree_width) const;
     void reconstructTree(int u_idx, const TrieState& state, float x, float y, std::unordered_map<int, float>& subtree_width, std::vector<TrieAnimationNode>& node_list, std::vector<TrieAnimationEdge>& edge_list) const;
@@ -34,6 +34,7 @@ private:
     std::vector<TrieAnimationState> base_states;
     std::vector<float> start_time;
     std::vector<TrieAnimationPhase> phases;
+    std::vector<int> highlighted_lines;
     float total_duration = 0.f;
 
     const int NODE_RADIUS = 50;

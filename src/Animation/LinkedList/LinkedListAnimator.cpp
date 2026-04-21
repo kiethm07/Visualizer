@@ -3,6 +3,8 @@
 void LinkedListAnimator::generateBaseStates(const LinkedListState& state, const LinkedListState& fin_state, const LinkedListRecorder& record) {
 	generateAnimationState(initial_state, state);
 	phases = record.getPhases();
+	highlighted_lines = record.getHighlightedLines();
+	//std::cout << phases.size() << " " << highlighted_lines.size() << "\n";
 	clear();
 	start_time.push_back(0.f);
 	LinkedListAnimationState base_state_after_spawn = initial_state;
@@ -133,6 +135,26 @@ float LinkedListAnimator::getRightBound(float t) const {
 		if (start_time[i] >= t) return start_time[i];
 	}
 	return -1;
+}
+
+int LinkedListAnimator::getHighlightedLine(float t) const {
+	if (highlighted_lines.empty()) {
+		return -1;
+	}
+	//std::cout << highlighted_lines.size() << "\n";
+	if (t >= total_duration) return -1;
+
+	int index = 0;
+	for (int i = 0; i < start_time.size(); i++) {
+		if (start_time[i] < t) {
+			index = i;
+		}
+		else break;
+	}
+
+	if (index == start_time.size()) return -1;
+
+	return highlighted_lines[index];
 }
 
 LinkedListAnimationState LinkedListAnimator::getStateAtTime(float t) {

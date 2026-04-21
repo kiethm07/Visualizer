@@ -41,6 +41,7 @@ public:
     }
 
     const Operation& getOperation(std::size_t index) const {
+        //std::cout << index << " " << operations.size() << "\n";
         return operations[index];
     }
 

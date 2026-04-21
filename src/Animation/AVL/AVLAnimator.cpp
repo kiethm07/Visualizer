@@ -31,6 +31,7 @@ static std::string int_to_string(int n) {
 void AVLAnimator::generateBaseStates(const AVLState& state, const AVLState& fin_state, const AVLRecorder& record) {
 	generateAnimationState(initial_state, state);
 	phases = record.getPhases();
+	highlighted_lines = record.getHighlightedLines();
 	clear();
 	start_time.push_back(0.f);
 	AVLAnimationState base_state_after_spawn = initial_state;
@@ -188,6 +189,25 @@ void AVLAnimator::generateAnimationState(AVLAnimationState& animation_state, con
 	animation_state.setNodeList(node_list);
 	animation_state.setEdgeList(edge_list);
 	normalizeEdgeLists(animation_state);
+}
+
+int AVLAnimator::getHighlightedLine(float t) const {
+	if (highlighted_lines.empty()) {
+		return -1;
+	}
+	if (t >= total_duration) return -1;
+
+	int index = 0;
+	for (int i = 0; i < start_time.size(); i++) {
+		if (start_time[i] < t) {
+			index = i;
+		}
+		else break;
+	}
+
+	if (index == start_time.size()) return -1;
+
+	return highlighted_lines[index];
 }
 
 AVLAnimationState AVLAnimator::getStateAtTime(float t) {

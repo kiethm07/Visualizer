@@ -73,7 +73,14 @@ public:
 	void insertEdge(const LinkedListAnimationEdge& new_edge) {
 		edge_list.push_back(new_edge);
 	}
+	int getHighlightedLine() const {
+		return highlighted_line;
+	}
+	void setHighlightedLine(int line) {
+		highlighted_line = line;
+	}
 private:
 	std::vector<LinkedListAnimationEdge> edge_list;
 	std::vector<LinkedListAnimationNode> node_list;
+	int highlighted_line = -1;
 };

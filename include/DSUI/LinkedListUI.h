@@ -3,14 +3,15 @@
 #include <Panel/LinkedListPanel.h>
 #include <Panel/TimelinePanel.h>
 #include <Panel/InitPanel.h>
-#include <Panel/PseudoCodePanel.h>
 #include <DataStructures/LinkedList.h>
 #include <Model/LinkedListModel/LinkedListTimeline.h>
 #include <Model/LinkedListModel/LinkedListRenderer.h>
+#include <Model/LinkedListModel/LinkedListDictionary.h>
 #include <Model/Button.h>
 #include <AssetManager/AssetManager.h>
 #include <UI/Camera.h>
 #include <DSUI/UIState.h>
+#include <Model/PseudoCodeController/PseudoCodeController.h>
 #include <chrono>
 #include <random>
 
@@ -40,5 +41,5 @@ private:
 	LinkedList list;
 	Button test;
 
-	PseudoCodePanel code_panel;
+	PseudoCodeController<ListOperationType, LinkedListDictionary> code_panel;
 };  
