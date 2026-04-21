@@ -12,6 +12,10 @@ PseudoCodePanel::PseudoCodePanel(const AssetManager& asset_manager, const std::s
 	//size = {400, 300};
 }
 
+void PseudoCodePanel::setTitle(const std::string& title) {
+	this->title.setLabel(title);
+}
+
 static sf::Color lerpColor(const sf::Color& a, const sf::Color& b, float t) {
 	return sf::Color(
 		(a.r + t * (b.r - a.r)),

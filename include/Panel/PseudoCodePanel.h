@@ -12,6 +12,7 @@ public:
     void setCode(const std::vector<std::string>& code_lines);
     void setHighlight(int index);
     void setPosition(const sf::Vector2f& pos);
+	void setTitle(const std::string& title);
     //void setSize(const sf::Vector2f& size);
 	void setBackgroundColor(const sf::Color& color);
 	void setTextColor(const sf::Color& color);

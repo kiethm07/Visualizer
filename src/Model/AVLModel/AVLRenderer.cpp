@@ -43,7 +43,7 @@ void AVLRenderer::loadState(const AVLAnimationState& animation_state) {
 		node.setOutlineColor(sf::Color(255, 255, 255, nodes[i].alpha));
 		node.setCharacterColor(sf::Color(255, 255, 255, nodes[i].alpha));
 		node_list.push_back(node);
-	}
+	}  
 	for (int i = 0; i < edges.size(); i++) {
 		Arrow edge(edges[i].from_position, edges[i].to_position, 3.f, 14.f, 10.f);
 		sf::Color edge_color = edges[i].fill_color;
