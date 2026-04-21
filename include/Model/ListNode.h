@@ -12,6 +12,7 @@ public:
 	void setListNodeColor(const sf::Color& color);
 	void setCharacterSize(const unsigned int& size);
 	void setCharacterColor(const sf::Color& color);
+	void setOutlineColor(const sf::Color& color);
 	//void handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
 	void update(const sf::RenderWindow& window, const sf::View& view);
 	bool mousePressed(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);

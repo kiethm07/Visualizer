@@ -43,6 +43,7 @@ void TrieRenderer::loadState(const TrieAnimationState& animation_state) {
 		node_color.a = nodes[i].alpha;
 		node.setListNodeColor(node_color);
 		node.setCharacterColor(sf::Color(255, 255, 255, nodes[i].alpha));
+		node.setOutlineColor(sf::Color(255, 255, 255, nodes[i].alpha));
 		node_list.push_back(node);
 	}
 	for (int i = 0; i < edges.size(); i++) {

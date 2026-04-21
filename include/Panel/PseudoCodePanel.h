@@ -42,6 +42,7 @@ private:
     const int LINE_HEIGHT = 25;
     const int CHAR_SIZE = 20;
     const sf::Vector2f BUTTON_SIZE = { 30,30 };
+    const sf::Vector2f TITLE_SIZE = { 200,30 };
 
 	const sf::Color DEFAULT_BG_COLOR = sf::Color(100, 100, 100);
 	const sf::Color DEFAULT_TEXT_COLOR = sf::Color(200, 200, 200);

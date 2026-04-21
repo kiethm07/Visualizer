@@ -40,6 +40,7 @@ void AVLRenderer::loadState(const AVLAnimationState& animation_state) {
 		sf::Color node_color = nodes[i].fill_color;
 		node_color.a = nodes[i].alpha;
 		node.setListNodeColor(node_color);
+		node.setOutlineColor(sf::Color(255, 255, 255, nodes[i].alpha));
 		node.setCharacterColor(sf::Color(255, 255, 255, nodes[i].alpha));
 		node_list.push_back(node);
 	}

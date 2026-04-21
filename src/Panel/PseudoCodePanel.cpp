@@ -100,7 +100,7 @@ void PseudoCodePanel::updateButtonPosition() {
 		lines_size.x = std::max(lines_size.x, code_lines[i].getSize().x);
 	}
 	title.setPosition(sf::Vector2f(position.x, position.y));
-	title.setButtonSize(sf::Vector2f(lines_size.x + 2 * PADDING - 2 * BUTTON_SIZE.x, BUTTON_SIZE.y));
+	title.setButtonSize(sf::Vector2f(std::max(TITLE_SIZE.x, lines_size.x + 2 * PADDING - 2 * BUTTON_SIZE.x), TITLE_SIZE.y));
 	//std::cout << title.getSize().x << " " << title.getSize().y << "\n";
 	//std::cout << title.getPosition().x << " " << title.getPosition().y << "\n";
 	minimize_button.setPosition(sf::Vector2f(position.x + title.getSize().x, position.y));

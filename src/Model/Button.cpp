@@ -7,8 +7,13 @@ Button::Button(const sf::Font& font, const std::string& label, const sf::Vector2
 	container.setPosition(pos);
 	container.setSize(size);
 	container.setFillColor(IDLE_COLOR);
-	
+	container.setOutlineThickness(1);
+	container.setOutlineColor(sf::Color::White);
 	centerText();
+}
+
+void Button::setOutlineColor(const sf::Color& color) {
+	container.setOutlineColor(color);
 }
 
 void Button::setPosition(const sf::Vector2f& pos) {

@@ -9,7 +9,13 @@ ListNode::ListNode(const sf::Font& font, const std::string& label, const sf::Vec
 	container.setPosition(pos);
 	container.setFillColor(IDLE_COLOR);
 	container.setPointCount(75);
+	container.setOutlineColor(sf::Color::White);
+	container.setOutlineThickness(1);
 	centerText();
+}
+
+void ListNode::setOutlineColor(const sf::Color& color) {
+	container.setOutlineColor(color);
 }
 
 void ListNode::setPosition(const sf::Vector2f& pos) {
