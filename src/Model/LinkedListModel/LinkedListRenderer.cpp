@@ -51,7 +51,7 @@ void LinkedListRenderer::loadState(const LinkedListAnimationState& animation_sta
 		node_list.push_back(node);
 	}
 	for (int i = 0; i < edges.size(); i++) {
-		Arrow edge(edges[i].from_position, edges[i].to_position, 5.f, 16.f, 12.f);
+		Arrow edge(edges[i].from_position, edges[i].to_position, 3.f, 14.f, 10.f);
 		sf::Color edge_color = edges[i].fill_color;
 		edge_color.a = edges[i].alpha;
 		//std::cout << edges[i].from_position.x << " " << edges[i].from_position.y << " -> " << edges[i].to_position.x << " " << edges[i].to_position.y << "\n";

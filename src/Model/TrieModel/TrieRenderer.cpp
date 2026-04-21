@@ -47,7 +47,7 @@ void TrieRenderer::loadState(const TrieAnimationState& animation_state) {
 		node_list.push_back(node);
 	}
 	for (int i = 0; i < edges.size(); i++) {
-		Arrow edge(edges[i].from_position, edges[i].to_position, 5.f, 16.f, 12.f);
+		Arrow edge(edges[i].from_position, edges[i].to_position, 2.f, 14.f, 10.f);
 		sf::Color edge_color = edges[i].fill_color;
 		edge_color.a = edges[i].alpha;
 		edge.setColor(edge_color);
