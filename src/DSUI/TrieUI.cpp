@@ -99,7 +99,7 @@ void TrieUI::handleEvent(const sf::RenderWindow& window, const sf::View& view, s
 			else if (op->type == TimelineOperation::LastState) timeline.toLast();
 			else if (op->type == TimelineOperation::InitState) timeline.toInit();
 			else if (op->type == TimelineOperation::ChangeSpeed) {
-
+				timeline.setSpeed(op->speed);
 			}
 		}
 	}

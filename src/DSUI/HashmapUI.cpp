@@ -142,7 +142,7 @@ void HashmapUI::handleEvent(const sf::RenderWindow& window, const sf::View& view
 				timeline.toInit();
 			}
 			else if (op->type == TimelineOperation::ChangeSpeed) {
-
+				timeline.setSpeed(op->speed);
 			}
 		}
 	}

@@ -133,7 +133,7 @@ void AVLUI::handleEvent(const sf::RenderWindow& window, const sf::View& view, sf
 				timeline.toInit();
 			}
 			else if (op->type == TimelineOperation::ChangeSpeed) {
-
+				timeline.setSpeed(op->speed);
 			}
 		}
 	}
