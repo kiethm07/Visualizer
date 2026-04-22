@@ -121,6 +121,9 @@ void PseudoCodePanel::updateButtonPosition() {
 	maximize_button.setPosition(sf::Vector2f(position.x + title.getSize().x + BUTTON_SIZE.x, position.y));
 	minimize_button.setButtonSize(BUTTON_SIZE);
 	maximize_button.setButtonSize(BUTTON_SIZE);
+
+	sf::Vector2f bg_size = { title.getSize().x + 2 * BUTTON_SIZE.x, BUTTON_SIZE.y + code_lines.size() * (LINE_HEIGHT + PADDING) };
+	background.setSize(bg_size);
 }
 
 //void PseudoCodePanel::setSize(const sf::Vector2f& size) {
