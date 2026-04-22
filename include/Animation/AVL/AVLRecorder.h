@@ -13,6 +13,7 @@ public:
 	}
 	void addNewPhase() {
 		phases.push_back(AVLAnimationPhase());
+		highlighted_lines.push_back(-1);
 	}
 	void clear() {
 		phases.clear();
@@ -20,6 +21,11 @@ public:
 	}
 	std::vector<AVLAnimationPhase> getPhases() const {
 		return phases;
+	}
+	void setHighlightedLineAsPrevious() {
+		if (highlighted_lines.size() <= 1) return;
+		int n = highlighted_lines.size();
+		highlighted_lines[n - 1] = highlighted_lines[n - 2];
 	}
 	void setHighlightedLine(int index) {
 		highlighted_lines.back() = index;

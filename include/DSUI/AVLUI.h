@@ -10,6 +10,8 @@
 #include <AssetManager/AssetManager.h>
 #include <UI/Camera.h>
 #include <DSUI/UIState.h>
+#include <Model/AVLModel/AVLDictionary.h>
+#include <Model/PseudoCodeController/PseudoCodeController.h>
 #include <chrono>
 #include <random>
 
@@ -39,4 +41,5 @@ private:
     TimelinePanel timeline_panel;
     UIState ui_state;
     InitPanel init_panel;
+    PseudoCodeController <AVLOperationType, AVLDictionary> code_panel;
 };

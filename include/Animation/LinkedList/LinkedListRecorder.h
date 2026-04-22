@@ -22,6 +22,11 @@ public:
 	//void setCurrentOperation(const ListOperation& operation) {
 	//	current_operation = operation;
 	//}
+	void setHighlightedLineAsPrevious() {
+		if (highlighted_lines.size() <= 1) return;
+		int n = highlighted_lines.size();
+		highlighted_lines[n - 1] = highlighted_lines[n - 2];
+	}
 	std::vector<LinkedListAnimationPhase> getPhases() const {
 		return phases;
 	}

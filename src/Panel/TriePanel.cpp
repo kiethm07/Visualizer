@@ -22,6 +22,7 @@ TriePanel::TriePanel(const sf::Font& BUTTON_FONT) :
 	background.setOrigin({ 0, 0 });
 	background.setPosition({ 0, 0 });
 	background.setSize({ 0, 0 });
+	input_value.setMaxLength(69696);
 }
 
 sf::Vector2f TriePanel::getSize() {

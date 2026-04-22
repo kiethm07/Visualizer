@@ -15,7 +15,8 @@ AVLUI::AVLUI(const AssetManager& a_manager) :
 	timeline(a_manager),
 	timeline_panel(a_manager),
 	ui_state(UIState::Init),
-	init_panel(a_manager)
+	init_panel(a_manager),
+	code_panel(a_manager, "Consola")
 {
 	init_panel.setPlaceHolderForManualInput("Input value manually, format : x y z");
 }
@@ -31,6 +32,13 @@ void AVLUI::update(const sf::RenderWindow& window, const sf::View& fixed_view, c
 		//test.update(window, cam_view);
 		//renderer.update(window, cam_view);
 		timeline.update(clock.restart().asSeconds());
+		std::optional<AVLOperation> current_operation = timeline.getCurrentOperation();
+		std::optional<AVLOperationType> type = std::nullopt;
+		if (current_operation.has_value()) type = current_operation->type;
+		int highlighted_line = timeline.getHighlightedLine();
+		//std::cout << highlighted_line << "\n";
+		code_panel.sync(type, highlighted_line);
+		code_panel.update(window, fixed_view);
 	}
 }
 
@@ -71,7 +79,7 @@ void AVLUI::Init(const sf::RenderWindow& window, const sf::View& view, sf::View&
 	}
 	else if (data.operation == PanelOperation::Random) {
 		std::vector<int> v;
-		int num = rand(5, 7);
+		int num = rand(10, 15);
 		for (int i = 0; i < num; i++) {
 			v.push_back(rand(-5, 20));
 		}
@@ -96,6 +104,7 @@ void AVLUI::handleEvent(const sf::RenderWindow& window, const sf::View& view, sf
 		return;
 	}
 	if (ui_state == UIState::Running) {
+		code_panel.handleEvent(window, view, ev);
 		if (const auto op = panel.handleEvent(window, view, ev); op.has_value()) {
 			recorder.clear();
 			avl.applyOperation(*op, recorder);
@@ -151,5 +160,6 @@ void AVLUI::draw(sf::RenderWindow& window, const sf::View& fixed_view, const sf:
 		window.setView(fixed_view);
 		window.draw(panel);
 		window.draw(timeline_panel);
+		window.draw(code_panel);
 	}
 }

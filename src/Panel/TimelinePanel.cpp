@@ -13,7 +13,7 @@ TimelinePanel::TimelinePanel(const AssetManager& a_manager) :
     auto_play(FONT, "Auto play", {}, {}, 20),
     fix_camera(FONT, "Fix camera", {}, {}, 20),
     reset_camera(FONT, "Reset camera", {}, {}, 20),
-    speed_slider({ 200.f, 300.f }, { 400.f, 10.f }, 0.5f, 3.0f, 1.0f)
+    speed_slider({ 200.f, 300.f }, { 400.f, 10.f }, 0.25f, 4.0f, 1.0f)
 {
     background.setFillColor(sf::Color::Blue);
     background.setOrigin({ 0,0 });

@@ -22,6 +22,11 @@ public:
 	void setHighlightedLine(int line) {
 		highlighted_lines.back() = line;
 	}
+	void setHighlightedLineAsPrevious() {
+		if (highlighted_lines.size() <= 1) return;
+		int n = highlighted_lines.size();
+		highlighted_lines[n - 1] = highlighted_lines[n - 2];
+	}
 	std::vector<int> getHighlightedLines() const {
 		return highlighted_lines;
 	}
