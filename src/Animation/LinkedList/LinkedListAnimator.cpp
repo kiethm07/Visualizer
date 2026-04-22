@@ -338,6 +338,8 @@ void LinkedListAnimator::applySpawnCommand(const LinkedListAnimationCommand& com
 }
 
 void LinkedListAnimator::applyCommand(const LinkedListAnimationCommand& command, const LinkedListAnimationState& base_state, LinkedListAnimationState& state, const float& progress) const {
+	using Type = LinkedListAnimationType;
+	if (command.type == Type::Wait) return;
 	if (command.target == LinkedListAnimationTarget::Node) {
 		const std::vector<LinkedListAnimationNode>& nodes = base_state.getNodeList();
 		int node_index = 0;

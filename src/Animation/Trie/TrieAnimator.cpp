@@ -583,6 +583,8 @@ void TrieAnimator::applySpawnCommand(const TrieAnimationCommand& command, TrieAn
 }
 
 void TrieAnimator::applyCommand(const TrieAnimationCommand& command, const TrieAnimationState& base_state, TrieAnimationState& state, const std::optional<TrieState>& snapshot, const float& progress) const {
+	using Type = TrieAnimationType;
+	if (command.type == Type::Wait) return;
 	if (command.target == TrieAnimationTarget::All) {
 		if (command.type == TrieAnimationType::Reconstruct) {
 			if (!snapshot.has_value()) return;

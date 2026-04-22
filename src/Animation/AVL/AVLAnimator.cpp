@@ -293,6 +293,8 @@ void AVLAnimator::applySpawnCommand(const AVLAnimationCommand& command, AVLAnima
 }
 
 void AVLAnimator::applyCommand(const AVLAnimationCommand& command, const AVLAnimationState& base_state, AVLAnimationState& state, const std::optional<AVLState>& snapshot, const float& progress) const {
+	using Type = AVLAnimationType;
+	if (command.type == Type::Wait) return;
 	if (command.target == AVLAnimationTarget::All) {
 		if (command.type == AVLAnimationType::Reconstruct) {
 			if (!snapshot.has_value()) return;

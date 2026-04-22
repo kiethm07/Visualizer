@@ -342,6 +342,8 @@ void HashmapAnimator::applySpawnCommand(const HashmapAnimationCommand& command, 
 }
 
 void HashmapAnimator::applyCommand(const HashmapAnimationCommand& command, const HashmapAnimationState& base_state, HashmapAnimationState& state, const float& progress) const {
+	using Type = HashmapAnimationType;
+	if (command.type == Type::Wait) return;
 	if (command.target == HashmapAnimationTarget::Node) {
 		const std::vector<HashmapAnimationNode>& nodes = base_state.getNodeList();
 		for (int i = 0; i < (int)nodes.size(); i++) {

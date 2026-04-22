@@ -95,19 +95,38 @@ LinkedList::LinkedList() :
 }
 
 void LinkedList::clear(LinkedList::Node*& pHead, LinkedListRecorder& recorder) {
-    if (pHead == nullptr) return;
+    using Command = LinkedListAnimationCommand;
+    using Target = LinkedListAnimationTarget;
+    using Type = LinkedListAnimationType;
+    if (pHead == nullptr) {
+        recorder.addNewPhase();
+        recorder.addCommand(Command(Target::Node, Type::Wait, -1));
+        recorder.setHighlightedLine(0);
+        return;
+    }
 	int pNext_ui_id = pHead->pNext ? pHead->pNext->ui_id : -1;
+    recorder.addNewPhase();
+    recorder.setHighlightedLine(1);
+    recorder.addCommand(Command(Target::Node, Type::HighlightOn, pHead->ui_id));
+    //recorder.addCommand(Command(Target::Node, Type::Wait, -1));
     clear(pHead->pNext, recorder);
     recorder.addNewPhase();
-	recorder.addCommand(LinkedListAnimationCommand(LinkedListAnimationTarget::Node, LinkedListAnimationType::HighlightOn, pHead->ui_id));
-    recorder.addNewPhase();
-	recorder.addCommand(LinkedListAnimationCommand(LinkedListAnimationTarget::Node, LinkedListAnimationType::FadeOut, pHead->ui_id));
+    recorder.setHighlightedLine(2);
+	//recorder.addCommand(Command(Target::Node, Type::HighlightOn, pHead->ui_id));
+    //recorder.addNewPhase();
+    //recorder.setHighlightedLine(2);
+	recorder.addCommand(Command(Target::Node, Type::FadeOut, pHead->ui_id));
     if (pNext_ui_id != -1) {
         //recorder.addNewPhase();
-        recorder.addCommand(LinkedListAnimationCommand(LinkedListAnimationTarget::Edge, LinkedListAnimationType::FadeOut, pHead->ui_id, pNext_ui_id));
+        recorder.addCommand(Command(Target::Edge, Type::FadeOut, pHead->ui_id, pNext_ui_id));
 	}
     delete pHead;
     pHead = nullptr;
+    if (this->pHead == nullptr) {
+        recorder.addNewPhase();
+        recorder.addCommand(Command(Target::Node, Type::Wait, -1));
+        recorder.setHighlightedLine(3);
+    }
 }
 
 LinkedList::~LinkedList() {
@@ -138,6 +157,9 @@ void LinkedList::insert(LinkedList::Node*& pHead, const int& x, const int& k, Li
         recorder.addNewPhase();
         recorder.addCommand(Command(Target::Node, Type::HighlightOff, pre->ui_id));
         recorder.setHighlightedLine(1);
+        recorder.addNewPhase();
+        recorder.addCommand(Command(Target::Node, Type::Wait, -1));
+        recorder.setHighlightedLine(3);
         return;
     }
     if (cur == nullptr) return;
@@ -172,10 +194,17 @@ void LinkedList::insert(LinkedList::Node*& pHead, const int& x, const int& k, Li
     recorder.addNewPhase();
     recorder.setHighlightedLine(2);
     recorder.addCommand(Command(Target::Node, Type::HighlightOff, cur->ui_id));
+    recorder.addNewPhase();
+    recorder.addCommand(Command(Target::Node, Type::Wait, -1));
+    recorder.setHighlightedLine(3);
 }
     
 void LinkedList::insertFirst(LinkedList::Node*& pHead, int x, LinkedListRecorder& recorder) {
+    using Command = LinkedListAnimationCommand;
+    using Target = LinkedListAnimationTarget;
+    using Type = LinkedListAnimationType;
     recorder.addNewPhase();
+    recorder.setHighlightedLine(2);
     for (Node* cur = pHead; cur != nullptr; cur = cur->pNext) {
 		//std::cout << "Move node " << cur->val << " with ui_id " << cur->ui_id << "\n";
         recorder.addCommand(LinkedListAnimationCommand(LinkedListAnimationTarget::Node, LinkedListAnimationType::Move, cur->ui_id));
@@ -185,17 +214,23 @@ void LinkedList::insertFirst(LinkedList::Node*& pHead, int x, LinkedListRecorder
     }
     Node* tmp = new Node(x, next_ui_id++);
 	recorder.addNewPhase();
+    recorder.setHighlightedLine(2);
     recorder.addCommand(LinkedListAnimationCommand::createSpawnNodeCommand(tmp->ui_id, pHead ? pHead->ui_id : -1, x, { 0, 200 }));
 	recorder.addCommand(LinkedListAnimationCommand(LinkedListAnimationTarget::Node, LinkedListAnimationType::FadeIn, tmp->ui_id));
     tmp->pNext = pHead;
     if (pHead) {
 		recorder.addNewPhase();
+        recorder.setHighlightedLine(2);
 		recorder.addCommand(LinkedListAnimationCommand::createSpawnEdgeCommand(tmp->ui_id, pHead->ui_id));
 		recorder.addCommand(LinkedListAnimationCommand(LinkedListAnimationTarget::Edge, LinkedListAnimationType::FadeIn, tmp->ui_id, pHead->ui_id));
         recorder.addNewPhase();
+        recorder.setHighlightedLine(2);
 		recorder.addCommand(LinkedListAnimationCommand(LinkedListAnimationTarget::Node, LinkedListAnimationType::Move, LinkedListMoveDirection::Up, tmp->ui_id));
     }
     pHead = tmp;
+    recorder.addNewPhase();
+    recorder.addCommand(Command(Target::Node, Type::Wait, -1));
+    recorder.setHighlightedLine(3);
 }
 
 void LinkedList::print() {
@@ -216,25 +251,28 @@ void LinkedList::remove(LinkedList::Node*& pHead, int k, LinkedListRecorder& rec
     Node* pre = nullptr;
     for (int i = 0; i < k && cur != nullptr; i++) {
         recorder.addNewPhase();
+        recorder.setHighlightedLine(0);
         recorder.addCommand(Command(Target::Node, Type::HighlightOn, cur->ui_id));
         if (pre) recorder.addCommand(Command(Target::Node, Type::HighlightOff, pre->ui_id));
         pre = cur;
         cur = cur->pNext;
     }
-    //if (cur == nullptr && pre != nullptr) {
-    //    recorder.addNewPhase();
-    //    recorder.addCommand(Command(Target::Node, Type::HighlightOff, pre->ui_id));
-    //}
     if (cur == nullptr && pre == nullptr) return;
     if (cur == nullptr && pre != nullptr) {
         recorder.addNewPhase();
+        recorder.setHighlightedLine(1);
         recorder.addCommand(Command(Target::Node, Type::HighlightOff, pre->ui_id));
+        recorder.addNewPhase();
+        recorder.setHighlightedLine(3);
+        recorder.addCommand(Command(Target::Node, Type::Wait, -1));
         return;
     }
     recorder.addNewPhase();
+    recorder.setHighlightedLine(2);
     recorder.addCommand(Command(Target::Node, Type::HighlightOn, cur->ui_id));
     if (pre) recorder.addCommand(Command(Target::Node, Type::HighlightOff, pre->ui_id));
     recorder.addNewPhase();
+    recorder.setHighlightedLine(2);
     recorder.addCommand(Command(Target::Node, Type::FadeOut, cur->ui_id));
     if (cur->pNext) {
         recorder.addCommand(Command(Target::Edge, Type::FadeOut, cur->ui_id, cur->pNext->ui_id));
@@ -243,12 +281,14 @@ void LinkedList::remove(LinkedList::Node*& pHead, int k, LinkedListRecorder& rec
         if (pre) recorder.addCommand(Command(Target::Edge, Type::FadeOut, pre->ui_id, cur->ui_id));
     }
     recorder.addNewPhase();
+    recorder.setHighlightedLine(2);
     for (Node* n = cur->pNext; n != nullptr; n = n->pNext) {
         recorder.addCommand(Command(Target::Node, Type::Move, LinkedListMoveDirection::Left, n->ui_id));
     }
     if (pre != nullptr) {
         if (cur->pNext != nullptr) {
             recorder.addNewPhase();
+            recorder.setHighlightedLine(3);
             recorder.addCommand(Command::createSpawnEdgeCommand(pre->ui_id, cur->pNext->ui_id));
             recorder.addCommand(Command(Target::Edge, Type::FadeIn, pre->ui_id, cur->pNext->ui_id));
         }
@@ -259,6 +299,9 @@ void LinkedList::remove(LinkedList::Node*& pHead, int k, LinkedListRecorder& rec
     }
     delete cur;
     cur = nullptr;
+    recorder.addNewPhase();
+    recorder.setHighlightedLine(3);
+    recorder.addCommand(Command(Target::Node, Type::Wait, -1));
 }
 
 void LinkedList::update(Node*& pHead, const int& x, const int& k, LinkedListRecorder& recorder) {
@@ -270,6 +313,7 @@ void LinkedList::update(Node*& pHead, const int& x, const int& k, LinkedListReco
     Node* pre = nullptr;
     for (int i = 0; i < k && cur != nullptr; i++) {
         recorder.addNewPhase();
+        recorder.setHighlightedLine(0);
         recorder.addCommand(Command(Target::Node, Type::HighlightOn, cur->ui_id));
         if (pre) recorder.addCommand(Command(Target::Node, Type::HighlightOff, pre->ui_id));
         pre = cur;
@@ -278,23 +322,34 @@ void LinkedList::update(Node*& pHead, const int& x, const int& k, LinkedListReco
     if (cur == nullptr) {
         if (pre != nullptr) {
             recorder.addNewPhase();
+            recorder.setHighlightedLine(1);
             recorder.addCommand(Command(Target::Node, Type::HighlightOff, pre->ui_id));
+            recorder.addNewPhase();
+            recorder.setHighlightedLine(3);
+            recorder.addCommand(Command(Target::Node, Type::Wait, -1));
         }
         return;
     }
     recorder.addNewPhase();
+    recorder.setHighlightedLine(0);
     recorder.addCommand(Command(Target::Node, Type::HighlightOn, cur->ui_id));
     if (pre) recorder.addCommand(Command(Target::Node, Type::HighlightOff, pre->ui_id));
     recorder.addNewPhase();
+    recorder.setHighlightedLine(2);
     recorder.addCommand(Command(Target::Node, Type::FadeOut, cur->ui_id));
     recorder.addNewPhase();
+    recorder.setHighlightedLine(2);
     recorder.addCommand(Command::createChangeValueCommand(cur->ui_id, x));
-    //std::cout << " " << x << "\n";
     cur->val = x;
     recorder.addNewPhase();
+    recorder.setHighlightedLine(2);
     recorder.addCommand(Command(Target::Node, Type::FadeIn, cur->ui_id));
     recorder.addNewPhase();
+    recorder.setHighlightedLine(3);
     recorder.addCommand(Command(Target::Node, Type::HighlightOff, cur->ui_id));
+    recorder.addNewPhase();
+    recorder.setHighlightedLine(3);
+    recorder.addCommand(Command(Target::Node, Type::Wait, -1));
 }
 
 void LinkedList::search(Node*& pHead, int x, LinkedListRecorder& recorder) {
@@ -305,21 +360,38 @@ void LinkedList::search(Node*& pHead, int x, LinkedListRecorder& recorder) {
     Node* pre = nullptr;
     while (cur != nullptr) {
         recorder.addNewPhase();
+        recorder.setHighlightedLine(0);
         recorder.addCommand(Command(Target::Node, Type::HighlightOn, cur->ui_id));
         if (pre) recorder.addCommand(Command(Target::Node, Type::HighlightOff, pre->ui_id));
+        recorder.addNewPhase();
+        recorder.addCommand(Command(Target::Node, Type::Wait, -1));
+        recorder.setHighlightedLine(1);
         if (cur->val == x) {
             std::cout << "Found " << x << "\n";
             recorder.addNewPhase();
+            recorder.setHighlightedLine(2);
             recorder.addCommand(Command(Target::Node, Type::FoundedOn, cur->ui_id));
             recorder.addNewPhase();
+            recorder.setHighlightedLine(2);
             recorder.addCommand(Command(Target::Node, Type::Wait, cur->ui_id));
             recorder.addNewPhase();
             recorder.addCommand(Command(Target::Node, Type::FoundedOff, cur->ui_id));
+            recorder.addNewPhase();
+            recorder.setHighlightedLine(5);
+            recorder.addCommand(Command(Target::Node, Type::Wait, -1));
             return;
         }
+        recorder.addNewPhase();
+        recorder.addCommand(Command(Target::Node, Type::Wait, -1));
+        recorder.setHighlightedLine(3);
         pre = cur;
         cur = cur->pNext;
     }
     std::cout << "No " << x << "!\n";
+    recorder.addNewPhase();
+    recorder.setHighlightedLine(4);
     if (pre) recorder.addCommand(Command(Target::Node, Type::HighlightOff, pre->ui_id));
+    recorder.addNewPhase();
+    recorder.setHighlightedLine(5);
+    recorder.addCommand(Command(Target::Node, Type::Wait, -1));
 }
