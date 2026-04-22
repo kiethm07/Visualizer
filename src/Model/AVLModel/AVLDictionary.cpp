@@ -3,7 +3,7 @@
 AVLDictionary::AVLDictionary() {
 	using Type = AVLOperationType;
 
-	// 1. Insert Single Node
+	// 1. Insert Node
 	pseudocode[Type::Insert] = {
 		"If node == nullptr",
 		"    Create new node then return",
@@ -15,7 +15,7 @@ AVLDictionary::AVLDictionary() {
 		"Balance subtree",
 		"Done!"
 	};
-	titles[Type::Insert] = "Insert Single Node";
+	titles[Type::Insert] = "Insert Node";
 
 	// 2. Remove Node
 	pseudocode[Type::Remove] = {
@@ -54,5 +54,5 @@ AVLDictionary::AVLDictionary() {
 		"Delete the current node and link",
 		"Done!"
 	};
-	titles[Type::Reset] = "Clear Linked List";
+	titles[Type::Reset] = "Clear All";
 }
