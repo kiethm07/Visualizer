@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <AssetManager/AssetManager.h>
 #include <Model/Button.h>
+#include <Model/Slider.h>
 #include <Model/Timeline/TimelineConfig.h>
 #include <UI/Camera.h>
 #include <optional>
@@ -11,6 +12,7 @@ public:
 	TimelinePanel(const AssetManager& a_manager);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
 		target.draw(background, states);
+		target.draw(speed_slider, states);
 		target.draw(play, states);
 		target.draw(one_phase_forward, states);
 		target.draw(one_phase_backward, states);
@@ -35,4 +37,5 @@ private:
 	Button one_step_forward, one_step_backward;
 	Button skip_to_last, skip_to_init;
 	Button auto_play, fix_camera, reset_camera;
+	Slider speed_slider;
 };

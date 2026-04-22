@@ -12,7 +12,8 @@ TimelinePanel::TimelinePanel(const AssetManager& a_manager) :
     skip_to_init(FONT, "<|", {}, {}, 20),
     auto_play(FONT, "Auto play", {}, {}, 20),
     fix_camera(FONT, "Fix camera", {}, {}, 20),
-    reset_camera(FONT, "Reset camera", {}, {}, 20)
+    reset_camera(FONT, "Reset camera", {}, {}, 20),
+    speed_slider({ 200.f, 300.f }, { 400.f, 10.f }, 0.5f, 3.0f, 1.0f)
 {
     background.setFillColor(sf::Color::Blue);
     background.setOrigin({ 0,0 });
@@ -21,7 +22,11 @@ TimelinePanel::TimelinePanel(const AssetManager& a_manager) :
 }
 
 std::optional<TimelineConfig> TimelinePanel::handleEvent(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const sf::Event& ev) {
+    speed_slider.handleEvent(window, view, ev);
     TimelineConfig timeline_config;
+    if (speed_slider.getIsDragging()) {
+        return TimelineConfig::changeSpeed(speed_slider.getValue());
+    }
     if (const auto* mb = ev.getIf<sf::Event::MouseButtonReleased>()) {
         sf::Vector2f mouse_pos = sf::Vector2f(mb->position);
         if (play.contains(window, view, mouse_pos)) {
@@ -97,8 +102,8 @@ void TimelinePanel::updateWindowState(const sf::RenderWindow& window, const sf::
 
     float center_x = background.getPosition().x + background_size.x / 2.f;
 
-    float top_y = background.getPosition().y + background_size.y * 0.35f;
-    float bottom_y = background.getPosition().y + background_size.y * 0.75f;
+    float top_y = background.getPosition().y + background_size.y * 0.22f;
+    float bottom_y = background.getPosition().y + background_size.y * 0.62f;
 
     auto place = [&](Button& b, float x, float y) {
         b.setButtonSize(button_size);
@@ -127,4 +132,13 @@ void TimelinePanel::updateWindowState(const sf::RenderWindow& window, const sf::
     place(auto_play, center_x, bottom_y);
     place(fix_camera, center_x - delta, bottom_y);
     place(reset_camera, center_x + delta, bottom_y);
+
+    sf::Vector2f slider_size = {
+        background_size.x * 0.3f,
+        background_size.y * 0.06f
+    };
+    float slider_y = background.getPosition().y + background_size.y * 0.90f;
+    speed_slider.setSliderSize(slider_size);
+    speed_slider.setOrigin(slider_size / 2.f);
+    speed_slider.setPosition({ center_x, slider_y });
 }

@@ -144,7 +144,7 @@ void LinkedListUI::handleEvent(const sf::RenderWindow& window, const sf::View& v
 				timeline.toInit();
 			}
 			else if (op->type == TimelineOperation::ChangeSpeed) {
-
+				timeline.setSpeed(op->speed);
 			}
 		}
 	}
