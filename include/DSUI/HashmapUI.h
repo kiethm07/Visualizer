@@ -6,6 +6,8 @@
 #include <DataStructures/Hashmap.h>
 #include <Model/HashmapModel/HashmapTimeline.h>
 #include <Model/HashmapModel/HashmapRenderer.h>
+#include <Model/HashmapModel/HashmapDictionary.h>
+#include <Model/PseudoCodeController/PseudoCodeController.h>
 #include <Model/Button.h>
 #include <AssetManager/AssetManager.h>
 #include <UI/Camera.h>
@@ -37,5 +39,6 @@ private:
 	TimelinePanel timeline_panel;
 	UIState ui_state;
 	InitPanel init_panel;
+	PseudoCodeController<HashmapOperationType, HashmapDictionary> code_panel;
 	const int DEFAULT_BUCKET_COUNT = 13;
 };

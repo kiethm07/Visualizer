@@ -1,5 +1,6 @@
 #include <DSUI/HashmapUI.h>
 #include <iostream>
+#include <unordered_map>
 #include <random>
 
 static std::mt19937 rng(6969);
@@ -16,9 +17,10 @@ HashmapUI::HashmapUI(const AssetManager& a_manager) :
 	timeline(a_manager),
 	timeline_panel(a_manager),
 	ui_state(UIState::Init),
-	init_panel(a_manager)
+	init_panel(a_manager),
+	code_panel(a_manager, "Consola")
 {
-	init_panel.setPlaceHolderForManualInput("Not inited");
+	init_panel.setPlaceHolderForManualInput("Input value manually, format: bucket_count, values");
 }
 
 void HashmapUI::update(const sf::RenderWindow& window, const sf::View& fixed_view, const sf::View& cam_view) {
@@ -29,6 +31,13 @@ void HashmapUI::update(const sf::RenderWindow& window, const sf::View& fixed_vie
 		panel.update(window, fixed_view);
 		timeline_panel.update(window, fixed_view);
 		timeline.update(clock.restart().asSeconds());
+		std::optional<HashmapOperation> current_operation = timeline.getCurrentOperation();
+		std::optional<HashmapOperationType> type = std::nullopt;
+		if (current_operation.has_value()) type = current_operation->type;
+		int highlighted_line = timeline.getHighlightedLine();
+		//std::cout << highlighted_line << "\n";
+		code_panel.sync(type, highlighted_line);
+		code_panel.update(window, fixed_view);
 	}
 }
 
@@ -69,16 +78,21 @@ void HashmapUI::Init(const sf::RenderWindow& window, const sf::View& view, sf::V
 	}
 	else if (data.operation == PanelOperation::Random) {
 		std::vector<int> v;
-		int num = rand(5, 7);
-		int bucket_count = rand(13, 23);
+		int num = rand(15, 20);
+		int bucket_count = rand(7, 13);
+		std::unordered_map<int, bool> used;
 		for (int i = 0; i < num; i++) {
-			v.push_back(rand(-5, 20));
+			int tmp = rand(-20, 20);
+			if (used.find(tmp) != used.end()) continue;
+			used[tmp] = 1;
+			v.push_back(tmp);
 		}
 		hashmap.rawInit(bucket_count, v);
 	}
 	else if (data.operation == PanelOperation::Manual) {
 		if (values[0] < 0) values[0] = -values[0];
 		int bucket_count = values[0];
+		if (bucket_count == 0) bucket_count = DEFAULT_BUCKET_COUNT;
 		values.erase(values.begin());
 		hashmap.rawInit(bucket_count, values);
 	}
@@ -94,6 +108,7 @@ void HashmapUI::Init(const sf::RenderWindow& window, const sf::View& view, sf::V
 }
 
 void HashmapUI::handleEvent(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const sf::Event& ev) {
+	code_panel.handleEvent(window, view, ev);
 	if (ui_state == UIState::Init) {
 		std::optional<PanelData> panel_data = init_panel.handleEvent(window, view, ev);
 		if (!panel_data.has_value()) return;
@@ -161,5 +176,6 @@ void HashmapUI::draw(sf::RenderWindow& window, const sf::View& fixed_view, const
 		window.setView(fixed_view);
 		window.draw(panel);
 		window.draw(timeline_panel);
+		window.draw(code_panel);
 	}
 }
