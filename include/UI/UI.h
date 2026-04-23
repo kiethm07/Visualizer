@@ -10,6 +10,7 @@
 #include <DSUI/HashmapUI.h>
 #include <DSUI/TrieUI.h>
 #include <DSUI/AVLUI.h>
+#include <DSUI/GraphUI.h>
 
 class UI{
 public:
@@ -29,11 +30,12 @@ private:
 	HashmapUI hashmap_ui;
 	TrieUI trie_ui;
 	AVLUI avl_ui;
+	GraphUI graph_ui;
 	MenuState current_state = MenuState::MainMenu;
 	bool changed_state = 1;
-	const unsigned int DEFAULT_WIDTH = 1280;
-	const unsigned int DEFAULT_HEIGHT = 720;
+	const unsigned int DEFAULT_WIDTH = 1366;
+	const unsigned int DEFAULT_HEIGHT = 768;
 
-	const unsigned int MIN_WIDTH = 800;
-	const unsigned int MIN_HEIGHT = 600;
+	const unsigned int MIN_WIDTH = 1280;
+	const unsigned int MIN_HEIGHT = 720;
 };

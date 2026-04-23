@@ -9,7 +9,8 @@ UI::UI(const AssetManager& a_manager) :
     linked_list_ui(asset_manager),
     hashmap_ui(asset_manager),
     trie_ui(asset_manager),
-    avl_ui(asset_manager)
+    avl_ui(asset_manager),
+	graph_ui(asset_manager)
 {
     settings.antiAliasingLevel = 8;
 
@@ -115,6 +116,15 @@ void UI::run() {
                 }
                 avl_ui.handleEvent(window, fixed_view, cam_view, cam, *ev);
             }
+            if (current_state == MenuState::Graph) {
+                if (changed_state) {
+                    graph_ui.setInit();
+                    cam.reset(window, cam_view);
+                    cam.setEnable(1);
+                    changed_state = 0;
+                }
+                graph_ui.handleEvent(window, fixed_view, cam_view, cam, *ev);
+			}
         }
         window.clear();
         if (current_state == MenuState::MainMenu) {
@@ -149,6 +159,10 @@ void UI::run() {
             avl_ui.update(window, fixed_view, cam_view);
             avl_ui.draw(window, fixed_view, cam_view);
         }
+        if (current_state == MenuState::Graph) {
+            graph_ui.update(window, fixed_view, cam_view);
+            graph_ui.draw(window, fixed_view, cam_view);
+		}
         window.display();
     }
 }
