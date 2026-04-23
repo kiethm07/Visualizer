@@ -16,8 +16,7 @@ private:
 	Button hashmap_button;
 	Button trie_button;
 	Button avl_button;
-	Button MST_button;
-	Button Dijkstra_button;
+	Button graph_button;
 	void updateWindowSize(const sf::RenderWindow& window, const sf::View& view);
 	void updateButtonState(const sf::RenderWindow& window, const sf::View& view);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
@@ -26,7 +25,6 @@ private:
 		target.draw(hashmap_button, states);
 		target.draw(trie_button, states);
 		target.draw(avl_button, states);
-		target.draw(MST_button, states);
-		target.draw(Dijkstra_button, states);
+		target.draw(graph_button, states);
 	}
 };

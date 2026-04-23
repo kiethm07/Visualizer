@@ -100,10 +100,10 @@ void Button::centerText() {
 	//text.setPosition(center);
 
 	sf::Vector2f text_origin = b.position + b.size / 2.f;
-	text_origin.x = lround(text_origin.x);
-	text_origin.y = lround(text_origin.y);
-	center.x = lround(center.x);
-	center.y = lround(center.y);
+	text_origin.x = round(text_origin.x);
+	text_origin.y = round(text_origin.y);
+	center.x = round(center.x);
+	center.y = round(center.y);
 
 	text.setOrigin(text_origin);
 	text.setPosition(center);

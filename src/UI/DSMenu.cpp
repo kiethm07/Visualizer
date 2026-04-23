@@ -8,8 +8,7 @@ DSMenu::DSMenu(const sf::Font& font) :
 	hashmap_button(font, "Hash Map", {}, {}, 20),
 	trie_button(font, "Trie", {}, {}, 20),
 	avl_button(font, "AVL Tree", {}, {}, 20),
-	MST_button(font, "MST", {}, {}, 20),
-	Dijkstra_button(font, "Dijkstra", {}, {}, 20) {
+	graph_button(font, "Graph", {}, {}, 20) {
 }
 
 void DSMenu::update(const sf::RenderWindow& window, const sf::View& view) {
@@ -29,8 +28,7 @@ std::optional<MenuState> DSMenu::handleEvent(const sf::RenderWindow& window, con
 			if (hashmap_button.mousePressed(window, view, ev)) return MenuState::Hashmap;
 			if (trie_button.mousePressed(window, view, ev)) return MenuState::Trie;
 			if (avl_button.mousePressed(window, view, ev)) return MenuState::AVL;
-			if (MST_button.mousePressed(window, view, ev)) return MenuState::MST;
-			if (Dijkstra_button.mousePressed(window, view, ev)) return MenuState::Dijkstra;
+			if (graph_button.mousePressed(window, view, ev)) return MenuState::Graph;
 		}
 	}
 
@@ -62,8 +60,7 @@ void DSMenu::updateWindowSize(const sf::RenderWindow& window, const sf::View& vi
 	place_button(hashmap_button, 2);
 	place_button(trie_button, 3);
 	place_button(avl_button, 4);
-	place_button(MST_button, 5);
-	place_button(Dijkstra_button, 6);
+	place_button(graph_button, 5);
 }
 
 void DSMenu::updateButtonState(const sf::RenderWindow& window, const sf::View& view) {
@@ -72,6 +69,5 @@ void DSMenu::updateButtonState(const sf::RenderWindow& window, const sf::View& v
 	hashmap_button.update(window, view);
 	trie_button.update(window, view);
 	avl_button.update(window, view);
-	MST_button.update(window, view);
-	Dijkstra_button.update(window, view);
+	graph_button.update(window, view);
 }
