@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <string>
 enum class TrieOperationType { Insert, InsertMultiple, Remove, Update, Reset, Search };
 
 struct TrieOperation {

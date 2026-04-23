@@ -15,6 +15,6 @@ private:
     bool enable = false;
     sf::Vector2i lastMousePos{};
     float zoom = 1.f;              // 1 = default
-    float zoomMin = 0.5f;
-    float zoomMax = 2.0f;
+    float zoomMin = 0.25f;
+    float zoomMax = 4.0f;
 };

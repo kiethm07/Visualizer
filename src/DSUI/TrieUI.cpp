@@ -1,6 +1,7 @@
 #include <DSUI/TrieUI.h>
 #include <iostream>
 #include <random>
+#include <unordered_map>
 static std::mt19937 rng(6969);
 static int rand(int l, int r) {
 	if (l > r) std::swap(l, r);
@@ -13,7 +14,8 @@ TrieUI::TrieUI(const AssetManager& a_manager) :
 	timeline(a_manager),
 	timeline_panel(a_manager),
 	ui_state(UIState::Init),
-	init_panel(a_manager)
+	init_panel(a_manager),
+	code_panel(a_manager, "Consola")
 {
 	init_panel.setPlaceHolderForManualInput("Input strings (comma separated)");
 }
@@ -25,6 +27,13 @@ void TrieUI::update(const sf::RenderWindow& window, const sf::View& fixed_view, 
 		panel.update(window, fixed_view);
 		timeline_panel.update(window, fixed_view);
 		timeline.update(clock.restart().asSeconds());
+		std::optional<TrieOperation> current_operation = timeline.getCurrentOperation();
+		std::optional<TrieOperationType> type = std::nullopt;
+		if (current_operation.has_value()) type = current_operation->type;
+		int highlighted_line = timeline.getHighlightedLine();
+		//std::cout << highlighted_line << "\n";
+		code_panel.sync(type, highlighted_line);
+		code_panel.update(window, fixed_view);
 	}
 }
 void TrieUI::Init(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const PanelData& data) {
@@ -54,10 +63,13 @@ void TrieUI::Init(const sf::RenderWindow& window, const sf::View& view, sf::View
 	else if (data.operation == PanelOperation::Random) {
 		std::vector<std::string> v;
 		int num = rand(6, 9);
+		std::unordered_map < std::string, bool> used;
 		for (int i = 0; i < num; i++) {
 			std::string s = "";
 			int len = rand(3, 6);
 			for (int j = 0; j < len; j++) s += (char)('A' + rand(0, 25));
+			if (used.find(s) != used.end()) continue;
+			used[s] = 1;
 			v.push_back(s);
 		}
 		trie.rawInit(v);
@@ -77,6 +89,7 @@ void TrieUI::handleEvent(const sf::RenderWindow& window, const sf::View& view, s
 		return;
 	}
 	if (ui_state == UIState::Running) {
+		code_panel.handleEvent(window, view, ev);
 		if (const auto op = panel.handleEvent(window, view, ev); op.has_value()) {
 			recorder.clear();
 			trie.applyOperation(*op, recorder);
@@ -115,5 +128,6 @@ void TrieUI::draw(sf::RenderWindow& window, const sf::View& fixed_view, const sf
 		window.setView(fixed_view);
 		window.draw(panel);
 		window.draw(timeline_panel);
+		window.draw(code_panel);
 	}
 }

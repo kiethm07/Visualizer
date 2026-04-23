@@ -10,6 +10,8 @@
 #include <AssetManager/AssetManager.h>
 #include <UI/Camera.h>
 #include <DSUI/UIState.h>
+#include <Model/TrieModel/TrieDictionary.h>
+#include <Model/PseudoCodeController/PseudoCodeController.h>
 #include <chrono>
 class TrieUI
 {
@@ -37,4 +39,5 @@ private:
     TimelinePanel timeline_panel;
     UIState ui_state;
     InitPanel init_panel;
+    PseudoCodeController <TrieOperationType, TrieDictionary> code_panel;
 };

@@ -34,7 +34,7 @@ private:
 	int next_ui_id = 0;
 	void insert(const std::string& s, TrieRecorder& recorder);
 	void remove(const std::string& s, TrieRecorder& recorder);
-	void clear(Node*& root, TrieRecorder& recorder);
+	void clear(Node*& root, Node* pa, TrieRecorder& recorder);
 	void search(const std::string& s, TrieRecorder& recorder);
 	void clearWithoutRecorder(Node*& root);
 	void removeBranch(Node*& root, const std::string& s, int idx, TrieRecorder& recorder);
