@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <string>
+#include <cmath>
 
 class ListNode : public sf::Drawable {
 public:

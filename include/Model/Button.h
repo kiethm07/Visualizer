@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 #include <iostream>
+#include <cmath>
 
 class Button : public sf::Drawable {
 public:
