@@ -22,8 +22,6 @@ public:
     void clear();
 
 private:
-    float calculateSubtreeWidth(int u_idx, const GraphState& state, std::unordered_map<int, float>& subtree_width) const;
-    void reconstructTree(int u_idx, const GraphState& state, float x, float y, std::unordered_map<int, float>& subtree_width, std::vector<GraphAnimationNode>& node_list, std::vector<GraphAnimationEdge>& edge_list) const;
     void normalizeEdgeLists(GraphAnimationState& animation_state) const;
     void generateAnimationState(GraphAnimationState& animation_state, const GraphState& state) const;
     void applyCommand(const GraphAnimationCommand& command, const GraphAnimationState& base_state, GraphAnimationState& state, const std::optional<GraphState>& snapshot, const float& progress) const;

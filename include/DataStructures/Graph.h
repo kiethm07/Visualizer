@@ -5,32 +5,33 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <set>
 
 class Graph {
 public:
-	Graph();
-	~Graph();
 	GraphState getState() const;
 	void loadState(const GraphState& state);
 	void applyOperation(const GraphOperation& operation, GraphRecorder& recorder);
-	void rawInit(const std::vector<int>& values);
+	void rawInit(const std::vector<int>& nodes, const std::vector<std::tuple<int, int, int>>& edges);
 private:
-	struct Node {
-		int val, height, size, ui_id;
-		Node* pLeft, * pRight, * pParent;
-		Node(int x, int id) : val(x), height(1), size(1), ui_id(id), pLeft(nullptr), pRight(nullptr) {}
-	};
-	Node* root = nullptr;
 	int next_ui_id = 0;
-	int getHeight(Node* u);
-	int getSize(Node* u);
-	void updateState(Node*& u);
-	void rotateLeft(Node*& u, GraphRecorder& recorder);
-	void rotateRight(Node*& u, GraphRecorder& recorder);
-	void balance(Node*& u, GraphRecorder& recorder);
-	void insert(Node*& root, int x, GraphRecorder& recorder);
-	void remove(Node*& root, int x, GraphRecorder& recorder);
-	void clear(Node*& root, GraphRecorder& recorder);
-	bool search(Node* root, int x, GraphRecorder& recorder);
-	void clearWithoutRecorder(Node*& root);
+	struct Node {
+		int ui_id;
+		std::map<int, int> neighbors; //to ui_id
+		Node() {}
+		Node(int id) :
+			ui_id(id) {
+		}
+	};
+	std::map<int, Node> nodes;
+	std::map<std::pair<int, int>, int> edges;
+	void clearWithoutRecorder();
+	void clear(GraphRecorder& recorder);
+	void insertNode(int key, GraphRecorder& recorder);
+	void removeNode(int key, GraphRecorder& recorder);
+	void addEdge(int from, int to, int weight, GraphRecorder& recorder);
+	void removeEdge(int from, int to, GraphRecorder& recorder);
+	void modifyEdge(int from, int to, int new_weight, GraphRecorder& recorder);
+	void runDijkstra(int start, GraphRecorder& recorder) const;
+	void runKruskal(GraphRecorder& recorder) const;
 };

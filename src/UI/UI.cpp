@@ -117,13 +117,13 @@ void UI::run() {
                 avl_ui.handleEvent(window, fixed_view, cam_view, cam, *ev);
             }
             if (current_state == MenuState::Graph) {
-                if (changed_state) {
-                    graph_ui.setInit();
-                    cam.reset(window, cam_view);
-                    cam.setEnable(1);
-                    changed_state = 0;
-                }
-                graph_ui.handleEvent(window, fixed_view, cam_view, cam, *ev);
+                //if (changed_state) {
+                //    graph_ui.setInit();
+                //    cam.reset(window, cam_view);
+                //    cam.setEnable(1);
+                //    changed_state = 0;
+                //}
+                //graph_ui.handleEvent(window, fixed_view, cam_view, cam, *ev);
 			}
         }
         window.clear();
@@ -160,8 +160,8 @@ void UI::run() {
             avl_ui.draw(window, fixed_view, cam_view);
         }
         if (current_state == MenuState::Graph) {
-            graph_ui.update(window, fixed_view, cam_view);
-            graph_ui.draw(window, fixed_view, cam_view);
+            //graph_ui.update(window, fixed_view, cam_view);
+            //graph_ui.draw(window, fixed_view, cam_view);
 		}
         window.display();
     }

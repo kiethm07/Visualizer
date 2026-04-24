@@ -75,21 +75,16 @@ void GraphUI::Init(const sf::RenderWindow& window, const sf::View& view, sf::Vie
 	std::vector<int> values = parseValues(data.values);
 	if (data.operation == PanelOperation::Empty) {
 		//Do nothing
-		graph.rawInit(values);
+		graph.rawInit({}, {});
 	}
 	else if (data.operation == PanelOperation::Random) {
-		std::vector<int> v;
-		int num = rand(10, 15);
-		for (int i = 0; i < num; i++) {
-			v.push_back(rand(-5, 20));
-		}
-		graph.rawInit(v);
+
 	}
 	else if (data.operation == PanelOperation::Manual) {
-		graph.rawInit(values);
+
 	}
 	else if (data.operation == PanelOperation::File) {
-		graph.rawInit(values);
+
 	}
 	current_state = graph.getState();
 	timeline.setInitialState(current_state);

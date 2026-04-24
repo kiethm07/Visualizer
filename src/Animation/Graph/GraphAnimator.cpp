@@ -129,63 +129,10 @@ void GraphAnimator::generateBaseStates(const GraphState& state, const GraphState
 //	}
 //}
 
-float GraphAnimator::calculateSubtreeWidth(int u_idx, const GraphState& state, std::unordered_map<int, float>& subtree_width) const {
-	if (u_idx == -1 || u_idx >= state.nodes.size()) return 0.f;
-	const auto& snp = state.nodes[u_idx];
-	float left_w = calculateSubtreeWidth(snp.leftChild, state, subtree_width);
-	float right_w = calculateSubtreeWidth(snp.rightChild, state, subtree_width);
-	
-	if (snp.leftChild != -1 && snp.rightChild == -1) right_w = (float)NODE_RADIUS * 1.5f;
-	if (snp.rightChild != -1 && snp.leftChild == -1) left_w = (float)NODE_RADIUS * 1.5f;
-
-	float width = std::max(left_w + right_w, (float)NODE_RADIUS * 2.5f);
-	subtree_width[snp.ui_id] = width;
-	return width;
-}
-
-void GraphAnimator::reconstructTree(int u_idx, const GraphState& state, float x, float y, std::unordered_map<int, float>& subtree_width, std::vector<GraphAnimationNode>& node_list, std::vector<GraphAnimationEdge>& edge_list) const {
-	if (u_idx == -1 || u_idx >= state.nodes.size()) return;
-	const auto& snp = state.nodes[u_idx];
-	GraphAnimationNode node;
-	node.value = snp.value;
-	node.ui_id = snp.ui_id;
-	node.position = { x, y };
-	node.alpha = 255;
-	node.fill_color = DEFAULT_NODE_COLOR;
-	node_list.push_back(node);
-	float total_w = subtree_width[snp.ui_id];
-	if (snp.leftChild != -1) {
-		float child_w = subtree_width[state.nodes[snp.leftChild].ui_id];
-		float child_x = x - (total_w / 2.f) + (child_w / 2.f);
-		float child_y = y + LEVEL_GAP;
-		reconstructTree(snp.leftChild, state, child_x, child_y, subtree_width, node_list, edge_list);
-		GraphAnimationEdge edge;
-		edge.from_ui_id = snp.ui_id;
-		edge.to_ui_id = state.nodes[snp.leftChild].ui_id;
-		edge.alpha = 255;
-		edge.fill_color = DEFAULT_EDGE_COLOR;
-		edge_list.push_back(edge);
-	}
-	if (snp.rightChild != -1) {
-		float child_w = subtree_width[state.nodes[snp.rightChild].ui_id];
-		float child_x = x + (total_w / 2.f) - (child_w / 2.f);
-		float child_y = y + LEVEL_GAP;
-		reconstructTree(snp.rightChild, state, child_x, child_y, subtree_width, node_list, edge_list);
-		GraphAnimationEdge edge;
-		edge.from_ui_id = snp.ui_id;
-		edge.to_ui_id = state.nodes[snp.rightChild].ui_id;
-		edge.alpha = 255;
-		edge.fill_color = DEFAULT_EDGE_COLOR;
-		edge_list.push_back(edge);
-	}
-}
-
 void GraphAnimator::generateAnimationState(GraphAnimationState& animation_state, const GraphState& state) const {
 	std::vector<GraphAnimationNode> node_list;
 	std::vector<GraphAnimationEdge> edge_list;
-	std::unordered_map<int, float> subtree_width;
-	calculateSubtreeWidth(0, state, subtree_width);
-	reconstructTree(0, state, (float)X_MARGIN, (float)Y_MARGIN, subtree_width, node_list, edge_list);
+	
 	animation_state.setNodeList(node_list);
 	animation_state.setEdgeList(edge_list);
 	normalizeEdgeLists(animation_state);
@@ -296,42 +243,19 @@ void GraphAnimator::applyCommand(const GraphAnimationCommand& command, const Gra
 	using Type = GraphAnimationType;
 	if (command.type == Type::Wait) return;
 	if (command.target == GraphAnimationTarget::All) {
-		if (command.type == GraphAnimationType::Reconstruct) {
-			if (!snapshot.has_value()) return;
-			GraphAnimationState tmp_state;
-			GraphState Graph_snapshot = snapshot.value();
-			generateAnimationState(tmp_state, Graph_snapshot);
-			const auto& base_nodes = base_state.getNodeList();
-			const auto& new_nodes = tmp_state.getNodeList();
-			std::unordered_map<int, sf::Vector2f> new_pos;
-			for (int i = 0; i < new_nodes.size(); i++) {
-				int ui_id = new_nodes[i].ui_id;
-				new_pos[ui_id] = new_nodes[i].position;
-			}
-			for (int i = 0; i < base_nodes.size(); i++) {
-				int ui_id = base_nodes[i].ui_id;
-				GraphAnimationNode n = base_nodes[i];
-				n.position = lerpVector2f(n.position, new_pos[ui_id], progress);
-				state.modifyNode(n, i);
-			}
-			normalizeEdgeLists(state);
-			return;
+		const auto& nodes = base_state.getNodeList();
+		for (int i = 0; i < (int)nodes.size(); i++) {
+			GraphAnimationNode n = nodes[i];
+			applyCommandOnNode(n, command, progress);
+			state.modifyNode(n, i);
 		}
-		else {
-			const auto& nodes = base_state.getNodeList();
-			for (int i = 0; i < (int)nodes.size(); i++) {
-				GraphAnimationNode n = nodes[i];
-				applyCommandOnNode(n, command, progress);
-				state.modifyNode(n, i);
-			}
-			const auto& edges = base_state.getEdgeList();
-			for (int i = 0; i < (int)edges.size(); i++) {
-				GraphAnimationEdge e = edges[i];
-				applyCommandOnEdge(e, command, progress);
-				state.modifyEdge(e, i);
-			}
-			return;
+		const auto& edges = base_state.getEdgeList();
+		for (int i = 0; i < (int)edges.size(); i++) {
+			GraphAnimationEdge e = edges[i];
+			applyCommandOnEdge(e, command, progress);
+			state.modifyEdge(e, i);
 		}
+		return;
 	}
 	if (command.target == GraphAnimationTarget::Node) {
 		const auto& nodes = base_state.getNodeList();

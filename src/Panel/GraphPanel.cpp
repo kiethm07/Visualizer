@@ -83,8 +83,7 @@ std::optional<GraphOperation> GraphPanel::handleEvent(
 				if (value.has_value()) {
 					input_value.setFocused(0);
 					input_value.reset();
-					std::cout << *value << "\n";
-					return GraphOperation::insert(*value);
+					//return GraphOperation::insert(*value);
 				}
 
 				return std::nullopt;
@@ -96,7 +95,7 @@ std::optional<GraphOperation> GraphPanel::handleEvent(
 				if (value.has_value()) {
 					input_value.setFocused(0);
 					input_value.reset();
-					return GraphOperation::remove(*value);
+					//return GraphOperation::remove(*value);
 				}
 
 				return std::nullopt;
@@ -107,8 +106,7 @@ std::optional<GraphOperation> GraphPanel::handleEvent(
 				if (value.has_value()) {
 					input_value.setFocused(0);
 					input_value.reset();
-					std::cout << (*value) << "\n";
-					return GraphOperation::search(*value);
+					//return GraphOperation::search(*value);
 				}
 			}
 

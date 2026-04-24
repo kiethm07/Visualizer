@@ -1,550 +1,192 @@
 #include <DataStructures/Graph.h>
-#include <map>
+#include <queue>
 #include <algorithm>
-
-Graph::Graph() : root(nullptr), next_ui_id(0) {}
-Graph::~Graph() { clearWithoutRecorder(root); }
-
-void Graph::applyOperation(const GraphOperation& operation, GraphRecorder& recorder) {
-	using namespace std;
-	using Command = GraphAnimationCommand;
-	using Target = GraphAnimationTarget;
-	using Type = GraphAnimationType;
-	if (operation.type == GraphOperationType::Insert) {
-		int x = operation.value;
-		insert(root, x, recorder);
-		recorder.addNewPhase();
-		recorder.addCommand(Command(Target::Node, Type::Wait, -1));
-		recorder.setHighlightedLine(8);
-		return;
-	}
-	if (operation.type == GraphOperationType::Remove) {
-		int x = operation.value;
-		remove(root, x, recorder);
-		recorder.addNewPhase();
-		recorder.addCommand(Command(Target::Node, Type::Wait, -1));
-		recorder.setHighlightedLine(10);
-		return;
-	}
-	if (operation.type == GraphOperationType::Search) {
-		int x = operation.value;
-		search(root, x, recorder);
-		recorder.addNewPhase();
-		recorder.addCommand(Command(Target::Node, Type::Wait, -1));
-		recorder.setHighlightedLine(7);
-		return;
-	}
-	if (operation.type == GraphOperationType::Reset) {
-		clear(root, recorder);
-		recorder.addNewPhase();
-		recorder.addCommand(Command(Target::Node, Type::Wait, -1));
-		recorder.setHighlightedLine(4);
-		return;
-	}
-}
+#include <cmath>
 
 GraphState Graph::getState() const {
 	GraphState state;
-	if (!root) return state;
-	std::vector<Node*> all_nodes;
-	std::map<Node*, int> node_to_idx;
-	auto collect = [&](auto self, Node* u) -> void {
-		if (!u) return;
-		node_to_idx[u] = (int)all_nodes.size();
-		all_nodes.push_back(u);
-		self(self, u->pLeft);
-		self(self, u->pRight);
-		};
-	collect(collect, root);
-	for (Node* u : all_nodes) {
-		GraphNodeSnapshot snp;
-		snp.value = u->val;
-		snp.ui_id = u->ui_id;
-		snp.size = u->size;
-		snp.height = u->height;
-		snp.leftChild = u->pLeft ? node_to_idx[u->pLeft] : -1;
-		snp.rightChild = u->pRight ? node_to_idx[u->pRight] : -1;
-		snp.parent = u->pParent ? node_to_idx[u->pParent] : -1;
-		state.nodes.push_back(snp);
+	state.next_ui_id = next_ui_id;
+	for (const auto& [key, node] : nodes) {
+		state.nodes[key] = GraphState::Node(node.ui_id);
+		state.nodes[key].neighbors = node.neighbors;
 	}
-	state.next_ui_id = this->next_ui_id;
+	for (const auto& [p, w] : edges) {
+		state.edges[p] = w;
+	}
 	return state;
 }
 
 void Graph::loadState(const GraphState& state) {
-	clearWithoutRecorder(root);
-	if (state.nodes.empty()) {
-		this->next_ui_id = state.next_ui_id;
-		return;
+	next_ui_id = state.next_ui_id;
+	nodes.clear();
+	edges.clear();
+	for (const auto& [key, node] : state.nodes) {
+		nodes[key] = Node(node.ui_id);
+		nodes[key].neighbors = node.neighbors;
 	}
-	int n = (int)state.nodes.size();
-	std::vector<Node*> new_nodes(n);
-	for (int i = 0; i < n; i++) {
-		const auto& snp = state.nodes[i];
-		new_nodes[i] = new Node(snp.value, snp.ui_id);
-		new_nodes[i]->height = snp.height;
-		new_nodes[i]->size = snp.size;
-		new_nodes[i]->pLeft = new_nodes[i]->pRight = new_nodes[i]->pParent = nullptr;
-	}
-	for (int i = 0; i < n; i++) {
-		if (state.nodes[i].leftChild != -1) new_nodes[i]->pLeft = new_nodes[state.nodes[i].leftChild];
-		if (state.nodes[i].rightChild != -1) new_nodes[i]->pRight = new_nodes[state.nodes[i].rightChild];
-		if (new_nodes[i]->pLeft) new_nodes[i]->pLeft->pParent = new_nodes[i];
-		if (new_nodes[i]->pRight) new_nodes[i]->pRight->pParent = new_nodes[i];
-	}
-	root = new_nodes[0];
-	this->next_ui_id = state.next_ui_id;
-}
-
-void Graph::rawInit(const std::vector<int>& values) {
-	GraphRecorder dummy;
-	clearWithoutRecorder(root);
-	for (int x : values) insert(root, x, dummy);
-}
-
-int Graph::getHeight(Node* u) { return u == nullptr ? 0 : u->height; }
-int Graph::getSize(Node* u) { return u == nullptr ? 0 : u->size; }
-
-void Graph::updateState(Node*& u) {
-	if (u == nullptr) return;
-	u->height = std::max(getHeight(u->pLeft), getHeight(u->pRight)) + 1;
-	u->size = getSize(u->pLeft) + getSize(u->pRight) + 1;
-}
-
-void Graph::rotateLeft(Node*& u, GraphRecorder& recorder) {
-	using Target = GraphAnimationTarget;
-	using Type = GraphAnimationType;
-	using Command = GraphAnimationCommand;
-	if (u == nullptr) return;
-	Node* tmp = u->pRight;
-	if (tmp == nullptr) return;
-	recorder.addNewPhase();
-	recorder.setHighlightedLineAsPrevious();
-	recorder.addCommand(Command(Target::Edge, Type::FadeOut, u->ui_id, tmp->ui_id));
-	if (tmp->pLeft) recorder.addCommand(Command(Target::Edge, Type::FadeOut, tmp->ui_id, tmp->pLeft->ui_id));
-	if (u->pParent) recorder.addCommand(Command(Target::Edge, Type::FadeOut, u->pParent->ui_id, u->ui_id));
-	u->pRight = tmp->pLeft;
-	if (u->pRight != nullptr) u->pRight->pParent = u;
-	tmp->pLeft = u;
-	tmp->pParent = u->pParent;
-	u->pParent = tmp;
-	updateState(u);
-	updateState(tmp);
-	u = tmp;
-	recorder.addNewPhase();
-	recorder.setHighlightedLineAsPrevious();
-	recorder.addCommand(Command(Target::All, Type::Reconstruct, -1));
-	recorder.addState(getState());
-
-	recorder.addNewPhase();
-	recorder.setHighlightedLineAsPrevious();
-	recorder.addCommand(Command::createSpawnEdgeCommand(u->ui_id, u->pLeft->ui_id));
-	recorder.addCommand(Command(Target::Edge, Type::FadeIn, u->ui_id, u->pLeft->ui_id));
-	if (u->pParent) {
-		recorder.addCommand(Command::createSpawnEdgeCommand(u->pParent->ui_id, u->ui_id));
-		recorder.addCommand(Command(Target::Edge, Type::FadeIn, u->pParent->ui_id, u->ui_id));
-	}
-	if (Node* tmp = u->pLeft) {
-		if (tmp->pRight) {
-			recorder.addCommand(Command::createSpawnEdgeCommand(tmp->ui_id, tmp->pRight->ui_id));
-			recorder.addCommand(Command(Target::Edge, Type::FadeIn, tmp->ui_id, tmp->pRight->ui_id));
-		}
+	for (const auto& [p, w] : state.edges) {
+		edges[p] = w;
 	}
 }
 
-void Graph::rotateRight(Node*& u, GraphRecorder& recorder) {
-	using Target = GraphAnimationTarget;
-	using Type = GraphAnimationType;
-	using Command = GraphAnimationCommand;
-	if (u == nullptr) return;
-	Node* tmp = u->pLeft;
-	if (tmp == nullptr) return;
-	recorder.addNewPhase();
-	recorder.setHighlightedLineAsPrevious();
-	recorder.addCommand(Command(Target::Edge, Type::FadeOut, u->ui_id, tmp->ui_id));
-	if (tmp->pRight) recorder.addCommand(Command(Target::Edge, Type::FadeOut, tmp->ui_id, tmp->pRight->ui_id));
-	if (u->pParent) recorder.addCommand(Command(Target::Edge, Type::FadeOut, u->pParent->ui_id, u->ui_id));
-	u->pLeft = tmp->pRight;
-	if (u->pLeft != nullptr) u->pLeft->pParent = u;
-	tmp->pRight = u;
-	tmp->pParent = u->pParent;
-	u->pParent = tmp;
-	updateState(u);
-	updateState(tmp);
-	u = tmp;
-	recorder.addNewPhase();
-	recorder.setHighlightedLineAsPrevious();
-	recorder.addCommand(Command(Target::All, Type::Reconstruct, -1));
-	recorder.addState(getState());
-
-	recorder.addNewPhase();
-	recorder.setHighlightedLineAsPrevious();
-	recorder.addCommand(Command::createSpawnEdgeCommand(u->ui_id, u->pRight->ui_id));
-	recorder.addCommand(Command(Target::Edge, Type::FadeIn, u->ui_id, u->pRight->ui_id));
-	if (u->pParent) {
-		//recorder.addNewPhase();
-		recorder.addCommand(Command::createSpawnEdgeCommand(u->pParent->ui_id, u->ui_id));
-		recorder.addCommand(Command(Target::Edge, Type::FadeIn, u->pParent->ui_id, u->ui_id));
+void Graph::applyOperation(const GraphOperation& operation, GraphRecorder& recorder) {
+	if (operation.type == GraphOperationType::InsertNode) {
+		insertNode(operation.value, recorder);
 	}
-	if (Node* tmp = u->pRight) {
-		//recorder.addNewPhase();
-		if (tmp->pLeft) {
-			recorder.addCommand(Command::createSpawnEdgeCommand(tmp->ui_id, tmp->pLeft->ui_id));
-			recorder.addCommand(Command(Target::Edge, Type::FadeIn, tmp->ui_id, tmp->pLeft->ui_id));
-		}
+	else if (operation.type == GraphOperationType::RemoveNode) {
+		removeNode(operation.value, recorder);
+	}
+	else if (operation.type == GraphOperationType::InsertEdge) {
+		addEdge(operation.from, operation.to, operation.weight, recorder);
+	}
+	else if (operation.type == GraphOperationType::RemoveEdge) {
+		removeEdge(operation.from, operation.to, recorder);
+	}
+	else if (operation.type == GraphOperationType::ModifyEdge) {
+		modifyEdge(operation.from, operation.to, operation.weight, recorder);
+	}
+	else if (operation.type == GraphOperationType::Dijkstra) {
+		runDijkstra(operation.value, recorder);
+	}
+	else if (operation.type == GraphOperationType::Kruskal) {
+		runKruskal(recorder);
+	}
+	else if (operation.type == GraphOperationType::Reset) {
+		clear(recorder);
 	}
 }
 
-//void Graph::rotateRight(Node*& u, GraphRecorder& recorder) {
-//	using Target = GraphAnimationTarget;
-//	using Type = GraphAnimationType;
-//	using Command = GraphAnimationCommand;
-//	if (u == nullptr) return;
-//	Node* tmp = u->pLeft;
-//	if (tmp == nullptr) return;
-//	u->pLeft = tmp->pRight;
-//	tmp->pRight = u;
-//	updateState(u);
-//	updateState(tmp);
-//	u = tmp;
-//	recorder.addNewPhase();
-//	recorder.addCommand(Command(Target::All, Type::Reconstruct, -1));
-//	recorder.addState(getState());
-//}
-
-void Graph::balance(Node*& u, GraphRecorder& recorder) {
-	if (u == nullptr) return;
-	int difference = getHeight(u->pLeft) - getHeight(u->pRight);
-	if (difference >= -1 && difference <= 1) return;
-	if (difference > 1) {
-		Node*& t = u->pLeft;
-		if (t && getHeight(t->pLeft) < getHeight(t->pRight)) { rotateLeft(t, recorder); }
-		rotateRight(u, recorder);
-		return;
+void Graph::rawInit(const std::vector<int>& nodes, const std::vector<std::tuple<int, int, int>>& edges) {
+	clearWithoutRecorder();
+	std::set<std::pair<int, int>> added_edges;
+	for (int value : nodes) {
+		insertNode(value, GraphRecorder());
 	}
-	Node*& t = u->pRight;
-	if (t && getHeight(t->pRight) < getHeight(t->pLeft)) { rotateRight(t, recorder); }
-	rotateLeft(u, recorder);
-	//using Target = GraphAnimationTarget;
-	//using Type = GraphAnimationType;
-	//using Command = GraphAnimationCommand;
-	//recorder.addNewPhase();
-	//recorder.addCommand(Command(Target::All, Type::Reconstruct, -1));
-	//recorder.addState(getState());
+	for (const auto& [u, v, w] : edges) {
+		int x = u;
+		int y = v;
+		if (x > y) std::swap(x, y);
+		if (added_edges.count({x,y})) continue;
+		addEdge(x, y, w, GraphRecorder());
+		added_edges.insert({ x, y });
+	}
 }
 
-void Graph::insert(Node*& root, int x, GraphRecorder& recorder) {
-	using Command = GraphAnimationCommand;
-	using Target = GraphAnimationTarget;
-	using Type = GraphAnimationType;
-	recorder.addNewPhase();
-	recorder.setHighlightedLine(0);
-	recorder.addCommand(Command(Target::Node, Type::Wait, -1));
-	if (root == nullptr) {
-		//Case init
-		root = new Node(x, next_ui_id++);
-		root->pParent = nullptr;
-		recorder.addNewPhase();
-		recorder.setHighlightedLine(1);
-		recorder.addCommand(Command::createSpawnNodeCommand(root->ui_id, -1, x, {}));
-		recorder.addCommand(Command(Target::Node, Type::FadeIn, root->ui_id));
-		return;
-	}
-	recorder.addNewPhase();
-	recorder.addCommand(Command(Target::Node, Type::HighlightOn, root->ui_id));
-	recorder.setHighlightedLine(2);
-	//if (root->pParent) recorder.addCommand(Command(Target::Node, Type::HighlightOff, root->pParent->ui_id));
-	if (root->val == x) {
-		recorder.addNewPhase();
-		recorder.setHighlightedLine(3);
-		recorder.addCommand(Command(Target::Node, Type::HighlightOff, root->ui_id));
-		return;
-	}
-	int pre_id = root->ui_id;
-	recorder.addNewPhase();
-	recorder.setHighlightedLine(4);
-	recorder.addCommand(Command(Target::Node, Type::Wait, -1));
-	if (root->val < x) {
-		recorder.addNewPhase();
-		recorder.setHighlightedLine(5);
-		recorder.addCommand(Command(Target::Node, Type::Wait, -1));
-		if (root->pRight == nullptr) {
-			recorder.addNewPhase();
-			recorder.setHighlightedLine(0);
-			recorder.addCommand(Command(Target::Node, Type::Wait, -1));
-			root->pRight = new Node(x, next_ui_id++);
-			root->pRight->pParent = root;
-			recorder.addNewPhase();
-			recorder.setHighlightedLine(1);
-			recorder.addCommand(Command::createSpawnNodeCommand(root->pRight->ui_id, pre_id, x, { 100, 150 }));
-			recorder.addCommand(Command(Target::Node, Type::FadeIn, root->pRight->ui_id));
-			recorder.addNewPhase();
-			recorder.setHighlightedLine(1);
-			recorder.addCommand(Command::createSpawnEdgeCommand(pre_id, root->pRight->ui_id));
-			recorder.addCommand(Command(Target::Edge, Type::FadeIn, root->ui_id, root->pRight->ui_id));
-			recorder.addNewPhase();
-			recorder.setHighlightedLine(1);
-			recorder.addCommand(Command(Target::All, Type::Reconstruct, -1));
-			recorder.addState(getState());
-		}
-		else insert(root->pRight, x, recorder);
-	}
-	else {
-		recorder.addNewPhase();
-		recorder.setHighlightedLine(6);
-		recorder.addCommand(Command(Target::Node, Type::Wait, -1));
-		if (root->pLeft == nullptr) {
-			recorder.addNewPhase();
-			recorder.setHighlightedLine(0);
-			recorder.addCommand(Command(Target::Node, Type::Wait, -1));
-			root->pLeft = new Node(x, next_ui_id++);
-			root->pLeft->pParent = root;
-			recorder.addNewPhase();
-			recorder.setHighlightedLine(1);
-			recorder.addCommand(Command::createSpawnNodeCommand(root->pLeft->ui_id, pre_id, x, { -100, 150 }));
-			recorder.addCommand(Command(Target::Node, Type::FadeIn, root->pLeft->ui_id));
-			recorder.addNewPhase();
-			recorder.setHighlightedLine(1);
-			recorder.addCommand(Command::createSpawnEdgeCommand(pre_id, root->pLeft->ui_id));
-			recorder.addCommand(Command(Target::Edge, Type::FadeIn, root->ui_id, root->pLeft->ui_id));
-			recorder.addNewPhase();
-			recorder.setHighlightedLine(1);
-			recorder.addCommand(Command(Target::All, Type::Reconstruct, -1));
-			recorder.addState(getState());
-		}
-		else insert(root->pLeft, x, recorder);
-	}
-	recorder.addNewPhase();
-	recorder.addCommand(Command(Target::Node, Type::HighlightOff, root->ui_id));
-	updateState(root);
-	recorder.addNewPhase();
-	recorder.addCommand(Command(Target::Node, Type::Wait, -1));
-	recorder.setHighlightedLine(7);
-	balance(root, recorder);
+void Graph::clearWithoutRecorder() {
+	nodes.clear();
+	edges.clear();
+	next_ui_id = 0;
 }
 
-void Graph::remove(Node*& root, int x, GraphRecorder& recorder) {
-	using Command = GraphAnimationCommand;
-	using Target = GraphAnimationTarget;
-	using Type = GraphAnimationType;
-	recorder.addNewPhase();
-	recorder.addCommand(Command(Target::Node, Type::Wait, -1));
-	recorder.setHighlightedLine(0);
-	if (root == nullptr) return;
-	recorder.addNewPhase();
-	recorder.setHighlightedLine(1);
-	recorder.addCommand(Command(Target::Node, Type::HighlightOn, root->ui_id));
-	if (root->val == x) {
-		//std::cout << root->val << " removed !\n";
-		//std::cout << (root->pParent ? (root->pParent->val) : -1) << " parent! \n";
-		//std::cout << getHeight(root) << " height!\n";
-		recorder.addNewPhase();
-		recorder.addCommand(Command(Target::Node, Type::Wait, -1));
-		recorder.setHighlightedLine(2);
-		if (root->pRight == nullptr && root->pLeft == nullptr) {
-			recorder.addNewPhase();
-			recorder.setHighlightedLine(3);
-			recorder.addCommand(Command(Target::Node, Type::FadeOut, root->ui_id));
-			if (root->pParent) recorder.addCommand(Command(Target::Edge, Type::FadeOut, root->pParent->ui_id, root->ui_id));
-			delete root;
-			root = nullptr;
-			recorder.addNewPhase();
-			recorder.setHighlightedLineAsPrevious();
-			recorder.addCommand(Command(Target::All, Type::Reconstruct, -1));
-			recorder.addState(getState());
-			return;
-		}
-		else if (root->pRight == nullptr) {
-			recorder.addNewPhase();
-			recorder.setHighlightedLine(3);
-			recorder.addCommand(Command(Target::Node, Type::FadeOut, root->ui_id));
-			recorder.addCommand(Command(Target::Edge, Type::FadeOut, root->ui_id, root->pLeft->ui_id));
-			if (root->pParent) recorder.addCommand(Command(Target::Edge, Type::FadeOut, root->pParent->ui_id, root->ui_id));
-			Node* tmp = root->pLeft;
-			tmp->pParent = root->pParent;
-			delete root;
-			root = tmp;
-			if (root->pParent) {
-				recorder.addNewPhase();
-				recorder.setHighlightedLineAsPrevious();
-				recorder.addCommand(Command::createSpawnEdgeCommand(root->pParent->ui_id, root->ui_id));
-				recorder.addCommand(Command(Target::Edge, Type::FadeIn, root->pParent->ui_id, root->ui_id));
+void Graph::clear(GraphRecorder& recorder) {
+	clearWithoutRecorder();
+}
+
+void Graph::insertNode(int key, GraphRecorder& recorder) {
+	if (nodes.find(key) != nodes.end()) return;
+	nodes[key] = Node(next_ui_id++);
+}
+
+void Graph::removeNode(int key, GraphRecorder& recorder) {
+	if (nodes.find(key) == nodes.end()) return;
+
+	for (const auto& [neighbor_id, weight] : nodes[key].neighbors) {
+		int u = std::min(key, neighbor_id);
+		int v = std::max(key, neighbor_id);
+		edges.erase({ u, v });
+		nodes[neighbor_id].neighbors.erase(key);
+	}
+	nodes.erase(key);
+}
+
+void Graph::addEdge(int from, int to, int weight, GraphRecorder& recorder) {
+	int u = std::min(from, to);
+	int v = std::max(from, to);
+	if (edges.find({ u, v }) != edges.end()) return;
+	edges[{u, v}] = weight;
+	nodes[u].neighbors[v] = weight;
+	nodes[v].neighbors[u] = weight;
+}
+
+void Graph::removeEdge(int from, int to, GraphRecorder& recorder) {
+	int u = std::min(from, to);
+	int v = std::max(from, to);
+	edges.erase({ u, v });
+	nodes[u].neighbors.erase(v);
+	nodes[v].neighbors.erase(u);
+}
+
+void Graph::modifyEdge(int from, int to, int new_weight, GraphRecorder& recorder) {
+	int u = std::min(from, to);
+	int v = std::max(from, to);
+	if (edges.find({ u, v }) != edges.end()) {
+		edges[{u, v}] = new_weight;
+		nodes[u].neighbors[v] = new_weight;
+		nodes[v].neighbors[u] = new_weight;
+	}
+}
+
+void Graph::runDijkstra(int start,  GraphRecorder& recorder) const {
+	const int INF = 1e9;
+	
+	if (nodes.find(start) == nodes.end()) return;
+
+	std::map<int, int> dist;
+	std::map<int, int> parent;
+	for (const auto& [id, node] : nodes) {
+		dist[id] = INF;
+	}
+	dist[start] = 0;
+
+	std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, std::greater<std::pair<int, int>>> pq;
+	pq.push({ 0, start });
+
+	while (!pq.empty()) {
+		auto [d, u] = pq.top();
+		pq.pop();
+
+		if (d > dist[u]) continue;
+
+		if (nodes.find(u) != nodes.end()) {
+			for (const auto& [v, weight] : nodes.at(u).neighbors) {
+				if (dist[u] + weight < dist[v]) {
+					dist[v] = dist[u] + weight;
+					parent[v] = u;
+					pq.push({ dist[v], v });
+				}
 			}
-			recorder.addNewPhase();
-			recorder.setHighlightedLineAsPrevious();
-			recorder.addCommand(Command(Target::All, Type::Reconstruct, -1));
-			recorder.addState(getState());
-			return;
 		}
-		else if (root->pLeft == nullptr) {
-			recorder.addNewPhase();
-			recorder.setHighlightedLine(3);
-			recorder.addCommand(Command(Target::Node, Type::FadeOut, root->ui_id));
-			recorder.addCommand(Command(Target::Edge, Type::FadeOut, root->ui_id, root->pRight->ui_id));
-			if (root->pParent) recorder.addCommand(Command(Target::Edge, Type::FadeOut, root->pParent->ui_id, root->ui_id));
-			Node* tmp = root->pRight;
-			tmp->pParent = root->pParent;
-			delete root;
-			root = tmp;
-			if (root->pParent) {
-				recorder.addNewPhase();
-				recorder.setHighlightedLineAsPrevious();
-				recorder.addCommand(Command::createSpawnEdgeCommand(root->pParent->ui_id, root->ui_id));
-				recorder.addCommand(Command(Target::Edge, Type::FadeIn, root->pParent->ui_id, root->ui_id));
-			}
-			recorder.addNewPhase();
-			recorder.setHighlightedLineAsPrevious();
-			recorder.addCommand(Command(Target::All, Type::Reconstruct, -1));
-			recorder.addState(getState());
-			return;
-		}
-		else {
-			Node* tmp = root->pRight;
-			while (tmp->pLeft != nullptr) {
-				tmp = tmp->pLeft;
-			}
-			recorder.addNewPhase();
-			recorder.setHighlightedLine(4);
-			//recorder.addCommand(Command(Target::Node, Type::HighlightOn, root->ui_id));
-			recorder.addCommand(Command(Target::Node, Type::HighlightOn, tmp->ui_id));
-			recorder.addNewPhase();
-			recorder.setHighlightedLineAsPrevious();
-			recorder.addCommand(Command(Target::Node, Type::FadeOut, root->ui_id));
-			recorder.addNewPhase();
-			recorder.setHighlightedLineAsPrevious();
-			recorder.addCommand(Command::createChangeValueCommand(root->ui_id, tmp->val));
-			recorder.addNewPhase();
-			recorder.setHighlightedLineAsPrevious();
-			recorder.addCommand(Command(Target::Node, Type::FadeIn, root->ui_id));
-			recorder.addNewPhase();
-			recorder.setHighlightedLineAsPrevious();
-			//recorder.addCommand(Command(Target::Node, Type::HighlightOff, root->ui_id));
-			recorder.addCommand(Command(Target::Node, Type::HighlightOff, tmp->ui_id));
-			root->val = tmp->val;
-			recorder.addNewPhase();
-			recorder.addCommand(Command(Target::Node, Type::Wait, -1));
-			recorder.setHighlightedLine(5);
-			remove(root->pRight, tmp->val, recorder);
-			recorder.addNewPhase();
-			recorder.addCommand(Command(Target::Node, Type::HighlightOff, root->ui_id));
-			//recorder.addCommand(Command(Target::All, Type::Reconstruct, -1));
-			//recorder.addState(getState());
-			updateState(root);
-			recorder.addNewPhase();
-			recorder.addCommand(Command(Target::Node, Type::Wait, -1));
-			recorder.setHighlightedLine(9);
-			balance(root, recorder);
-			return;
-		}
-	}
-	else {
-		recorder.addNewPhase();
-		recorder.addCommand(Command(Target::Node, Type::Wait, -1));
-		recorder.setHighlightedLine(6);
-		if (root->val < x) {
-			recorder.addNewPhase();
-			recorder.addCommand(Command(Target::Node, Type::Wait, -1));
-			recorder.setHighlightedLine(7);
-			remove(root->pRight, x, recorder);
-		}
-		else {
-			recorder.addNewPhase();
-			recorder.addCommand(Command(Target::Node, Type::Wait, -1));
-			recorder.setHighlightedLine(8);
-			remove(root->pLeft, x, recorder);
-		}
-	}
-	if (root) {
-		recorder.addNewPhase();
-		recorder.addCommand(Command(Target::Node, Type::HighlightOff, root->ui_id));
-		updateState(root);
-		recorder.addNewPhase();
-		recorder.addCommand(Command(Target::Node, Type::Wait, -1));
-		recorder.setHighlightedLine(9);
-		balance(root, recorder);
 	}
 }
 
-bool Graph::search(Node* root, int x, GraphRecorder& recorder) {
-	using Command = GraphAnimationCommand;
-	using Target = GraphAnimationTarget;
-	using Type = GraphAnimationType;
-	recorder.addNewPhase();
-	recorder.addCommand(Command(Target::Node, Type::Wait, -1));
-	recorder.setHighlightedLine(0);
-	if (root == nullptr) {
-		recorder.addNewPhase();
-		recorder.addCommand(Command(Target::Node, Type::Wait, -1));
-		recorder.setHighlightedLine(1);
-		return false;
+void Graph::runKruskal(GraphRecorder& recorder) const {
+	std::vector<std::pair<int, std::pair<int, int>>> edge_list;
+	for (const auto& [p, w] : edges) {
+		edge_list.push_back({ w, p });
 	}
-	recorder.addNewPhase();
-	recorder.addCommand(Command(Target::Node, Type::Wait, -1));
-	recorder.setHighlightedLine(2);
-	bool found = false;
-	if (root->val == x) {
-		recorder.addNewPhase();
-		recorder.addCommand(Command(Target::Node, Type::Wait, -1));
-		recorder.setHighlightedLine(3);
-		recorder.addCommand(Command(Target::Node, Type::FoundedOn, root->ui_id));
-		recorder.addNewPhase();
-		recorder.setHighlightedLineAsPrevious();
-		recorder.addCommand(Command(Target::Node, Type::Wait, root->ui_id));
-		recorder.addNewPhase();
-		recorder.setHighlightedLineAsPrevious();
-		recorder.addCommand(Command(Target::Node, Type::FoundedOff, root->ui_id));
-		return true;
+	std::sort(edge_list.begin(), edge_list.end());
+	std::map<int, int> parent;
+	for (const auto& [value, node] : nodes) {
+		parent[value] = -1;
 	}
-	recorder.addNewPhase();
-	recorder.setHighlightedLine(4);
-	recorder.addCommand(Command(Target::Node, Type::HighlightOn, root->ui_id));
-	if (root->val < x) {
-		recorder.addNewPhase();
-		recorder.addCommand(Command(Target::Node, Type::Wait, -1));
-		recorder.setHighlightedLine(5);
-		found = search(root->pRight, x, recorder);
+	auto root = [&](auto&& self, int u) -> int {
+		return parent[u] < 0 ? u : parent[u] = self(self, parent[u]);
+	};
+	auto join = [&](int u, int v) -> bool {
+		u = root(root, u);
+		v = root(root, v);
+		if (u == v) return 0;
+		if (parent[u] > parent[v]) std::swap(u, v);
+		parent[u] += parent[v];
+		parent[v] = u;
+		return 1;
+	};
+	int MST = 0;
+	for (const auto& [w, p] : edge_list) {
+		int u = root(root, p.first);
+		int v = root(root, p.second);
+		if (join(u, v)) {
+			MST += w;
+		}
 	}
-	else {
-		recorder.addNewPhase();
-		recorder.addCommand(Command(Target::Node, Type::Wait, -1));
-		recorder.setHighlightedLine(6);
-		found = search(root->pLeft, x, recorder);
-	}
-	recorder.addNewPhase();
-	recorder.addCommand(Command(Target::Node, Type::HighlightOff, root->ui_id));
-	return found;
-}
-
-void Graph::clear(Node*& root, GraphRecorder& recorder) {
-	using Command = GraphAnimationCommand;
-	using Target = GraphAnimationTarget;
-	using Type = GraphAnimationType;
-	recorder.addNewPhase();
-	recorder.addCommand(Command(Target::Node, Type::Wait, -1));
-	recorder.setHighlightedLine(0);
-	if (root == nullptr) return;
-	recorder.addNewPhase();
-	recorder.addCommand(Command(Target::Node, Type::HighlightOn, root->ui_id));
-	recorder.addNewPhase();
-	recorder.addCommand(Command(Target::Node, Type::Wait, -1));
-	recorder.setHighlightedLine(1);
-	clear(root->pLeft, recorder);
-	recorder.addNewPhase();
-	recorder.addCommand(Command(Target::Node, Type::Wait, -1));
-	recorder.setHighlightedLine(2);
-	clear(root->pRight, recorder);
-	recorder.addNewPhase();
-	recorder.setHighlightedLine(3);
-	recorder.addCommand(Command(Target::Node, Type::FadeOut, root->ui_id));
-	if (root->pParent) recorder.addCommand(Command(Target::Edge, Type::FadeOut, root->pParent->ui_id, root->ui_id));
-	delete root;
-	root = nullptr;
-}
-
-void Graph::clearWithoutRecorder(Node*& root) {
-	if (root == nullptr) return;
-	clearWithoutRecorder(root->pLeft);
-	clearWithoutRecorder(root->pRight);
-	delete root;
-	root = nullptr;
 }

@@ -80,6 +80,14 @@ struct GraphAnimationCommand
         command.duration = getCommandDuration(command.type);
         return command;
     }
+    static GraphAnimationCommand createWaitCommand() {
+        GraphAnimationCommand command;
+        command.target = GraphAnimationTarget::Node;
+        command.type = GraphAnimationType::Wait;
+        command.ui_id = -1;
+        command.duration = getCommandDuration(command.type);
+		return command;
+    }
     GraphAnimationTarget target;
     GraphAnimationType type;
     GraphMoveDirection direction;

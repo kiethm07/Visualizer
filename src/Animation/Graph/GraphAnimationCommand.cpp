@@ -11,17 +11,8 @@ float getCommandDuration(const GraphAnimationType& type) {
 	if (type == Type::Wait) {
 		return 0.5f;
 	}
-	if (type == Type::Move) {
-		return 1.f;
-	}
 	if (type == Type::Spawn) {
 		return 0.0f;
-	}
-	if (type == Type::FoundedOn || type == Type::FoundedOff) {
-		return 0.75f;
-	}
-	if (type == Type::Reconstruct) {
-		return 1.f;
 	}
 	if (type == Type::UpdateValue) {
 		return 0.f;
