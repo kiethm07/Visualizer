@@ -42,7 +42,7 @@ struct GraphOperation {
         return op;
     }
 
-    static GraphOperation moodifyEdge(int u,int v,int w) {
+    static GraphOperation modifyEdge(int u,int v,int w) {
         GraphOperation op;
         op.type = GraphOperationType::ModifyEdge;
         op.from = u;

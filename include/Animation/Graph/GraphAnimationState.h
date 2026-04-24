@@ -4,17 +4,16 @@
 struct GraphAnimationNode {
 	int value;
 	int ui_id;
-	sf::Vector2f position;
 	int alpha;
+	bool disable_physics = false;
 	sf::Color fill_color;
 };
 
 struct GraphAnimationEdge {
 	int from_ui_id;
 	int to_ui_id;
-	sf::Vector2f from_position;
-	sf::Vector2f to_position;
 	int alpha;
+	bool disable_physics = false;
 	sf::Color fill_color;
 };
 

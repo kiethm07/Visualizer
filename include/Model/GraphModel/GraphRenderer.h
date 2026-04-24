@@ -4,6 +4,7 @@
 #include <Model/Arrow.h>
 #include <AssetManager/AssetManager.h>
 #include <Model/GraphModel/GraphState.h>
+#include <Model/GraphModel/GraphPhysics.h>
 #include <Animation/Graph/GraphAnimationState.h>
 #include <string>
 #include <algorithm>
@@ -14,9 +15,11 @@ public:
 	void loadState(const GraphAnimationState& animation_state);
 	void draw(sf::RenderWindow& window, const sf::View& view);
 private:
+	GraphAnimationState current_state;
 	const AssetManager& a_manager;
 	std::vector<ListNode> node_list;
 	std::vector<Arrow> edge_list;
+	GraphPhysics physics;
+	sf::Clock physics_clock;
 	const int NODE_RADIUS = 50;
-
 };

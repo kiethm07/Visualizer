@@ -44,6 +44,7 @@ private:
 
     const sf::Color DEFAULT_NODE_COLOR = sf::Color(89, 145, 46);
     const sf::Color DEFAULT_EDGE_COLOR = sf::Color(255, 255, 255);
+    const sf::Color HIGHLIGHT_EDGE_COLOR = sf::Color::Red;
     const sf::Color HIGHLIGHT_NODE_COLOR = sf::Color(209, 70, 38);
     const sf::Color FOUNDED_NODE_COLOR = sf::Color::Blue;
     const sf::Color END_NODE_COLOR = sf::Color(255, 165, 0);

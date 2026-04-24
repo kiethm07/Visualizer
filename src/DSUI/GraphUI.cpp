@@ -101,6 +101,7 @@ void GraphUI::handleEvent(const sf::RenderWindow& window, const sf::View& view, 
 	if (ui_state == UIState::Running) {
 		code_panel.handleEvent(window, view, ev);
 		if (const auto op = panel.handleEvent(window, view, ev); op.has_value()) {
+			std::cout << "Hallo\n";
 			recorder.clear();
 			graph.applyOperation(*op, recorder);
 			GraphState prev = current_state;

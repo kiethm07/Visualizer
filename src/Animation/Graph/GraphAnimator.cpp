@@ -132,10 +132,30 @@ void GraphAnimator::generateBaseStates(const GraphState& state, const GraphState
 void GraphAnimator::generateAnimationState(GraphAnimationState& animation_state, const GraphState& state) const {
 	std::vector<GraphAnimationNode> node_list;
 	std::vector<GraphAnimationEdge> edge_list;
-	
+	for (const auto& [value, node] : state.nodes) {
+		GraphAnimationNode anim_node;
+		anim_node.value = value;
+		anim_node.ui_id = node.ui_id;
+		anim_node.alpha = 255;
+		anim_node.disable_physics = false;
+		anim_node.fill_color = DEFAULT_NODE_COLOR;
+		node_list.push_back(anim_node);
+	}
+	for (const auto& [edge_pair, weight] : state.edges) {
+		int u_val = edge_pair.first;
+		int v_val = edge_pair.second;
+		if (state.nodes.find(u_val) != state.nodes.end() && state.nodes.find(v_val) != state.nodes.end()) {
+			GraphAnimationEdge anim_edge;
+			anim_edge.from_ui_id = state.nodes.at(u_val).ui_id;
+			anim_edge.to_ui_id = state.nodes.at(v_val).ui_id;
+			anim_edge.alpha = 255; 
+			anim_edge.disable_physics = false;
+			anim_edge.fill_color = DEFAULT_EDGE_COLOR;
+			edge_list.push_back(anim_edge);
+		}
+	}
 	animation_state.setNodeList(node_list);
 	animation_state.setEdgeList(edge_list);
-	normalizeEdgeLists(animation_state);
 }
 
 int GraphAnimator::getHighlightedLine(float t) const {
@@ -187,30 +207,29 @@ static sf::Color lerpColor(const sf::Color& a, const sf::Color& b, float t) {
 
 void GraphAnimator::applyCommandOnNode(GraphAnimationNode& node, const GraphAnimationCommand& command, const float& progress) const {
 	using Type = GraphAnimationType;
-	if (command.type == Type::FadeIn) node.alpha = lerpByte(0, 255, progress);
-	else if (command.type == Type::FadeOut) node.alpha = lerpByte(255, 0, progress);
+	if (command.type == Type::FadeIn) {
+		node.alpha = lerpByte(0, 255, progress);
+		if (node.alpha == 255) node.disable_physics = 0;
+	}
+	else if (command.type == Type::FadeOut) {
+		node.alpha = lerpByte(255, 0, progress);
+		if (node.alpha == 0) node.disable_physics = 1;
+	}
 	else if (command.type == Type::HighlightOn) node.fill_color = lerpColor(DEFAULT_NODE_COLOR, HIGHLIGHT_NODE_COLOR, progress);
 	else if (command.type == Type::HighlightOff) node.fill_color = lerpColor(HIGHLIGHT_NODE_COLOR, DEFAULT_NODE_COLOR, progress);
-	else if (command.type == Type::FoundedOn) {
-		node.fill_color = lerpColor(DEFAULT_NODE_COLOR, FOUNDED_NODE_COLOR, progress);
-	}
-	else if (command.type == Type::FoundedOff) {
-		node.fill_color = lerpColor(FOUNDED_NODE_COLOR, DEFAULT_NODE_COLOR, progress);
-	}
-	else if (command.type == Type::UpdateValue) {
-		node.value = command.value;
-	}
-	else if (command.type == Type::Move) {
-		sf::Vector2f offset = { 0.f, 0.f };
-		if (command.direction == GraphMoveDirection::Right) offset.x = (float)NODE_RADIUS * 2.f;
-		else if (command.direction == GraphMoveDirection::Left) offset.x = -(float)NODE_RADIUS * 2.f;
-		node.position = lerpVector2f(node.position, node.position + offset, progress);
-	}
 }
 
 void GraphAnimator::applyCommandOnEdge(GraphAnimationEdge& edge, const GraphAnimationCommand& command, const float& progress) const {
-	if (command.type == GraphAnimationType::FadeIn) edge.alpha = lerpByte(0, 255, progress);
-	else if (command.type == GraphAnimationType::FadeOut) edge.alpha = lerpByte(255, 0, progress);
+	if (command.type == GraphAnimationType::FadeIn) {
+		edge.alpha = lerpByte(0, 255, progress);
+		if (edge.alpha == 255) edge.disable_physics = 0;
+	}
+	else if (command.type == GraphAnimationType::FadeOut) {
+		edge.alpha = lerpByte(255, 0, progress);
+		if (edge.alpha == 0) edge.disable_physics = 1;
+	}
+	else if (command.type == GraphAnimationType::HighlightOn) edge.fill_color = lerpColor(DEFAULT_EDGE_COLOR, HIGHLIGHT_EDGE_COLOR, progress);
+	else if (command.type == GraphAnimationType::HighlightOff) edge.fill_color = lerpColor(HIGHLIGHT_EDGE_COLOR, DEFAULT_EDGE_COLOR, progress);
 }
 
 void GraphAnimator::applySpawnCommand(const GraphAnimationCommand& command, GraphAnimationState& state, const GraphAnimationState& base_state) const {
@@ -218,14 +237,8 @@ void GraphAnimator::applySpawnCommand(const GraphAnimationCommand& command, Grap
 		GraphAnimationNode new_node;
 		new_node.value = command.value;
 		new_node.ui_id = command.ui_id;
-		new_node.position = { (float)X_MARGIN, (float)Y_MARGIN };
-		for (const auto& node : base_state.getNodeList()) {
-			if (node.ui_id == command.spawn_from_ui_id) {
-				new_node.position = node.position + command.spawn_offset;
-				break;
-			}
-		}
 		new_node.alpha = 0;
+		new_node.disable_physics = false;
 		new_node.fill_color = DEFAULT_NODE_COLOR;
 		state.insertNode(new_node);
 	}
@@ -234,6 +247,7 @@ void GraphAnimator::applySpawnCommand(const GraphAnimationCommand& command, Grap
 		new_edge.from_ui_id = command.from_ui_id;
 		new_edge.to_ui_id = command.to_ui_id;
 		new_edge.alpha = 0;
+		new_edge.disable_physics = false;
 		new_edge.fill_color = DEFAULT_EDGE_COLOR;
 		state.insertEdge(new_edge);
 	}
@@ -282,15 +296,15 @@ void GraphAnimator::applyCommand(const GraphAnimationCommand& command, const Gra
 }
 
 void GraphAnimator::normalizeEdgeLists(GraphAnimationState& animation_state) const {
-	std::vector<GraphAnimationEdge> edge_list = animation_state.getEdgeList();
-	const std::vector<GraphAnimationNode>& node_list = animation_state.getNodeList();
-	std::unordered_map<int, sf::Vector2f> pos_map;
-	for (const auto& node : node_list) pos_map[node.ui_id] = node.position;
-	for (auto& edge : edge_list) {
-		if (pos_map.count(edge.from_ui_id)) edge.from_position = pos_map[edge.from_ui_id] + sf::Vector2f(0.f, (float)NODE_RADIUS);
-		if (pos_map.count(edge.to_ui_id)) edge.to_position = pos_map[edge.to_ui_id] - sf::Vector2f(0.f, (float)NODE_RADIUS);
-	}
-	animation_state.setEdgeList(edge_list);
+	//std::vector<GraphAnimationEdge> edge_list = animation_state.getEdgeList();
+	//const std::vector<GraphAnimationNode>& node_list = animation_state.getNodeList();
+	//std::unordered_map<int, sf::Vector2f> pos_map;
+	//for (const auto& node : node_list) pos_map[node.ui_id] = node.position;
+	//for (auto& edge : edge_list) {
+	//	if (pos_map.count(edge.from_ui_id)) edge.from_position = pos_map[edge.from_ui_id] + sf::Vector2f(0.f, (float)NODE_RADIUS);
+	//	if (pos_map.count(edge.to_ui_id)) edge.to_position = pos_map[edge.to_ui_id] - sf::Vector2f(0.f, (float)NODE_RADIUS);
+	//}
+	//animation_state.setEdgeList(edge_list);
 }
 
 void GraphAnimator::clear() {

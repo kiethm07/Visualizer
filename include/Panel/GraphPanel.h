@@ -3,7 +3,6 @@
 #include <Model/TextBox.h>
 #include <Model/GraphModel/GraphOperation.h>
 #include <optional>
-#include <iostream>
 
 class GraphPanel : public sf::Drawable {
 public:
@@ -20,9 +19,13 @@ private:
 
 	TextBox input_value;
 
-	Button insert_button;
-	Button remove_button;
-	Button search_button;
+	Button insert_node_button;
+	Button remove_node_button;
+	Button insert_edge_button;
+	Button remove_edge_button;
+	Button modify_edge_button;
+	Button dijkstra_button;
+	Button kruskal_button;
 	Button reset_button;
 
 	void updateButtonState(const sf::RenderWindow& window, const sf::View& view);
@@ -31,9 +34,13 @@ private:
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
 		target.draw(background, states);
 		target.draw(input_value, states);
-		target.draw(insert_button, states);
-		target.draw(remove_button, states);
-		target.draw(search_button, states);
+		target.draw(insert_node_button, states);
+		target.draw(remove_node_button, states);
+		target.draw(insert_edge_button, states);
+		target.draw(remove_edge_button, states);
+		target.draw(modify_edge_button, states);
+		target.draw(dijkstra_button, states);
+		target.draw(kruskal_button, states);
 		target.draw(reset_button, states);
 	}
 };

@@ -13,6 +13,7 @@ GraphState Graph::getState() const {
 	for (const auto& [p, w] : edges) {
 		state.edges[p] = w;
 	}
+	std::cout << "GraphState: " << state.nodes.size() << " nodes, " << state.edges.size() << " edges\n";
 	return state;
 }
 
