@@ -47,5 +47,5 @@ private:
     const sf::Color HIGHLIGHT_EDGE_COLOR = sf::Color::Red;
     const sf::Color HIGHLIGHT_NODE_COLOR = sf::Color(209, 70, 38);
     const sf::Color FOUNDED_NODE_COLOR = sf::Color::Blue;
-    const sf::Color END_NODE_COLOR = sf::Color(255, 165, 0);
+    const sf::Color FOUNDED_EDGE_COLOR = sf::Color::Green;
 };

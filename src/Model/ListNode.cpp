@@ -82,6 +82,27 @@ void ListNode::update(const sf::RenderWindow& window, const sf::View& view) {
 	container.setFillColor(hovered ? HOVER_COLOR : IDLE_COLOR);
 }
 
+void ListNode::handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev) {
+	sf::Vector2f mouse_world = window.mapPixelToCoords(sf::Mouse::getPosition(window), view);
+
+	if (const auto* press = ev.getIf<sf::Event::MouseButtonPressed>()) {
+		if (press->button == sf::Mouse::Button::Left && this->getGlobalBounds().contains(mouse_world)) {
+			is_dragging = true;
+			drag_offset = this->getPosition() - mouse_world;
+		}
+	}
+	else if (const auto* release = ev.getIf<sf::Event::MouseButtonReleased>()) {
+		if (release->button == sf::Mouse::Button::Left) {
+			is_dragging = false;
+		}
+	}
+	else if (const auto* move = ev.getIf<sf::Event::MouseMoved>()) {
+		if (is_dragging) {
+			this->setPosition(mouse_world + drag_offset);
+		}
+	}
+}
+
 bool ListNode::mousePressed(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev) {
 	if (const auto* mouse_press = ev.getIf<sf::Event::MouseButtonPressed>()) {
 		if (mouse_press->button == sf::Mouse::Button::Left) {

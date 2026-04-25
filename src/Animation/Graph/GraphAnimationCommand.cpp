@@ -15,7 +15,10 @@ float getCommandDuration(const GraphAnimationType& type) {
 		return 0.0f;
 	}
 	if (type == Type::UpdateValue) {
-		return 0.f;
+		return 1.f;
+	}
+	if (type == Type::InSPG) {
+		return 1.5f;
 	}
 	return 1.f; //Default duration is 1 second
 }

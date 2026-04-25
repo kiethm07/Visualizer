@@ -14,8 +14,8 @@ void GraphPhysics::update(const GraphAnimationState& anim_state, float dt) {
         int id = node.ui_id;
         current_ids.insert(id);
         if (physics_nodes.find(id) == physics_nodes.end()) {
-            float rx = center_pos.x + (std::rand() % 100 - 50);
-            float ry = center_pos.y + (std::rand() % 100 - 50);
+            float rx = center_pos.x + (std::rand() % 200 - 100);
+            float ry = center_pos.y + (std::rand() % 200 - 100);
             physics_nodes[id] = PhysicsNode(sf::Vector2f(rx, ry));
         }
     }
@@ -35,8 +35,10 @@ void GraphPhysics::update(const GraphAnimationState& anim_state, float dt) {
     // 3. Repulsion force (Coulomb)
     for (size_t i = 0; i < nodes.size(); ++i) {
         if (nodes[i].disable_physics) continue;
+        //if (nodes[i].ui_id == dragged_node) continue;
         for (size_t j = i + 1; j < nodes.size(); ++j) {
             if (nodes[j].disable_physics) continue;
+            //if (nodes[j].ui_id == dragged_node) continue;
 
             int u = nodes[i].ui_id;
             int v = nodes[j].ui_id;
@@ -76,6 +78,11 @@ void GraphPhysics::update(const GraphAnimationState& anim_state, float dt) {
     // 5. Apply gravity, damping, and integrate velocity to position
     for (const auto& node : nodes) {
         int id = node.ui_id;
+        if (id == dragged_node) {
+            physics_nodes[id].position = current_mouse_pos + drag_offset;
+            physics_nodes[id].velocity = { 0.f, 0.f };
+            continue;
+        }
         sf::Vector2f grav = (center_pos - physics_nodes[id].position) * gravity;
         forces[id] += grav;
 

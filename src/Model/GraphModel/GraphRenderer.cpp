@@ -53,6 +53,14 @@ static std::string int_to_string(int n) {
 //	}
 //}
 
+void GraphRenderer::handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev) {
+
+}
+
+void GraphRenderer::update(const sf::RenderWindow& window, const sf::View& view) {
+
+}
+
 void GraphRenderer::loadState(const GraphAnimationState& animation_state) {
 	current_state = animation_state;
 }
@@ -67,8 +75,31 @@ void GraphRenderer::loadState(const GraphAnimationState& animation_state) {
 //}
 
 void GraphRenderer::draw(sf::RenderWindow& window, const sf::View& view) {
+    sf::Vector2f mouse_world = window.mapPixelToCoords(sf::Mouse::getPosition(window), view);
+    bool is_left_pressed = sf::Mouse::isButtonPressed(sf::Mouse::Button::Left);
+
+    if (is_left_pressed && !was_left_pressed) {
+        const auto& nodes = current_state.getNodeList();
+        for (const auto& n : nodes) {
+            if (n.node_alpha == 0) continue;
+            sf::Vector2f pos = physics.getPosition(n.ui_id);
+            sf::Vector2f diff = pos - mouse_world;
+
+            if (diff.x * diff.x + diff.y * diff.y <= NODE_RADIUS * NODE_RADIUS) {
+                physics.setDraggedNode(n.ui_id);
+                physics.setDragOffset(pos - mouse_world);
+                break;
+            }
+        }
+    }
+    else if (!is_left_pressed && was_left_pressed) {
+        physics.releaseNode();
+    }
+
+    physics.updateMousePos(mouse_world);
+    was_left_pressed = is_left_pressed;
     // 1. Calculate delta time for physics
-    float dt = physics_clock.restart().asSeconds();
+    float dt = physics_clock.restart().asSeconds() * SPEED_CONSTANT;
     if (dt > 0.1f) dt = 0.1f; // Prevent physics explosion on lag spikes
 
     // 2. Update physics simulation
@@ -82,25 +113,69 @@ void GraphRenderer::draw(sf::RenderWindow& window, const sf::View& view) {
         sf::Vector2f u_pos = physics.getPosition(edges[i].from_ui_id);
         sf::Vector2f v_pos = physics.getPosition(edges[i].to_ui_id);
 
-        Arrow edge(u_pos, v_pos, 3.f, 14.f, NODE_RADIUS);
-        sf::Color edge_color = edges[i].fill_color;
-        edge_color.a = edges[i].alpha;
-        edge.setColor(edge_color);
+        if (edges[i].in_spg == 0) {
+            GraphEdge edge(a_manager.getFont("Roboto-Regular"), edges[i].weight, u_pos, v_pos, 3.f);
 
-        window.draw(edge);
+            sf::Color edge_color = edges[i].fill_color;
+            edge_color.a = edges[i].edge_alpha;
+            edge.setColor(edge_color);
+
+            sf::Color weight_color = DEFAULT_WEIGHT_COLOR;
+            weight_color.a = edges[i].weight_alpha;
+            edge.setWeightColor(weight_color);
+
+            window.draw(edge);
+        }
+        else {
+            sf::Vector2f direction = v_pos - u_pos;
+            float dist = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+
+            sf::Vector2f adjusted_u = u_pos;
+            sf::Vector2f adjusted_v = v_pos;
+
+
+            if (dist > 0.1f) {
+                sf::Vector2f normal = direction / dist;
+                float padding = 2.f;
+                adjusted_v = v_pos - normal * (NODE_RADIUS + padding);
+                adjusted_u = u_pos + normal * (NODE_RADIUS + padding);
+            }
+
+            if (edges[i].flip_head) std::swap(adjusted_u, adjusted_v);
+
+            Arrow edge(adjusted_u, adjusted_v, 3.f, 14.f, 10.f); 
+
+            sf::Color edge_color = edges[i].fill_color;
+            edge_color.a = edges[i].edge_alpha;
+            edge.setColor(edge_color);
+
+            window.draw(edge);
+        }
     }
 
     // 4. Draw Nodes
     for (int i = 0; i < nodes.size(); i++) {
+        const int INF = 1e9;
+
         sf::Vector2f pos = physics.getPosition(nodes[i].ui_id);
 
-        ListNode node(a_manager.getFont("Roboto-Regular"), int_to_string(nodes[i].value), pos, NODE_RADIUS, 20);
+        std::string label = (nodes[i].value == INF) ? "oo" : int_to_string(nodes[i].value);
+
+        ListNode node(a_manager.getFont("Roboto-Regular"), label, pos, NODE_RADIUS, 20);
         sf::Color node_color = nodes[i].fill_color;
-        node_color.a = nodes[i].alpha;
+        node_color.a = nodes[i].node_alpha;
+        //std::cout << nodes[i].alpha << "\n";
 
         node.setListNodeColor(node_color);
-        node.setOutlineColor(sf::Color(255, 255, 255, nodes[i].alpha));
-        node.setCharacterColor(sf::Color(255, 255, 255, nodes[i].alpha));
+        node.setOutlineColor(sf::Color(255, 255, 255, nodes[i].node_alpha));
+        node.setCharacterColor(sf::Color(255, 255, 255, nodes[i].value_alpha));
+
+        //node.update(window, view);
+        //sf::Vector2f mouse_pos = sf::Vector2f(sf::Mouse::getPosition(window));
+        //sf::Vector2f mouse_world = window.mapPixelToCoords(sf::Mouse::getPosition(window), view);
+        //if (node.contains(window, view, mouse_pos)) {
+        //    node.update(window, view);
+        //}
 
         window.draw(node);
     }

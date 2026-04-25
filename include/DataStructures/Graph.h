@@ -12,7 +12,7 @@ public:
 	GraphState getState() const;
 	void loadState(const GraphState& state);
 	void applyOperation(const GraphOperation& operation, GraphRecorder& recorder);
-	void rawInit(const std::vector<int>& nodes, const std::vector<std::tuple<int, int, int>>& edges);
+	void rawInit(int node_cnt, const std::vector<std::tuple<int, int, int>>& edges);
 private:
 	int next_ui_id = 0;
 	struct Node {

@@ -13,7 +13,7 @@ GraphState Graph::getState() const {
 	for (const auto& [p, w] : edges) {
 		state.edges[p] = w;
 	}
-	std::cout << "GraphState: " << state.nodes.size() << " nodes, " << state.edges.size() << " edges\n";
+	//std::cout << "GraphState: " << state.nodes.size() << " nodes, " << state.edges.size() << " edges\n";
 	return state;
 }
 
@@ -57,11 +57,14 @@ void Graph::applyOperation(const GraphOperation& operation, GraphRecorder& recor
 	}
 }
 
-void Graph::rawInit(const std::vector<int>& nodes, const std::vector<std::tuple<int, int, int>>& edges) {
+void Graph::rawInit(int node_cnt, const std::vector<std::tuple<int, int, int>>& edges) {
 	clearWithoutRecorder();
 	std::set<std::pair<int, int>> added_edges;
-	for (int value : nodes) {
-		insertNode(value, GraphRecorder());
+	//for (int value : nodes) {
+	//	insertNode(value, GraphRecorder());
+	//}
+	for (int i = 0; i < node_cnt; i++) {
+		insertNode(i, GraphRecorder());
 	}
 	for (const auto& [u, v, w] : edges) {
 		int x = u;
@@ -80,64 +83,147 @@ void Graph::clearWithoutRecorder() {
 }
 
 void Graph::clear(GraphRecorder& recorder) {
-	clearWithoutRecorder();
+	using Command = GraphAnimationCommand;
+	using Type = GraphAnimationType;
+	using Target = GraphAnimationTarget;
+	for (const auto& [value, u] : nodes) {
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::Node, Type::HighlightOn, nodes[value].ui_id));
+		for (const auto& [v, weight] : nodes.at(value).neighbors) {
+			int x = std::min(value, v);
+			int y = std::max(value, v);
+			if (edges.find({ x,y }) != edges.end()) {
+				recorder.addNewPhase();
+				recorder.addCommand(Command(Target::Edge, Type::FadeOut, nodes[x].ui_id, nodes[y].ui_id));
+				edges.erase({ x,y });
+			}
+		}
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::Node, Type::FadeOut, nodes[value].ui_id));
+	}
+	nodes.clear();
+	edges.clear();
 }
 
 void Graph::insertNode(int key, GraphRecorder& recorder) {
-	if (nodes.find(key) != nodes.end()) return;
+	using Command = GraphAnimationCommand;
+	using Type = GraphAnimationType;
+	using Target = GraphAnimationTarget;
+	if (nodes.find(key) != nodes.end()) {
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::Node, Type::HighlightOn, nodes[key].ui_id));
+		recorder.addNewPhase();
+		recorder.addCommand(Command::createWaitCommand());
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::Node, Type::HighlightOff, nodes[key].ui_id));
+		return;
+	}
 	nodes[key] = Node(next_ui_id++);
+	recorder.addNewPhase();
+	recorder.addCommand(Command::createSpawnNodeCommand(nodes[key].ui_id, -1, key, { 0, 0 }));
+	recorder.addCommand(Command(Target::Node, Type::FadeIn, nodes[key].ui_id));
 }
 
 void Graph::removeNode(int key, GraphRecorder& recorder) {
-	if (nodes.find(key) == nodes.end()) return;
-
+	using Command = GraphAnimationCommand;
+	using Type = GraphAnimationType;
+	using Target = GraphAnimationTarget;
+	if (nodes.find(key) == nodes.end()) {
+		return;
+	}
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::Node, Type::HighlightOn, nodes[key].ui_id));
 	for (const auto& [neighbor_id, weight] : nodes[key].neighbors) {
 		int u = std::min(key, neighbor_id);
 		int v = std::max(key, neighbor_id);
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::Edge, Type::FadeOut, nodes[u].ui_id, nodes[v].ui_id));
 		edges.erase({ u, v });
 		nodes[neighbor_id].neighbors.erase(key);
 	}
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::Node, Type::FadeOut, nodes[key].ui_id));
 	nodes.erase(key);
 }
 
 void Graph::addEdge(int from, int to, int weight, GraphRecorder& recorder) {
+	using Command = GraphAnimationCommand;
+	using Type = GraphAnimationType;
+	using Target = GraphAnimationTarget;
 	int u = std::min(from, to);
 	int v = std::max(from, to);
-	if (edges.find({ u, v }) != edges.end()) return;
+	if (edges.find({ u, v }) != edges.end()) {
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::Edge, Type::HighlightOn, nodes[u].ui_id, nodes[v].ui_id));
+		recorder.addNewPhase();
+		recorder.addCommand(Command::createWaitCommand());
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::Edge, Type::HighlightOff, nodes[u].ui_id, nodes[v].ui_id));
+		return;
+	}
 	edges[{u, v}] = weight;
 	nodes[u].neighbors[v] = weight;
 	nodes[v].neighbors[u] = weight;
+	recorder.addNewPhase();
+	recorder.addCommand(Command::createSpawnEdgeCommand(nodes[u].ui_id, nodes[v].ui_id, weight));
+	recorder.addCommand(Command(Target::Edge, Type::FadeIn, nodes[u].ui_id, nodes[v].ui_id));
 }
 
 void Graph::removeEdge(int from, int to, GraphRecorder& recorder) {
+	using Command = GraphAnimationCommand;
+	using Type = GraphAnimationType;
+	using Target = GraphAnimationTarget;
 	int u = std::min(from, to);
 	int v = std::max(from, to);
+	if (edges.find({ u,v }) == edges.end()) {
+		return;
+	}
 	edges.erase({ u, v });
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::Edge, Type::FadeOut, nodes[u].ui_id, nodes[v].ui_id));
 	nodes[u].neighbors.erase(v);
 	nodes[v].neighbors.erase(u);
 }
 
 void Graph::modifyEdge(int from, int to, int new_weight, GraphRecorder& recorder) {
+	using Command = GraphAnimationCommand;
+	using Type = GraphAnimationType;
+	using Target = GraphAnimationTarget;
 	int u = std::min(from, to);
 	int v = std::max(from, to);
 	if (edges.find({ u, v }) != edges.end()) {
 		edges[{u, v}] = new_weight;
 		nodes[u].neighbors[v] = new_weight;
 		nodes[v].neighbors[u] = new_weight;
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::Edge, Type::HighlightOn, nodes[u].ui_id, nodes[v].ui_id));
+		recorder.addNewPhase();
+		recorder.addCommand(Command::createChangeValueCommand(nodes[u].ui_id, nodes[v].ui_id, new_weight));
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::Edge, Type::HighlightOff, nodes[u].ui_id, nodes[v].ui_id));
 	}
 }
 
 void Graph::runDijkstra(int start,  GraphRecorder& recorder) const {
+	using Command = GraphAnimationCommand;
+	using Type = GraphAnimationType;
+	using Target = GraphAnimationTarget;
 	const int INF = 1e9;
 	
 	if (nodes.find(start) == nodes.end()) return;
 
 	std::map<int, int> dist;
-	std::map<int, int> parent;
+	std::map<int, std::vector<int>> parent;
 	for (const auto& [id, node] : nodes) {
 		dist[id] = INF;
 	}
 	dist[start] = 0;
+	recorder.addNewPhase();
+	for (const auto& [val, u] : nodes) {
+		recorder.addCommand(Command::createChangeValueCommand(u.ui_id, INF));
+	}
+	recorder.addNewPhase();
+	recorder.addCommand(Command::createChangeValueCommand(nodes.at(start).ui_id, 0));
 
 	std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, std::greater<std::pair<int, int>>> pq;
 	pq.push({ 0, start });
@@ -147,20 +233,56 @@ void Graph::runDijkstra(int start,  GraphRecorder& recorder) const {
 		pq.pop();
 
 		if (d > dist[u]) continue;
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::Node, Type::HighlightOn, nodes.at(u).ui_id));
 
 		if (nodes.find(u) != nodes.end()) {
 			for (const auto& [v, weight] : nodes.at(u).neighbors) {
+				if (dist[u] > dist[v]) continue;
+				int x = std::min(u, v);
+				int y = std::max(u, v);
+				x = nodes.at(x).ui_id;
+				y = nodes.at(y).ui_id;
+				recorder.addNewPhase();
+				recorder.addCommand(Command(Target::Edge, Type::HighlightOn, x, y));
 				if (dist[u] + weight < dist[v]) {
 					dist[v] = dist[u] + weight;
-					parent[v] = u;
+					recorder.addNewPhase();
+					for (int i = 0; i < parent[v].size(); i++) {
+						int x = std::min(v, parent[v][i]);
+						int y = std::max(v, parent[v][i]);
+						x = nodes.at(x).ui_id;
+						y = nodes.at(y).ui_id;
+						recorder.addCommand(Command(Target::Edge, Type::FadeOut, x, y));
+					}
+					recorder.addNewPhase();
+					recorder.addCommand(Command::createChangeValueCommand(nodes.at(v).ui_id, dist[v]));
+					parent[v].clear();
 					pq.push({ dist[v], v });
 				}
+				if (dist[u] + weight == dist[v]) {
+					Command com = Command(Target::Edge, Type::InSPG, x, y);
+					com.flip_head = x == u ? 0 : 1;
+					com.in_spg = 1;
+					recorder.addNewPhase();
+					recorder.addCommand(com);
+					parent[v].push_back(u);
+					continue;
+				}
+				recorder.addNewPhase();
+				recorder.addCommand(Command(Target::Edge, Type::FadeOut, x, y));
 			}
 		}
+
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::Node, Type::HighlightOff, nodes.at(u).ui_id));
 	}
 }
 
 void Graph::runKruskal(GraphRecorder& recorder) const {
+	using Command = GraphAnimationCommand;
+	using Type = GraphAnimationType;
+	using Target = GraphAnimationTarget;
 	std::vector<std::pair<int, std::pair<int, int>>> edge_list;
 	for (const auto& [p, w] : edges) {
 		edge_list.push_back({ w, p });
@@ -186,8 +308,20 @@ void Graph::runKruskal(GraphRecorder& recorder) const {
 	for (const auto& [w, p] : edge_list) {
 		int u = root(root, p.first);
 		int v = root(root, p.second);
+		int x = p.first;
+		int y = p.second;
+		if (x > y) std::swap(x, y);
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::Edge, Type::HighlightOn, nodes.at(x).ui_id, nodes.at(y).ui_id));
+		recorder.addNewPhase();
+		recorder.addCommand(Command::createWaitCommand());
 		if (join(u, v)) {
 			MST += w;
+			recorder.addNewPhase();
+			recorder.addCommand(Command(Target::Edge, Type::FoundedOn, nodes.at(x).ui_id, nodes.at(y).ui_id));
+			continue;
 		}
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::Edge, Type::FadeOut, nodes.at(x).ui_id, nodes.at(y).ui_id));
 	}
 }

@@ -61,13 +61,14 @@ struct GraphAnimationCommand
         command.value = value;
         return command;
     }
-    static GraphAnimationCommand createSpawnEdgeCommand(int from_ui_id, int to_ui_id)
+    static GraphAnimationCommand createSpawnEdgeCommand(int from_ui_id, int to_ui_id, int weight)
     {
         GraphAnimationCommand command;
         command.target = GraphAnimationTarget::Edge;
         command.type = GraphAnimationType::Spawn;
         command.from_ui_id = from_ui_id;
         command.to_ui_id = to_ui_id;
+        command.value = weight;
         command.duration = getCommandDuration(command.type);
         return command;
     }
@@ -77,6 +78,16 @@ struct GraphAnimationCommand
 		command.type = GraphAnimationType::UpdateValue;
         command.value = value;
 		command.ui_id = ui_id;
+        command.duration = getCommandDuration(command.type);
+        return command;
+    }
+    static GraphAnimationCommand createChangeValueCommand(int from, int to, int value) {
+        GraphAnimationCommand command;
+        command.target = GraphAnimationTarget::Edge;
+        command.type = GraphAnimationType::UpdateValue;
+        command.value = value;
+        command.from_ui_id = from;
+        command.to_ui_id = to;
         command.duration = getCommandDuration(command.type);
         return command;
     }
@@ -95,6 +106,8 @@ struct GraphAnimationCommand
     int ui_id;
     int from_ui_id, to_ui_id;
     int spawn_from_ui_id;
+    bool flip_head = 0;
+    bool in_spg = 0;
     int value = 0;
     float duration = 1.f;
 };

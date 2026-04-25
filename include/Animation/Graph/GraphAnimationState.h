@@ -4,7 +4,8 @@
 struct GraphAnimationNode {
 	int value;
 	int ui_id;
-	int alpha;
+	int node_alpha;
+	int value_alpha;
 	bool disable_physics = false;
 	sf::Color fill_color;
 };
@@ -12,7 +13,11 @@ struct GraphAnimationNode {
 struct GraphAnimationEdge {
 	int from_ui_id;
 	int to_ui_id;
-	int alpha;
+	int edge_alpha;
+	int weight_alpha;
+	int weight;
+	bool in_spg = 0;
+	bool flip_head = 0;
 	bool disable_physics = false;
 	sf::Color fill_color;
 };

@@ -18,7 +18,7 @@ GraphUI::GraphUI(const AssetManager& a_manager) :
 	init_panel(a_manager),
 	code_panel(a_manager, "Consola")
 {
-	init_panel.setPlaceHolderForManualInput("Input value manually, format : x y z");
+	init_panel.setPlaceHolderForManualInput("Manual input: (nodes count, edge info [u, v, w])");
 }
 
 void GraphUI::update(const sf::RenderWindow& window, const sf::View& fixed_view, const sf::View& cam_view) {
@@ -78,7 +78,28 @@ void GraphUI::Init(const sf::RenderWindow& window, const sf::View& view, sf::Vie
 		graph.rawInit({}, {});
 	}
 	else if (data.operation == PanelOperation::Random) {
-
+		int n = rand(7, 11);
+		int m = rand(11, 15);
+		std::vector<std::tuple<int, int, int>> edges;
+		bool tree_guarantee = n & 1;
+		if (tree_guarantee) {
+			for (int i = 1; i < n; i++) {
+				int u = rand(0, i - 1);
+				int v = i;
+				int weight = rand(1, 100);
+				edges.push_back({ u,v,weight });
+			}
+			m = rand(5, 8);
+		}
+		for (int i = 0; i < m; i++) {
+			int u = rand(0, n);
+			int v = rand(0, n);
+			while (u == v) v = rand(0, n);
+			if (u > v) std::swap(u, v);
+			int weight = rand(1, 100);
+			edges.push_back({ u, v, weight });
+		}
+		graph.rawInit(n, edges);
 	}
 	else if (data.operation == PanelOperation::Manual) {
 
@@ -101,7 +122,7 @@ void GraphUI::handleEvent(const sf::RenderWindow& window, const sf::View& view, 
 	if (ui_state == UIState::Running) {
 		code_panel.handleEvent(window, view, ev);
 		if (const auto op = panel.handleEvent(window, view, ev); op.has_value()) {
-			std::cout << "Hallo\n";
+			//std::cout << "Hallo\n";
 			recorder.clear();
 			graph.applyOperation(*op, recorder);
 			GraphState prev = current_state;

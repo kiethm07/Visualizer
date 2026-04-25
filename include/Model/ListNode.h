@@ -14,7 +14,7 @@ public:
 	void setCharacterSize(const unsigned int& size);
 	void setCharacterColor(const sf::Color& color);
 	void setOutlineColor(const sf::Color& color);
-	//void handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
+	void handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
 	void update(const sf::RenderWindow& window, const sf::View& view);
 	bool mousePressed(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
 	bool contains(const sf::RenderWindow& window, const sf::View& view, const sf::Vector2f& position);
@@ -24,15 +24,19 @@ public:
 	int getRadius();
 	sf::FloatRect getGlobalBounds();
 	std::string getLabel();
-private:
+	bool isDragging() const {
+		return is_dragging;
+	}
+protected:
 	sf::CircleShape container;
 	sf::Text text;
+	sf::Vector2f drag_offset;
 	bool hovered = 0;
+	bool is_dragging = 0;
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
 		target.draw(container, states);
 		target.draw(text, states);
 	}
-
 	const sf::Color IDLE_COLOR = sf::Color(89, 145, 46);
 	const sf::Color HOVER_COLOR = sf::Color(209, 70, 38);
 
