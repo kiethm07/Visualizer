@@ -18,7 +18,7 @@ file(GLOB_RECURSE HEADER_FILES CONFIGURE_DEPENDS include/*.h)
 add_executable(Visualizer ${SRC_FILES} ${HEADER_FILES})
 
 target_compile_features(Visualizer PRIVATE cxx_std_17)
-target_link_libraries(Visualizer PRIVATE SFML::Graphics)
+target_link_libraries(Visualizer PRIVATE SFML::Graphics SFML::Audio)
 
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Visualizer)
 

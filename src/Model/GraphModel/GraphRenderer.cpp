@@ -115,6 +115,7 @@ void GraphRenderer::draw(sf::RenderWindow& window, const sf::View& view) {
 
         if (edges[i].in_spg == 0) {
             GraphEdge edge(a_manager.getFont("Roboto-Regular"), edges[i].weight, u_pos, v_pos, 3.f);
+            //std::cout << edges[i].edge_alpha << " " << edges[i].weight_alpha << "\n";
 
             sf::Color edge_color = edges[i].fill_color;
             edge_color.a = edges[i].edge_alpha;
@@ -123,6 +124,7 @@ void GraphRenderer::draw(sf::RenderWindow& window, const sf::View& view) {
             sf::Color weight_color = DEFAULT_WEIGHT_COLOR;
             weight_color.a = edges[i].weight_alpha;
             edge.setWeightColor(weight_color);
+
 
             window.draw(edge);
         }

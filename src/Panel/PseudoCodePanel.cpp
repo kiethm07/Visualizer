@@ -9,6 +9,9 @@ PseudoCodePanel::PseudoCodePanel(const AssetManager& asset_manager, const std::s
 	maximize_button(asset_manager.getFont(font_name), "+", { 0, 0 }, BUTTON_SIZE, 20)
 {
 	position = { 600, 600 };
+	title.setCornerRadius(0);
+	minimize_button.setCornerRadius(0);
+	maximize_button.setCornerRadius(0);
 	updateButtonPosition();
 }
 

@@ -196,11 +196,12 @@ void GraphAnimator::applyCommandOnNode(GraphAnimationNode& node, const GraphAnim
 void GraphAnimator::applyCommandOnEdge(GraphAnimationEdge& edge, const GraphAnimationCommand& command, const float& progress) const {
 	using Type = GraphAnimationType;
 
-	if (command.type == GraphAnimationType::FadeIn) {
+	if (command.type == Type::FadeIn) {
 		edge.edge_alpha = edge.weight_alpha = lerpByte(0, 255, progress);
-		if (edge.edge_alpha = 255) edge.disable_physics = 0;
+		//std::cout << edge.edge_alpha << " " << edge.weight_alpha << "\n";
+		if (edge.edge_alpha == 255) edge.disable_physics = 0;
 	}
-	else if (command.type == GraphAnimationType::FadeOut) {
+	else if (command.type == Type::FadeOut) {
 		edge.edge_alpha = edge.weight_alpha = lerpByte(255, 0, progress);
 		if (edge.edge_alpha == 0) edge.disable_physics = 1;
 	}
@@ -229,7 +230,7 @@ void GraphAnimator::applyCommandOnEdge(GraphAnimationEdge& edge, const GraphAnim
 			edge.edge_alpha = lerpByte(0, 255, (progress - 0.5f) * 2);
 		}
 	}
-	else if (command.type == GraphAnimationType::UpdateValue) {
+	else if (command.type == Type::UpdateValue) {
 		if (progress <= 0.5f) {
 			edge.weight_alpha = lerpByte(255, 0, progress * 2);
 		}
@@ -296,7 +297,9 @@ void GraphAnimator::applyCommand(const GraphAnimationCommand& command, const Gra
 		for (int i = 0; i < (int)edges.size(); i++) {
 			if (edges[i].from_ui_id == command.from_ui_id && edges[i].to_ui_id == command.to_ui_id) {
 				GraphAnimationEdge e = edges[i];
+				//std::cout << "Pre: " << e.weight_alpha << " " << e.edge_alpha << "\n";
 				applyCommandOnEdge(e, command, progress);
+				//std::cout << "Pos: " << e.weight_alpha << " " << e.edge_alpha << "\n";
 				state.modifyEdge(e, i);
 				return;
 			}

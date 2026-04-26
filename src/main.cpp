@@ -5,7 +5,9 @@
 
 int main() {
     AssetManager asset_manager;
-    asset_manager.loadAllFontFromFile();
+    asset_manager.loadAllFontsFromFile();
+    asset_manager.loadAllTexturesFromFile();
+    asset_manager.loadAllSoundsFromFile();
     UI ui(asset_manager);
     //asset_manager.printAllFont();
     ui.run();

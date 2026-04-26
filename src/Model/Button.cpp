@@ -7,9 +7,20 @@ Button::Button(const sf::Font& font, const std::string& label, const sf::Vector2
 	container.setPosition(pos);
 	container.setSize(size);
 	container.setFillColor(IDLE_COLOR);
-	container.setOutlineThickness(1);
-	container.setOutlineColor(sf::Color::White);
+	container.setOutlineThickness(1.5f);
+	container.setOutlineColor(sf::Color(255, 255, 255, 100));
+	container.setCornerRadius(10.f);
+	container.setPointCount(10);
+	text.setFillColor(TEXT_IDLE);
 	centerText();
+}
+
+void Button::setCornerRadius(float f) {
+	container.setCornerRadius(f);
+}
+
+void Button::setPointCount(int point_count) {
+	container.setPointCount(point_count);
 }
 
 void Button::setOutlineColor(const sf::Color& color) {
@@ -75,10 +86,34 @@ bool Button::contains(const sf::RenderWindow& window, const sf::View& view, cons
 	return container.getGlobalBounds().contains(mouse_world);
 }
 
+//void Button::update(const sf::RenderWindow& window, const sf::View& view) {
+//	sf::Vector2f mouse_world = window.mapPixelToCoords(sf::Mouse::getPosition(window), view);
+//	hovered = container.getGlobalBounds().contains(mouse_world);
+//	container.setFillColor(hovered ? HOVER_COLOR : IDLE_COLOR);
+//}
+
 void Button::update(const sf::RenderWindow& window, const sf::View& view) {
 	sf::Vector2f mouse_world = window.mapPixelToCoords(sf::Mouse::getPosition(window), view);
 	hovered = container.getGlobalBounds().contains(mouse_world);
-	container.setFillColor(hovered ? HOVER_COLOR : IDLE_COLOR);
+
+	if (hovered) {
+		targetScale = 1.05f; 
+		container.setFillColor(HOVER_COLOR);
+		container.setOutlineColor(NEON_CYAN); 
+		container.setOutlineThickness(3.0f);  
+		text.setFillColor(sf::Color::White);
+	}
+	else {
+		targetScale = 1.0f;
+		container.setFillColor(IDLE_COLOR);
+		container.setOutlineColor(sf::Color(255, 255, 255, 100));
+		container.setOutlineThickness(1.5f);
+		text.setFillColor(TEXT_IDLE);
+	}
+
+	currentScale += (targetScale - currentScale) * 0.2f;
+	container.setScale({ currentScale, currentScale });
+	text.setScale({ currentScale, currentScale });
 }
 
 bool Button::mousePressed(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev) {

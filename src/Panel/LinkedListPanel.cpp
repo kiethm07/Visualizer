@@ -14,11 +14,11 @@ LinkedListPanel::LinkedListPanel(const sf::Font& BUTTON_FONT) :
 	BUTTON_FONT(BUTTON_FONT),
 	input_value(BUTTON_FONT, "value", {}, {}, 20, 0),
 	input_position(BUTTON_FONT, "position", {}, {}, 20, 0),
-	insert_button(BUTTON_FONT, "insert", {}, {}, 20),
-	remove_button(BUTTON_FONT, "remove", {}, {}, 20),
-	update_button(BUTTON_FONT, "update", {}, {}, 20),
-	search_button(BUTTON_FONT, "search", {}, {}, 20),
-	reset_button(BUTTON_FONT, "reset", {}, {}, 20)
+	insert_button(BUTTON_FONT, "Insert", {}, {}, 20),
+	remove_button(BUTTON_FONT, "Remove", {}, {}, 20),
+	update_button(BUTTON_FONT, "Update", {}, {}, 20),
+	search_button(BUTTON_FONT, "Search", {}, {}, 20),
+	reset_button(BUTTON_FONT, "Reset", {}, {}, 20)
 {
 	background.setFillColor(sf::Color::White);
 	background.setOrigin({ 0, 0 });

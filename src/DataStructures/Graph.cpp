@@ -31,29 +31,56 @@ void Graph::loadState(const GraphState& state) {
 }
 
 void Graph::applyOperation(const GraphOperation& operation, GraphRecorder& recorder) {
+	using Command = GraphAnimationCommand;
+	using Type = GraphAnimationType;
+	using Target = GraphAnimationTarget;
 	if (operation.type == GraphOperationType::InsertNode) {
 		insertNode(operation.value, recorder);
+		recorder.addNewPhase();
+		recorder.addCommand(Command::createWaitCommand());
+		recorder.setHighlightedLine(3);
 	}
 	else if (operation.type == GraphOperationType::RemoveNode) {
 		removeNode(operation.value, recorder);
+		recorder.addNewPhase();
+		recorder.addCommand(Command::createWaitCommand());
+		recorder.setHighlightedLine(5);
 	}
 	else if (operation.type == GraphOperationType::InsertEdge) {
 		addEdge(operation.from, operation.to, operation.weight, recorder);
+		recorder.addNewPhase();
+		recorder.addCommand(Command::createWaitCommand());
+		recorder.setHighlightedLine(3);
 	}
 	else if (operation.type == GraphOperationType::RemoveEdge) {
 		removeEdge(operation.from, operation.to, recorder);
+		recorder.addNewPhase();
+		recorder.addCommand(Command::createWaitCommand());
+		recorder.setHighlightedLine(3);
 	}
 	else if (operation.type == GraphOperationType::ModifyEdge) {
 		modifyEdge(operation.from, operation.to, operation.weight, recorder);
+		recorder.addNewPhase();
+		recorder.addCommand(Command::createWaitCommand());
+		recorder.setHighlightedLine(2);
 	}
 	else if (operation.type == GraphOperationType::Dijkstra) {
 		runDijkstra(operation.value, recorder);
+		recorder.addNewPhase();
+		recorder.addCommand(Command::createWaitCommand());
+		recorder.setHighlightedLine(13);
 	}
 	else if (operation.type == GraphOperationType::Kruskal) {
 		runKruskal(recorder);
+		recorder.addNewPhase();
+		recorder.addCommand(Command::createWaitCommand());
+		recorder.setHighlightedLine(5);
 	}
 	else if (operation.type == GraphOperationType::Reset) {
 		clear(recorder);
+		recorder.addNewPhase();
+		recorder.addCommand(Command::createWaitCommand());
+		recorder.setHighlightedLine(1);
 	}
 }
 
@@ -88,17 +115,20 @@ void Graph::clear(GraphRecorder& recorder) {
 	using Target = GraphAnimationTarget;
 	for (const auto& [value, u] : nodes) {
 		recorder.addNewPhase();
+		recorder.setHighlightedLine(0);
 		recorder.addCommand(Command(Target::Node, Type::HighlightOn, nodes[value].ui_id));
 		for (const auto& [v, weight] : nodes.at(value).neighbors) {
 			int x = std::min(value, v);
 			int y = std::max(value, v);
 			if (edges.find({ x,y }) != edges.end()) {
 				recorder.addNewPhase();
+				recorder.setHighlightedLine(0);
 				recorder.addCommand(Command(Target::Edge, Type::FadeOut, nodes[x].ui_id, nodes[y].ui_id));
 				edges.erase({ x,y });
 			}
 		}
 		recorder.addNewPhase();
+		recorder.setHighlightedLine(0);
 		recorder.addCommand(Command(Target::Node, Type::FadeOut, nodes[value].ui_id));
 	}
 	nodes.clear();
@@ -109,17 +139,24 @@ void Graph::insertNode(int key, GraphRecorder& recorder) {
 	using Command = GraphAnimationCommand;
 	using Type = GraphAnimationType;
 	using Target = GraphAnimationTarget;
+	recorder.addNewPhase();
+	recorder.addCommand(Command::createWaitCommand());
+	recorder.setHighlightedLine(0);
 	if (nodes.find(key) != nodes.end()) {
 		recorder.addNewPhase();
+		recorder.setHighlightedLine(0);
 		recorder.addCommand(Command(Target::Node, Type::HighlightOn, nodes[key].ui_id));
 		recorder.addNewPhase();
+		recorder.setHighlightedLine(0);
 		recorder.addCommand(Command::createWaitCommand());
 		recorder.addNewPhase();
+		recorder.setHighlightedLine(1);
 		recorder.addCommand(Command(Target::Node, Type::HighlightOff, nodes[key].ui_id));
 		return;
 	}
 	nodes[key] = Node(next_ui_id++);
 	recorder.addNewPhase();
+	recorder.setHighlightedLine(2);
 	recorder.addCommand(Command::createSpawnNodeCommand(nodes[key].ui_id, -1, key, { 0, 0 }));
 	recorder.addCommand(Command(Target::Node, Type::FadeIn, nodes[key].ui_id));
 }
@@ -128,20 +165,29 @@ void Graph::removeNode(int key, GraphRecorder& recorder) {
 	using Command = GraphAnimationCommand;
 	using Type = GraphAnimationType;
 	using Target = GraphAnimationTarget;
+	recorder.addNewPhase();
+	recorder.setHighlightedLine(0);
+	recorder.addCommand(Command::createWaitCommand());
 	if (nodes.find(key) == nodes.end()) {
+		recorder.addNewPhase();
+		recorder.setHighlightedLine(1);
+		recorder.addCommand(Command::createWaitCommand());
 		return;
 	}
 	recorder.addNewPhase();
+	recorder.setHighlightedLine(2);
 	recorder.addCommand(Command(Target::Node, Type::HighlightOn, nodes[key].ui_id));
 	for (const auto& [neighbor_id, weight] : nodes[key].neighbors) {
 		int u = std::min(key, neighbor_id);
 		int v = std::max(key, neighbor_id);
 		recorder.addNewPhase();
+		recorder.setHighlightedLine(3);
 		recorder.addCommand(Command(Target::Edge, Type::FadeOut, nodes[u].ui_id, nodes[v].ui_id));
 		edges.erase({ u, v });
 		nodes[neighbor_id].neighbors.erase(key);
 	}
 	recorder.addNewPhase();
+	recorder.setHighlightedLine(4);
 	recorder.addCommand(Command(Target::Node, Type::FadeOut, nodes[key].ui_id));
 	nodes.erase(key);
 }
@@ -152,12 +198,18 @@ void Graph::addEdge(int from, int to, int weight, GraphRecorder& recorder) {
 	using Target = GraphAnimationTarget;
 	int u = std::min(from, to);
 	int v = std::max(from, to);
+	recorder.addNewPhase();
+	recorder.setHighlightedLine(0);
+	recorder.addCommand(Command::createWaitCommand());
 	if (edges.find({ u, v }) != edges.end()) {
 		recorder.addNewPhase();
+		recorder.setHighlightedLine(0);
 		recorder.addCommand(Command(Target::Edge, Type::HighlightOn, nodes[u].ui_id, nodes[v].ui_id));
 		recorder.addNewPhase();
+		recorder.setHighlightedLine(0);
 		recorder.addCommand(Command::createWaitCommand());
 		recorder.addNewPhase();
+		recorder.setHighlightedLine(1);
 		recorder.addCommand(Command(Target::Edge, Type::HighlightOff, nodes[u].ui_id, nodes[v].ui_id));
 		return;
 	}
@@ -165,6 +217,7 @@ void Graph::addEdge(int from, int to, int weight, GraphRecorder& recorder) {
 	nodes[u].neighbors[v] = weight;
 	nodes[v].neighbors[u] = weight;
 	recorder.addNewPhase();
+	recorder.setHighlightedLine(2);
 	recorder.addCommand(Command::createSpawnEdgeCommand(nodes[u].ui_id, nodes[v].ui_id, weight));
 	recorder.addCommand(Command(Target::Edge, Type::FadeIn, nodes[u].ui_id, nodes[v].ui_id));
 }
@@ -175,11 +228,18 @@ void Graph::removeEdge(int from, int to, GraphRecorder& recorder) {
 	using Target = GraphAnimationTarget;
 	int u = std::min(from, to);
 	int v = std::max(from, to);
+	recorder.addNewPhase();
+	recorder.setHighlightedLine(0);
+	recorder.addCommand(Command::createWaitCommand());
 	if (edges.find({ u,v }) == edges.end()) {
+		recorder.addNewPhase();
+		recorder.setHighlightedLine(1);
+		recorder.addCommand(Command::createWaitCommand());
 		return;
 	}
 	edges.erase({ u, v });
 	recorder.addNewPhase();
+	recorder.setHighlightedLine(2);
 	recorder.addCommand(Command(Target::Edge, Type::FadeOut, nodes[u].ui_id, nodes[v].ui_id));
 	nodes[u].neighbors.erase(v);
 	nodes[v].neighbors.erase(u);
@@ -191,15 +251,21 @@ void Graph::modifyEdge(int from, int to, int new_weight, GraphRecorder& recorder
 	using Target = GraphAnimationTarget;
 	int u = std::min(from, to);
 	int v = std::max(from, to);
+	recorder.addNewPhase();
+	recorder.setHighlightedLine(0);
+	recorder.addCommand(Command::createWaitCommand());
 	if (edges.find({ u, v }) != edges.end()) {
 		edges[{u, v}] = new_weight;
 		nodes[u].neighbors[v] = new_weight;
 		nodes[v].neighbors[u] = new_weight;
 		recorder.addNewPhase();
+		recorder.setHighlightedLine(0);
 		recorder.addCommand(Command(Target::Edge, Type::HighlightOn, nodes[u].ui_id, nodes[v].ui_id));
 		recorder.addNewPhase();
+		recorder.setHighlightedLine(1);
 		recorder.addCommand(Command::createChangeValueCommand(nodes[u].ui_id, nodes[v].ui_id, new_weight));
 		recorder.addNewPhase();
+		recorder.setHighlightedLine(1);
 		recorder.addCommand(Command(Target::Edge, Type::HighlightOff, nodes[u].ui_id, nodes[v].ui_id));
 	}
 }
@@ -220,56 +286,81 @@ void Graph::runDijkstra(int start,  GraphRecorder& recorder) const {
 	dist[start] = 0;
 	recorder.addNewPhase();
 	for (const auto& [val, u] : nodes) {
+		recorder.setHighlightedLine(0);
 		recorder.addCommand(Command::createChangeValueCommand(u.ui_id, INF));
 	}
 	recorder.addNewPhase();
+	recorder.setHighlightedLine(0);
 	recorder.addCommand(Command::createChangeValueCommand(nodes.at(start).ui_id, 0));
 
 	std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, std::greater<std::pair<int, int>>> pq;
 	pq.push({ 0, start });
+	recorder.addNewPhase();
+	recorder.setHighlightedLine(1);
+	recorder.addCommand(Command::createWaitCommand());
 
 	while (!pq.empty()) {
 		auto [d, u] = pq.top();
 		pq.pop();
-
+		recorder.addNewPhase();
+		recorder.setHighlightedLine(2);
+		recorder.addCommand(Command::createWaitCommand());
 		if (d > dist[u]) continue;
 		recorder.addNewPhase();
+		recorder.setHighlightedLine(3);
 		recorder.addCommand(Command(Target::Node, Type::HighlightOn, nodes.at(u).ui_id));
 
 		if (nodes.find(u) != nodes.end()) {
 			for (const auto& [v, weight] : nodes.at(u).neighbors) {
+				recorder.addNewPhase();
+				recorder.setHighlightedLine(4);
+				recorder.addCommand(Command::createWaitCommand());
 				if (dist[u] > dist[v]) continue;
 				int x = std::min(u, v);
 				int y = std::max(u, v);
 				x = nodes.at(x).ui_id;
 				y = nodes.at(y).ui_id;
 				recorder.addNewPhase();
+				recorder.setHighlightedLine(5);
 				recorder.addCommand(Command(Target::Edge, Type::HighlightOn, x, y));
 				if (dist[u] + weight < dist[v]) {
 					dist[v] = dist[u] + weight;
+					recorder.addNewPhase();
+					recorder.setHighlightedLine(6);
+					recorder.addCommand(Command::createChangeValueCommand(nodes.at(v).ui_id, dist[v]));
 					recorder.addNewPhase();
 					for (int i = 0; i < parent[v].size(); i++) {
 						int x = std::min(v, parent[v][i]);
 						int y = std::max(v, parent[v][i]);
 						x = nodes.at(x).ui_id;
 						y = nodes.at(y).ui_id;
+						recorder.setHighlightedLine(7);
 						recorder.addCommand(Command(Target::Edge, Type::FadeOut, x, y));
 					}
-					recorder.addNewPhase();
-					recorder.addCommand(Command::createChangeValueCommand(nodes.at(v).ui_id, dist[v]));
 					parent[v].clear();
+					recorder.addNewPhase();
+					recorder.setHighlightedLine(8);
+					recorder.addCommand(Command::createWaitCommand());
 					pq.push({ dist[v], v });
 				}
+				recorder.addNewPhase();
+				recorder.setHighlightedLine(9);
+				recorder.addCommand(Command::createWaitCommand());
 				if (dist[u] + weight == dist[v]) {
 					Command com = Command(Target::Edge, Type::InSPG, x, y);
 					com.flip_head = x == u ? 0 : 1;
 					com.in_spg = 1;
 					recorder.addNewPhase();
+					recorder.setHighlightedLine(10);
 					recorder.addCommand(com);
 					parent[v].push_back(u);
+					recorder.addNewPhase();
+					recorder.setHighlightedLine(11);
+					recorder.addCommand(Command::createWaitCommand());
 					continue;
 				}
 				recorder.addNewPhase();
+				recorder.setHighlightedLine(12);
 				recorder.addCommand(Command(Target::Edge, Type::FadeOut, x, y));
 			}
 		}
@@ -287,6 +378,9 @@ void Graph::runKruskal(GraphRecorder& recorder) const {
 	for (const auto& [p, w] : edges) {
 		edge_list.push_back({ w, p });
 	}
+	recorder.addNewPhase();
+	recorder.addCommand(Command::createWaitCommand());
+	recorder.setHighlightedLine(0);
 	std::sort(edge_list.begin(), edge_list.end());
 	std::map<int, int> parent;
 	for (const auto& [value, node] : nodes) {
@@ -313,15 +407,19 @@ void Graph::runKruskal(GraphRecorder& recorder) const {
 		if (x > y) std::swap(x, y);
 		recorder.addNewPhase();
 		recorder.addCommand(Command(Target::Edge, Type::HighlightOn, nodes.at(x).ui_id, nodes.at(y).ui_id));
+		recorder.setHighlightedLine(0);
 		recorder.addNewPhase();
 		recorder.addCommand(Command::createWaitCommand());
+		recorder.setHighlightedLine(2);
 		if (join(u, v)) {
 			MST += w;
 			recorder.addNewPhase();
+			recorder.setHighlightedLine(4);
 			recorder.addCommand(Command(Target::Edge, Type::FoundedOn, nodes.at(x).ui_id, nodes.at(y).ui_id));
 			continue;
 		}
 		recorder.addNewPhase();
+		recorder.setHighlightedLine(3);
 		recorder.addCommand(Command(Target::Edge, Type::FadeOut, nodes.at(x).ui_id, nodes.at(y).ui_id));
 	}
 }

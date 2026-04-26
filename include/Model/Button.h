@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <Model/RoundedRectangleShape.h>
 #include <string>
 #include <iostream>
 #include <cmath>
@@ -14,6 +15,8 @@ public:
 	void setCharacterSize(const unsigned int& size);
 	void setCharacterColor(const sf::Color& color);
 	void setOutlineColor(const sf::Color& color);
+	void setCornerRadius(float radius);
+	void setPointCount(int point_count);
 	//void handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
 	void update(const sf::RenderWindow& window, const sf::View& view);
 	bool mousePressed(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
@@ -26,16 +29,22 @@ public:
 	sf::FloatRect getGlobalBounds() const;
 	std::string getLabel() const;
 protected:
-	sf::RectangleShape container;
+	RoundedRectangleShape container;
 	sf::Text text;
 	bool hovered = 0;
+	float currentScale = 1.0f;
+	float targetScale = 1.0f;
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
 		target.draw(container, states);
 		target.draw(text, states);
 	}
 
-	const sf::Color IDLE_COLOR = sf::Color(89, 145, 46);
-	const sf::Color HOVER_COLOR = sf::Color(209, 70, 38);
+	//const sf::Color IDLE_COLOR = sf::Color(89, 145, 46);
+	//const sf::Color HOVER_COLOR = sf::Color(209, 70, 38);
 
+	const sf::Color IDLE_COLOR = sf::Color(45, 45, 50, 230);      
+	const sf::Color HOVER_COLOR = sf::Color(60, 60, 70, 255);    
+	const sf::Color NEON_CYAN = sf::Color(0, 255, 255);         
+	const sf::Color TEXT_IDLE = sf::Color(200, 200, 200);
 	void centerText();
 };
