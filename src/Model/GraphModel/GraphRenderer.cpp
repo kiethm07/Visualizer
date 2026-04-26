@@ -156,7 +156,10 @@ void GraphRenderer::draw(sf::RenderWindow& window, const sf::View& view) {
 
     if (popup.ui_id != 0 && popup.popup_alpha > 0) {
         sf::View oldView = window.getView();
-        window.setView(window.getDefaultView());
+
+        sf::Vector2f winSize(window.getSize().x, window.getSize().y);
+        sf::View uiView(sf::FloatRect({ 0.f, 0.f }, winSize));
+        window.setView(uiView);
 
         std::string label = "";
         if (popup.ui_id == -2) {
@@ -173,7 +176,9 @@ void GraphRenderer::draw(sf::RenderWindow& window, const sf::View& view) {
         pText.setFillColor(textColor);
 
         sf::FloatRect bounds = pText.getLocalBounds();
-        sf::RectangleShape pRect(sf::Vector2f(bounds.size.x + 30.f, bounds.size.y + 20.f));
+
+        sf::Vector2f rectSize(std::round(bounds.size.x + 30.f), std::round(bounds.size.y + 20.f));
+        sf::RectangleShape pRect(rectSize);
 
         sf::Color bgColor = sf::Color(40, 40, 40);
         bgColor.a = popup.popup_alpha;
@@ -184,12 +189,25 @@ void GraphRenderer::draw(sf::RenderWindow& window, const sf::View& view) {
         pRect.setOutlineThickness(2.f);
         pRect.setOutlineColor(outlineColor);
 
-        float winWidth = window.getDefaultView().getSize().x;
-        pRect.setPosition({ winWidth - pRect.getSize().x - 20.f, 20.f });
-        pText.setPosition({ pRect.getPosition().x + 15.f - bounds.position.x, pRect.getPosition().y + 10.f - bounds.position.y });
+        sf::Vector2f rectPos;
+        rectPos.x = std::round(winSize.x - rectSize.x - 20.f);
+        rectPos.y = 20.f;
+        pRect.setPosition(rectPos);
+
+        sf::Vector2f center = pRect.getPosition() + pRect.getSize() / 2.f;
+        sf::Vector2f text_origin = bounds.position + bounds.size / 2.f;
+
+        text_origin.x = std::round(text_origin.x);
+        text_origin.y = std::round(text_origin.y);
+        center.x = std::round(center.x);
+        center.y = std::round(center.y);
+
+        pText.setOrigin(text_origin);
+        pText.setPosition(center);
 
         window.draw(pRect);
         window.draw(pText);
+
         window.setView(oldView);
     }
 }

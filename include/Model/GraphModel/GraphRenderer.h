@@ -8,6 +8,7 @@
 #include <Animation/Graph/GraphAnimationState.h>
 #include <string>
 #include <algorithm>
+#include <cmath>
 
 class GraphRenderer {
 public:
