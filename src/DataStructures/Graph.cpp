@@ -165,15 +165,16 @@ void Graph::rawInit(int node_cnt, const std::vector<std::tuple<int, int, int>>& 
 	//for (int value : nodes) {
 	//	insertNode(value, GraphRecorder());
 	//}
+	GraphRecorder dummy;
 	for (int i = 0; i < node_cnt; i++) {
-		insertNode(i, GraphRecorder());
+		insertNode(i, dummy);
 	}
 	for (const auto& [u, v, w] : edges) {
 		int x = u;
 		int y = v;
 		if (x > y) std::swap(x, y);
 		if (added_edges.count({x,y})) continue;
-		addEdge(x, y, w, GraphRecorder());
+		addEdge(x, y, w, dummy);
 		added_edges.insert({ x, y });
 	}
 }
