@@ -15,7 +15,7 @@ public:
         weight_text.setFillColor(color);
     }
 
-    void GraphEdge::updateWeightPosition() {
+    void updateWeightPosition() {
         sf::Vector2f start = getPosition();
         sf::Vector2f end = getTarget();
         sf::Vector2f mid = (start + end) / 2.f;
