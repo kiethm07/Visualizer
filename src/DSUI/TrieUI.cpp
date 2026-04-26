@@ -80,7 +80,8 @@ void TrieUI::Init(const sf::RenderWindow& window, const sf::View& view, sf::View
 	current_state = trie.getState();
 	timeline.clear();
 	timeline.setInitialState(current_state);
-	timeline.generateAnimation(current_state, current_state, TrieRecorder());
+	TrieRecorder dummy;
+	timeline.generateAnimation(current_state, current_state, dummy);
 }
 std::optional<MenuState> TrieUI::handleEvent(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const sf::Event& ev) {
 	if (ui_state == UIState::Init) {
@@ -100,11 +101,12 @@ std::optional<MenuState> TrieUI::handleEvent(const sf::RenderWindow& window, con
 			}
 			else if (op->type == TrieOperationType::Load) {
 				if (op->file_path.empty()) return std::nullopt;
-				trie.applyOperation(*op, TrieRecorder());
+				TrieRecorder dummy;
+				trie.applyOperation(*op, dummy);
 				current_state = trie.getState();
 				timeline.clear();
 				timeline.setInitialState(current_state);
-				timeline.generateAnimation(current_state, current_state, TrieRecorder());
+				timeline.generateAnimation(current_state, current_state, dummy);
 			}
 			else {
 				trie.applyOperation(*op, recorder);

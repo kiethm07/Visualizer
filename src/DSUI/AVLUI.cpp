@@ -94,7 +94,8 @@ void AVLUI::Init(const sf::RenderWindow& window, const sf::View& view, sf::View&
 	current_state = avl.getState();
 	timeline.clear();
 	timeline.setInitialState(current_state);
-	timeline.generateAnimation(current_state, current_state, AVLRecorder());
+	AVLRecorder dummy;
+	timeline.generateAnimation(current_state, current_state, dummy);
 }
 
 std::optional<MenuState> AVLUI::handleEvent(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const sf::Event& ev) {
@@ -115,11 +116,12 @@ std::optional<MenuState> AVLUI::handleEvent(const sf::RenderWindow& window, cons
 			}
 			else if (op->type == AVLOperationType::Load) {
 				if (op->file_path.empty()) return std::nullopt;
-				avl.applyOperation(*op, AVLRecorder());
+				AVLRecorder dummy;
+				avl.applyOperation(*op, dummy);
 				current_state = avl.getState();
 				timeline.clear();
 				timeline.setInitialState(current_state);
-				timeline.generateAnimation(current_state, current_state, AVLRecorder());
+				timeline.generateAnimation(current_state, current_state, dummy);
 			}
 			else {
 				avl.applyOperation(*op, recorder);

@@ -110,7 +110,8 @@ void GraphUI::Init(const sf::RenderWindow& window, const sf::View& view, sf::Vie
 	current_state = graph.getState();
 	timeline.clear();
 	timeline.setInitialState(current_state);
-	timeline.generateAnimation(current_state, current_state, GraphRecorder());
+	GraphRecorder dummy;
+	timeline.generateAnimation(current_state, current_state, dummy);
 }
 
 std::optional<MenuState> GraphUI::handleEvent(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const sf::Event& ev) {
@@ -131,11 +132,12 @@ std::optional<MenuState> GraphUI::handleEvent(const sf::RenderWindow& window, co
 			}
 			else if (op->type == GraphOperationType::Load) {
 				if (op->file_path.empty()) return std::nullopt;
-				graph.applyOperation(*op, GraphRecorder());
+				GraphRecorder dummy;
+				graph.applyOperation(*op, dummy);
 				current_state = graph.getState();
 				timeline.clear();
 				timeline.setInitialState(current_state);
-				timeline.generateAnimation(current_state, current_state, GraphRecorder());
+				timeline.generateAnimation(current_state, current_state, dummy);
 			}
 			else {
 				graph.applyOperation(*op, recorder);

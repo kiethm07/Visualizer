@@ -96,7 +96,8 @@ void LinkedListUI::Init(const sf::RenderWindow& window, const sf::View& view, sf
 	current_state = list.getState();
 	timeline.clear();
 	timeline.setInitialState(current_state);
-	timeline.generateAnimation(current_state, current_state, LinkedListRecorder());
+	LinkedListRecorder dummy;
+	timeline.generateAnimation(current_state, current_state, dummy);
 }
 
 std::optional<MenuState> LinkedListUI::handleEvent(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const sf::Event& ev) {
@@ -117,11 +118,12 @@ std::optional<MenuState> LinkedListUI::handleEvent(const sf::RenderWindow& windo
 			}
 			else if (op->type == ListOperationType::Load) {
 				if (op->file_path.empty()) return std::nullopt;
-				list.applyOperation(*op, LinkedListRecorder());
+				LinkedListRecorder dummy;
+				list.applyOperation(*op, dummy);
 				current_state = list.getState();
 				timeline.clear();
 				timeline.setInitialState(current_state);
-				timeline.generateAnimation(current_state, current_state, LinkedListRecorder());
+				timeline.generateAnimation(current_state, current_state, dummy);
 			}
 			else {
 				list.applyOperation(*op, recorder);

@@ -105,7 +105,8 @@ void HashmapUI::Init(const sf::RenderWindow& window, const sf::View& view, sf::V
 	current_state = hashmap.getState();
 	timeline.clear();
 	timeline.setInitialState(current_state);
-	timeline.generateAnimation(current_state, current_state, HashmapRecorder());
+	HashmapRecorder dummy;
+	timeline.generateAnimation(current_state, current_state, dummy);
 }
 
 std::optional<MenuState> HashmapUI::handleEvent(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const sf::Event& ev) {
@@ -126,11 +127,12 @@ std::optional<MenuState> HashmapUI::handleEvent(const sf::RenderWindow& window, 
 			}
 			else if (op->type == HashmapOperationType::Load) {
 				if (op->file_path.empty()) return std::nullopt;
-				hashmap.applyOperation(*op, HashmapRecorder());
+				HashmapRecorder dummy;
+				hashmap.applyOperation(*op, dummy);
 				current_state = hashmap.getState();
 				timeline.clear();
 				timeline.setInitialState(current_state);
-				timeline.generateAnimation(current_state, current_state, HashmapRecorder());
+				timeline.generateAnimation(current_state, current_state, dummy);
 			}
 			else {
 				hashmap.applyOperation(*op, recorder);
