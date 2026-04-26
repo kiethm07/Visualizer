@@ -84,7 +84,7 @@ void MainMenu::updateWindowSize(const sf::RenderWindow& window, const sf::View& 
 		button.setButtonSize({ width, height });
 		button.setOrigin({ width / 2.f, height / 2.f });
 		button.setPosition({ winSize.x / 2.f, winSize.y * yPosRatio });
-		button.setCharacterSize(unsigned int(winSize.y * 0.04f));
+		button.setCharacterSize(static_cast<unsigned int>(winSize.y * 0.04f));
 		};
 
 	centerOrigin(title);

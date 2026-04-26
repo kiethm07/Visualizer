@@ -1,4 +1,3 @@
-#pragma once
 #include <Model/ListNode.h>
 #include <SFML/Graphics.hpp>
 #include <iostream>

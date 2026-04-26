@@ -1,4 +1,3 @@
-#pragma once
 #include <Model/Button.h>
 #include <SFML/Graphics.hpp>
 #include <iostream>

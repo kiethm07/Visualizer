@@ -1,4 +1,3 @@
-#pragma once
 #include <Model/Arrow.h>
 #include <SFML/Graphics.hpp>
 #include <cmath>
