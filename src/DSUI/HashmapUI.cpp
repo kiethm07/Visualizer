@@ -103,36 +103,49 @@ void HashmapUI::Init(const sf::RenderWindow& window, const sf::View& view, sf::V
 		hashmap.rawInit(bucket_count, values);
 	}
 	current_state = hashmap.getState();
+	timeline.clear();
 	timeline.setInitialState(current_state);
 	timeline.generateAnimation(current_state, current_state, HashmapRecorder());
 }
 
-void HashmapUI::handleEvent(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const sf::Event& ev) {
-	code_panel.handleEvent(window, view, ev);
+std::optional<MenuState> HashmapUI::handleEvent(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const sf::Event& ev) {
 	if (ui_state == UIState::Init) {
 		std::optional<PanelData> panel_data = init_panel.handleEvent(window, view, ev);
-		if (!panel_data.has_value()) return;
+		if (!panel_data.has_value()) return std::nullopt;
 		Init(window, view, cam_view, cam, *panel_data);
-		return;
+		return std::nullopt;
 	}
-
 	if (ui_state == UIState::Running) {
+		code_panel.handleEvent(window, view, ev);
 		if (const auto op = panel.handleEvent(window, view, ev); op.has_value()) {
+			if (op->type == HashmapOperationType::Home) {
+				return MenuState::DSMenu;
+			}
+			else if (op->type == HashmapOperationType::Setting) {
+				return MenuState::Setting;
+			}
+			else if (op->type == HashmapOperationType::Load) {
+				if (op->file_path.empty()) return std::nullopt;
+				hashmap.applyOperation(*op, HashmapRecorder());
+				current_state = hashmap.getState();
+				timeline.clear();
+				timeline.setInitialState(current_state);
+				timeline.generateAnimation(current_state, current_state, HashmapRecorder());
+			}
+			else {
+				hashmap.applyOperation(*op, recorder);
+				HashmapState prev = current_state;
+				current_state = hashmap.getState();
+				timeline.push(prev, current_state, *op, recorder);
+			}
 			recorder.clear();
-			hashmap.applyOperation(*op, recorder);
-			HashmapState prev = current_state;
-			current_state = hashmap.getState();
-			timeline.push(prev, current_state, *op, recorder);
 		}
-
 		if (const auto op = timeline_panel.handleEvent(window, view, cam_view, cam, ev)) {
 			if (op->type == TimelineOperation::Play) {
 				if (timeline.isRunning()) {
 					timeline.pause();
 				}
-				else {
-					timeline.run();
-				}
+				else timeline.run();
 			}
 			else if (op->type == TimelineOperation::AutoPlay) {
 				bool flag = timeline.isAutoPlaying() ^ 1;
@@ -160,8 +173,10 @@ void HashmapUI::handleEvent(const sf::RenderWindow& window, const sf::View& view
 				timeline.setSpeed(op->speed);
 			}
 		}
+		return std::nullopt;
 	}
 }
+
 
 void HashmapUI::draw(sf::RenderWindow& window, const sf::View& fixed_view, const sf::View& cam_view) {
 	if (ui_state == UIState::Init) {
@@ -174,8 +189,8 @@ void HashmapUI::draw(sf::RenderWindow& window, const sf::View& fixed_view, const
 		timeline.draw(window, cam_view);
 
 		window.setView(fixed_view);
-		window.draw(panel);
 		window.draw(timeline_panel);
+		window.draw(panel);
 		window.draw(code_panel);
 	}
 }

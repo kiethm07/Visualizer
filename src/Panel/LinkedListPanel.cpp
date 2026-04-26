@@ -18,7 +18,12 @@ LinkedListPanel::LinkedListPanel(const sf::Font& BUTTON_FONT) :
 	remove_button(BUTTON_FONT, "Remove", {}, {}, 20),
 	update_button(BUTTON_FONT, "Update", {}, {}, 20),
 	search_button(BUTTON_FONT, "Search", {}, {}, 20),
-	reset_button(BUTTON_FONT, "Reset", {}, {}, 20)
+	reset_button(BUTTON_FONT, "Reset", {}, {}, 20),
+
+	home_button(BUTTON_FONT, "Home", {}, {}, 20),
+	setting_button(BUTTON_FONT, "Set", {}, {}, 20),
+	save_button(BUTTON_FONT, "Save", {}, {}, 20),
+	load_button(BUTTON_FONT, "Load", {}, {}, 20)
 {
 	background.setFillColor(sf::Color::White);
 	background.setOrigin({ 0, 0 });
@@ -43,6 +48,10 @@ void LinkedListPanel::updateButtonState(const sf::RenderWindow& window, const sf
 	update_button.update(window, view);
 	search_button.update(window, view);
 	reset_button.update(window, view);
+	save_button.update(window, view);
+	load_button.update(window, view);
+	home_button.update(window, view);
+	setting_button.update(window, view);
 }
 
 void LinkedListPanel::updateWindowState(const sf::RenderWindow& window, const sf::View& view) {
@@ -70,6 +79,25 @@ void LinkedListPanel::updateWindowState(const sf::RenderWindow& window, const sf
 	place_button(update_button, 4);
 	place_button(search_button, 5);
 	place_button(reset_button, 6);
+
+	auto place_system_button = [&](auto& btn, int index) {
+		float side = background_size.x * 0.25f;
+		sf::Vector2f sq_size = { side, side };
+
+		btn.setButtonSize(sq_size);
+		btn.setOrigin(sq_size / 2.f);
+
+		float margin = 10.f;
+		float pos_x = margin + sq_size.x / 2.f + (sq_size.x + 10.f) * index;
+		float pos_y = size.y - margin - sq_size.y / 2.f;
+
+		btn.setPosition({ pos_x, pos_y });
+		};
+
+	place_system_button(home_button, 0);
+	place_system_button(setting_button, 1);
+	place_system_button(save_button, 2);
+	place_system_button(load_button, 3);
 }
 
 std::optional<ListOperation> LinkedListPanel::handleEvent(
@@ -141,6 +169,24 @@ std::optional<ListOperation> LinkedListPanel::handleEvent(
 
 			if (reset_button.contains(window, view, mouse_pos)) {
 				return ListOperation::reset();
+			}
+
+			if (home_button.contains(window, view, mouse_pos)) {
+				return ListOperation::home();
+			}
+
+			if (setting_button.contains(window, view, mouse_pos)) {
+				return ListOperation::setting();
+			}
+
+			if (save_button.contains(window, view, mouse_pos)) {
+				std::string filepath = cr::utils::SimpleFileDialog::saveDialog();
+				return ListOperation::save(filepath);
+			}
+
+			if (load_button.contains(window, view, mouse_pos)) {
+				std::string filepath = cr::utils::SimpleFileDialog::dialog();
+				return ListOperation::load(filepath);
 			}
 		}
 	}

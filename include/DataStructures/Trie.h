@@ -2,6 +2,7 @@
 #include <Model/TrieModel/TrieState.h>
 #include <Model/TrieModel/TrieOperation.h>
 #include <Animation/Trie/TrieRecorder.h>
+#include <fstream>
 #include <vector>
 #include <string>
 
@@ -14,6 +15,8 @@ public:
 	void loadState(const TrieState& state);
 	void applyOperation(const TrieOperation& operation, TrieRecorder& recorder);
 	void rawInit(const std::vector<std::string>& values);
+	void saveToFile(const std::string& filepath) const;
+	void loadFromFile(const std::string& file_path);
 private:
 	struct Node {
 		std::string label;

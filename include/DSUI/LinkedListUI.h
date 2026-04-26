@@ -12,6 +12,7 @@
 #include <UI/Camera.h>
 #include <DSUI/UIState.h>
 #include <Model/PseudoCodeController/PseudoCodeController.h>
+#include <Model/MenuState.h>
 #include <chrono>
 #include <random>
 
@@ -19,7 +20,7 @@ class LinkedListUI {
 public:
 	LinkedListUI(const AssetManager& a_manager);
 	void update(const sf::RenderWindow& window, const sf::View& fixed_view, const sf::View& cam_view);
-	void handleEvent(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const sf::Event& ev);
+	std::optional<MenuState> handleEvent(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const sf::Event& ev);
 	void draw(sf::RenderWindow& window, const sf::View& fixed_view, const sf::View& cam_view);
 	void setInit() {
 		ui_state = UIState::Init;

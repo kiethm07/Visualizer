@@ -12,10 +12,12 @@ public:
     //void clear() { clear(pHead); }
     LinkedList();
     ~LinkedList();
-    LinkedListState getState();
+    LinkedListState getState() const;
     void rawInit(const std::vector<int>& values);
     void loadState(const LinkedListState& state);
     void applyOperation(const ListOperation& operation, LinkedListRecorder& recorder);
+    void saveToFile(const std::string& filepath) const;
+    void loadFromFile(const std::string& file_path);
     ///Debug purpose
     void print();
 private:

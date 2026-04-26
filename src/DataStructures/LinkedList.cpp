@@ -1,7 +1,8 @@
 #include <DataStructures/LinkedList.h>
 #include <iostream>
+#include <fstream>
 
-LinkedListState LinkedList::getState() {
+LinkedListState LinkedList::getState() const {
     LinkedListState state;
     state.next_ui_id = this->next_ui_id;
     for (LinkedList::Node* cur = pHead; cur != nullptr; cur = cur->pNext) {
@@ -88,6 +89,59 @@ void LinkedList::applyOperation(const ListOperation& operation, LinkedListRecord
         clear(pHead, recorder);
         return;
     }
+    if (operation.type == ListOperationType::Save) {
+        saveToFile(operation.file_path);
+        return;
+    }
+    if (operation.type == ListOperationType::Load) {
+        loadFromFile(operation.file_path);
+        return;
+    }
+}
+
+void LinkedList::saveToFile(const std::string& filepath) const {
+    if (filepath.empty()) return;
+
+    LinkedListState state = getState();
+
+    std::ofstream fout(filepath);
+    if (!fout.is_open()) {
+        std::cerr << "Cannot open file: " << filepath << "\n";
+        return;
+    }
+
+    fout << state.next_ui_id << " " << state.value.size() << "\n";
+
+    for (int i = 0; i < (int)state.value.size(); i++) {
+        fout << state.value[i] << " " << state.ui_id[i] << "\n";
+    }
+
+    fout.close();
+    std::cout << "Success: " << filepath << "\n";
+}
+
+void LinkedList::loadFromFile(const std::string& filepath) {
+    LinkedListState state;
+    if (filepath.empty()) return;
+
+    std::ifstream fin(filepath);
+    if (!fin.is_open()) {
+        std::cerr << "Cannot open file: " << filepath << "\n";
+        return;
+    }
+
+    int node_count = 0;
+    if (fin >> state.next_ui_id >> node_count) {
+        state.value.resize(node_count);
+        state.ui_id.resize(node_count);
+        for (int i = 0; i < node_count; i++) {
+            fin >> state.value[i] >> state.ui_id[i];
+        }
+    }
+
+    fin.close();
+    std::cout << "Success: " << filepath << "\n";
+    loadState(state);
 }
 
 LinkedList::LinkedList() :

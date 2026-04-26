@@ -1,10 +1,11 @@
 #pragma once
 #include <vector>
-enum class HashmapOperationType { Insert, InsertMultiple, Remove, Update, Reset, Search };
+#include <string>
+enum class HashmapOperationType { Insert, InsertMultiple, Remove, Update, Reset, Search, Save, Load, Home, Setting };
 
 struct HashmapOperation {
     HashmapOperationType type;
-
+    std::string file_path = "";
     int key = 0;
     int value = 0;
     std::vector<int> keys;
@@ -53,6 +54,32 @@ struct HashmapOperation {
     static HashmapOperation reset() {
         HashmapOperation op;
         op.type = HashmapOperationType::Reset;
+        return op;
+    }
+
+    static HashmapOperation save(const std::string& s) {
+        HashmapOperation op;
+        op.type = HashmapOperationType::Save;
+        op.file_path = s;
+        return op;
+    }
+
+    static HashmapOperation load(const std::string& s) {
+        HashmapOperation op;
+        op.type = HashmapOperationType::Load;
+        op.file_path = s;
+        return op;
+    }
+
+    static HashmapOperation home() {
+        HashmapOperation op;
+        op.type = HashmapOperationType::Home;
+        return op;
+    }
+
+    static HashmapOperation setting() {
+        HashmapOperation op;
+        op.type = HashmapOperationType::Setting;
         return op;
     }
 };

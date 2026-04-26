@@ -94,25 +94,42 @@ void LinkedListUI::Init(const sf::RenderWindow& window, const sf::View& view, sf
 		list.rawInit(values);
 	}
 	current_state = list.getState();
+	timeline.clear();
 	timeline.setInitialState(current_state);
 	timeline.generateAnimation(current_state, current_state, LinkedListRecorder());
 }
 
-void LinkedListUI::handleEvent(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const sf::Event& ev) {
+std::optional<MenuState> LinkedListUI::handleEvent(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const sf::Event& ev) {
 	if (ui_state == UIState::Init) {
 		std::optional<PanelData> panel_data = init_panel.handleEvent(window, view, ev);
-		if (!panel_data.has_value()) return;
+		if (!panel_data.has_value()) return std::nullopt;
 		Init(window, view, cam_view, cam, *panel_data);
-		return;
+		return std::nullopt;
 	}
 	if (ui_state == UIState::Running) {
 		code_panel.handleEvent(window, view, ev);
 		if (const auto op = panel.handleEvent(window, view, ev); op.has_value()) {
+			if (op->type == ListOperationType::Home) {
+				return MenuState::DSMenu;
+			}
+			else if (op->type == ListOperationType::Setting) {
+				return MenuState::Setting;
+			}
+			else if (op->type == ListOperationType::Load) {
+				if (op->file_path.empty()) return std::nullopt;
+				list.applyOperation(*op, LinkedListRecorder());
+				current_state = list.getState();
+				timeline.clear();
+				timeline.setInitialState(current_state);
+				timeline.generateAnimation(current_state, current_state, LinkedListRecorder());
+			}
+			else {
+				list.applyOperation(*op, recorder);
+				LinkedListState prev = current_state;
+				current_state = list.getState();
+				timeline.push(prev, current_state, *op, recorder);
+			}
 			recorder.clear();
-			list.applyOperation(*op, recorder);
-			LinkedListState prev = current_state;
-			current_state = list.getState();
-			timeline.push(prev, current_state, *op, recorder);
 		}
 		if (const auto op = timeline_panel.handleEvent(window, view, cam_view, cam, ev)) {
 			if (op->type == TimelineOperation::Play) {
@@ -147,6 +164,7 @@ void LinkedListUI::handleEvent(const sf::RenderWindow& window, const sf::View& v
 				timeline.setSpeed(op->speed);
 			}
 		}
+		return std::nullopt;
 	}
 }
 
@@ -160,8 +178,8 @@ void LinkedListUI::draw(sf::RenderWindow& window, const sf::View& fixed_view, co
 		//window.draw(test);
 		timeline.draw(window, cam_view);
 		window.setView(fixed_view);
-		window.draw(panel);
 		window.draw(timeline_panel);
+		window.draw(panel);
 		//test_panel.setSize({ 300.f, 200.f });
 		window.draw(code_panel);
 	}

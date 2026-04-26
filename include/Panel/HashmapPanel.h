@@ -2,6 +2,7 @@
 #include <Model/Button.h>
 #include <Model/TextBox.h>
 #include <Model/HashmapModel/HashmapOperation.h>
+#include <External/SimpleFileDialog.h>
 #include <optional>
 #include <iostream>
 
@@ -25,6 +26,11 @@ private:
 	Button search_button;
 	Button reset_button;
 
+	Button save_button;
+	Button load_button;
+	Button home_button;
+	Button setting_button;
+
 	void updateButtonState(const sf::RenderWindow& window, const sf::View& view);
 	void updateWindowState(const sf::RenderWindow& window, const sf::View& view);
 
@@ -35,5 +41,9 @@ private:
 		target.draw(remove_button, states);
 		target.draw(search_button, states);
 		target.draw(reset_button, states);
+		target.draw(home_button, states);
+		target.draw(setting_button, states);
+		target.draw(save_button, states);
+		target.draw(load_button, states);
 	}
 };

@@ -45,6 +45,61 @@ void Hashmap::loadState(const HashmapState& state)
 	}
 }
 
+void Hashmap::saveToFile(const std::string& filepath) const {
+	if (filepath.empty()) return;
+
+	HashmapState state = getState();
+
+	std::ofstream fout(filepath);
+	if (!fout.is_open()) {
+		std::cerr << "Cannot open file: " << filepath << "\n";
+		return;
+	}
+
+	fout << state.next_ui_id << " " << state.bucket_count << "\n";
+
+	for (int i = 0; i < state.bucket_count; i++) {
+		fout << state.value[i].size() << "\n";
+		for (int j = 0; j < (int)state.value[i].size(); j++) {
+			fout << state.value[i][j] << " " << state.ui_id[i][j] << " ";
+		}
+		fout << "\n";
+	}
+
+	fout.close();
+	std::cout << "Success: " << filepath << "\n";
+}
+
+void Hashmap::loadFromFile(const std::string& filepath) {
+	HashmapState state;
+	if (filepath.empty()) return;
+
+	std::ifstream fin(filepath);
+	if (!fin.is_open()) {
+		std::cerr << "Cannot open file: " << filepath << "\n";
+		return;
+	}
+
+	if (fin >> state.next_ui_id >> state.bucket_count) {
+		state.value.resize(state.bucket_count);
+		state.ui_id.resize(state.bucket_count);
+
+		for (int i = 0; i < state.bucket_count; i++) {
+			int sz = 0;
+			fin >> sz;
+			state.value[i].resize(sz);
+			state.ui_id[i].resize(sz);
+			for (int j = 0; j < sz; j++) {
+				fin >> state.value[i][j] >> state.ui_id[i][j];
+			}
+		}
+	}
+
+	fin.close();
+	std::cout << "Success: " << filepath << "\n";
+	loadState(state);
+}
+
 void Hashmap::rawInit(const int& bucket_count, const std::vector<int>& values)
 {
 	this->bucket_count = bucket_count;
@@ -91,6 +146,14 @@ void Hashmap::applyOperation(const HashmapOperation& operation, HashmapRecorder&
 		recorder.addNewPhase();
 		recorder.setHighlightedLine(3);
 		recorder.addCommand(Command(Target::Node, Type::Wait, -1));
+		return;
+	}
+	if (operation.type == HashmapOperationType::Save) {
+		saveToFile(operation.file_path);
+		return;
+	}
+	if (operation.type == HashmapOperationType::Load) {
+		loadFromFile(operation.file_path);
 		return;
 	}
 }

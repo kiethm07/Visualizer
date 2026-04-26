@@ -87,7 +87,13 @@ void UI::run() {
                     cam.setEnable(1);
                     changed_state = 0;
                 }
-                linked_list_ui.handleEvent(window, fixed_view, cam_view, cam, *ev);
+                std::optional<MenuState> chosen = linked_list_ui.handleEvent(window, fixed_view, cam_view, cam, *ev);
+                if (chosen.has_value()) {
+                    changed_state = 1;
+                    current_state = chosen.value();
+                    cam.reset(window, cam_view);
+                    break;
+                }
             }
             if (current_state == MenuState::Hashmap) {
                 if (changed_state) {
@@ -96,7 +102,13 @@ void UI::run() {
                     cam.setEnable(1);
                     changed_state = 0;
                 }
-                hashmap_ui.handleEvent(window, fixed_view, cam_view, cam, *ev);
+                std::optional<MenuState> chosen = hashmap_ui.handleEvent(window, fixed_view, cam_view, cam, *ev);
+                if (chosen.has_value()) {
+                    changed_state = 1;
+                    current_state = chosen.value();
+                    cam.reset(window, cam_view);
+                    break;
+                }
             }
             if (current_state == MenuState::Trie) {
                 if (changed_state) {
@@ -105,7 +117,13 @@ void UI::run() {
                     cam.setEnable(1);
                     changed_state = 0;
                 }
-                trie_ui.handleEvent(window, fixed_view, cam_view, cam, *ev);
+                std::optional<MenuState> chosen = trie_ui.handleEvent(window, fixed_view, cam_view, cam, *ev);
+                if (chosen.has_value()) {
+                    changed_state = 1;
+                    current_state = chosen.value();
+                    cam.reset(window, cam_view);
+                    break;
+                }
             }
             if (current_state == MenuState::AVL) {
                 if (changed_state) {
@@ -114,7 +132,13 @@ void UI::run() {
                     cam.setEnable(1);
                     changed_state = 0;
                 }
-                avl_ui.handleEvent(window, fixed_view, cam_view, cam, *ev);
+                std::optional<MenuState> chosen = avl_ui.handleEvent(window, fixed_view, cam_view, cam, *ev);
+                if (chosen.has_value()) {
+                    changed_state = 1;
+                    current_state = chosen.value();
+                    cam.reset(window, cam_view);
+                    break;
+                }
             }
             if (current_state == MenuState::Graph) {
                 if (changed_state) {
@@ -123,7 +147,13 @@ void UI::run() {
                     cam.setEnable(1);
                     changed_state = 0;
                 }
-                graph_ui.handleEvent(window, fixed_view, cam_view, cam, *ev);
+                std::optional<MenuState> chosen = graph_ui.handleEvent(window, fixed_view, cam_view, cam, *ev);
+                if (chosen.has_value()) {
+                    changed_state = 1;
+                    current_state = chosen.value();
+                    cam.reset(window, cam_view);
+                    break;
+                }
 			}
         }
         window.clear();

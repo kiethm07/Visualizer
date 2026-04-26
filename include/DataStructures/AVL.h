@@ -2,6 +2,7 @@
 #include <Model/AVLModel/AVLState.h>
 #include <Model/AVLModel/AVLOperation.h>
 #include <Animation/AVL/AVLRecorder.h>
+#include <fstream>
 #include <vector>
 #include <string>
 #include <map>
@@ -14,6 +15,8 @@ public:
 	void loadState(const AVLState& state);
 	void applyOperation(const AVLOperation& operation, AVLRecorder& recorder);
 	void rawInit(const std::vector<int>& values);
+	void saveToFile(const std::string& filepath) const;
+	void loadFromFile(const std::string& file_path);
 private:
 	struct Node {
 		int val, height, size, ui_id;

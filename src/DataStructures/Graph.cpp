@@ -82,6 +82,81 @@ void Graph::applyOperation(const GraphOperation& operation, GraphRecorder& recor
 		recorder.addCommand(Command::createWaitCommand());
 		recorder.setHighlightedLine(1);
 	}
+	if (operation.type == GraphOperationType::Save) {
+		saveToFile(operation.file_path);
+		return;
+	}
+	if (operation.type == GraphOperationType::Load) {
+		loadFromFile(operation.file_path);
+		return;
+	}
+}
+
+void Graph::saveToFile(const std::string& filepath) const {
+	if (filepath.empty()) return;
+
+	GraphState state = getState();
+
+	std::ofstream fout(filepath);
+	if (!fout.is_open()) {
+		std::cerr << "Cannot open file: " << filepath << "\n";
+		return;
+	}
+
+	fout << state.next_ui_id << " " << state.nodes.size() << " " << state.edges.size() << "\n";
+
+	for (const auto& [key, node] : state.nodes) {
+		fout << key << " "
+			<< node.ui_id << " "
+			<< node.neighbors.size() << "\n";
+		for (const auto& [neigh_id, val] : node.neighbors) {
+			fout << neigh_id << " " << val << " ";
+		}
+		fout << "\n";
+	}
+
+	for (const auto& [p, w] : state.edges) {
+		fout << p.first << " " << p.second << " " << w << "\n";
+	}
+
+	fout.close();
+	std::cout << "Success: " << filepath << "\n";
+}
+
+void Graph::loadFromFile(const std::string& filepath) {
+	GraphState state;
+	if (filepath.empty()) return;
+
+	std::ifstream fin(filepath);
+	if (!fin.is_open()) {
+		std::cerr << "Cannot open file: " << filepath << "\n";
+		return;
+	}
+
+	int node_count = 0;
+	int edge_count = 0;
+	if (fin >> state.next_ui_id >> node_count >> edge_count) {
+		for (int i = 0; i < node_count; ++i) {
+			int key, ui_id, sz;
+			fin >> key >> ui_id >> sz;
+			state.nodes[key] = GraphState::Node(ui_id);
+			for (int j = 0; j < sz; ++j) {
+				int neigh_id, val;
+				fin >> neigh_id >> val;
+				state.nodes[key].neighbors[neigh_id] = val;
+			}
+		}
+
+		for (int i = 0; i < edge_count; ++i) {
+			int u, v, w;
+			fin >> u >> v >> w;
+			state.edges[{u, v}] = w;
+		}
+	}
+
+	fin.close();
+	std::cout << "Success: " << filepath << "\n";
+	loadState(state);
 }
 
 void Graph::rawInit(int node_cnt, const std::vector<std::tuple<int, int, int>>& edges) {

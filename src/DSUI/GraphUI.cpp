@@ -108,26 +108,42 @@ void GraphUI::Init(const sf::RenderWindow& window, const sf::View& view, sf::Vie
 
 	}
 	current_state = graph.getState();
+	timeline.clear();
 	timeline.setInitialState(current_state);
 	timeline.generateAnimation(current_state, current_state, GraphRecorder());
 }
 
-void GraphUI::handleEvent(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const sf::Event& ev) {
+std::optional<MenuState> GraphUI::handleEvent(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const sf::Event& ev) {
 	if (ui_state == UIState::Init) {
 		std::optional<PanelData> panel_data = init_panel.handleEvent(window, view, ev);
-		if (!panel_data.has_value()) return;
+		if (!panel_data.has_value()) return std::nullopt;
 		Init(window, view, cam_view, cam, *panel_data);
-		return;
+		return std::nullopt;
 	}
 	if (ui_state == UIState::Running) {
 		code_panel.handleEvent(window, view, ev);
 		if (const auto op = panel.handleEvent(window, view, ev); op.has_value()) {
-			//std::cout << "Hallo\n";
+			if (op->type == GraphOperationType::Home) {
+				return MenuState::DSMenu;
+			}
+			else if (op->type == GraphOperationType::Setting) {
+				return MenuState::Setting;
+			}
+			else if (op->type == GraphOperationType::Load) {
+				if (op->file_path.empty()) return std::nullopt;
+				graph.applyOperation(*op, GraphRecorder());
+				current_state = graph.getState();
+				timeline.clear();
+				timeline.setInitialState(current_state);
+				timeline.generateAnimation(current_state, current_state, GraphRecorder());
+			}
+			else {
+				graph.applyOperation(*op, recorder);
+				GraphState prev = current_state;
+				current_state = graph.getState();
+				timeline.push(prev, current_state, *op, recorder);
+			}
 			recorder.clear();
-			graph.applyOperation(*op, recorder);
-			GraphState prev = current_state;
-			current_state = graph.getState();
-			timeline.push(prev, current_state, *op, recorder);
 		}
 		if (const auto op = timeline_panel.handleEvent(window, view, cam_view, cam, ev)) {
 			if (op->type == TimelineOperation::Play) {
@@ -162,6 +178,7 @@ void GraphUI::handleEvent(const sf::RenderWindow& window, const sf::View& view, 
 				timeline.setSpeed(op->speed);
 			}
 		}
+		return std::nullopt;
 	}
 }
 
@@ -175,8 +192,8 @@ void GraphUI::draw(sf::RenderWindow& window, const sf::View& fixed_view, const s
 		//window.draw(test);
 		timeline.draw(window, cam_view);
 		window.setView(fixed_view);
-		window.draw(panel);
 		window.draw(timeline_panel);
+		window.draw(panel);
 		window.draw(code_panel);
 	}
 }

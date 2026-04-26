@@ -66,3 +66,60 @@ std::string cr::utils::SimpleFileDialog::dialog()
     return "";
 #endif
 }
+
+std::string cr::utils::SimpleFileDialog::saveDialog()
+{
+#if defined(linux) || defined(__linux) || defined(__linux__)
+    char filename[1024];
+    FILE* f = popen("zenity --file-selection --save", "r");
+    fgets(filename, 1024, f);
+    filename[strlen(filename) - 1] = 0;
+    std::string file(filename);
+    return file;
+#else
+    IFileSaveDialog* pFileSave = nullptr;
+    HRESULT hr;
+    PWSTR file;
+    char* filename;
+
+    hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+    if (SUCCEEDED(hr))
+    {
+        hr = CoCreateInstance(CLSID_FileSaveDialog,
+            NULL, CLSCTX_ALL,
+            IID_IFileSaveDialog,
+            (void**)&pFileSave);
+        if (SUCCEEDED(hr))
+        {
+            pFileSave->SetTitle(L"SAVE FILE");
+            hr = pFileSave->Show(NULL);
+            if (SUCCEEDED(hr))
+            {
+                IShellItem* pItem;
+                hr = pFileSave->GetResult(&pItem);
+                if (SUCCEEDED(hr))
+                {
+                    hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &file);
+                    if (SUCCEEDED(hr))
+                    {
+                        pItem->Release();
+                        int count = WideCharToMultiByte(
+                            CP_ACP, 0, file, (int)wcslen(file), 0, 0, NULL, NULL);
+                        filename = new char[(size_t)count + 1];
+                        WideCharToMultiByte(CP_ACP, 0, file, count, filename,
+                            count + 1, NULL, NULL);
+                        filename[(size_t)count] = '\0';
+                        std::string file(filename);
+                        delete[] filename;
+                        return file;
+                    }
+                }
+                pItem->Release();
+                return "";
+            }
+        }
+    }
+    pFileSave->Release();
+    return "";
+#endif
+}

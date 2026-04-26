@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
-enum class GraphOperationType { InsertNode, RemoveNode, InsertEdge, RemoveEdge, ModifyEdge, Dijkstra, Kruskal, Reset };
+#include <string>
+enum class GraphOperationType { InsertNode, RemoveNode, InsertEdge, RemoveEdge, ModifyEdge, Dijkstra, Kruskal, Reset, Save, Load, Home, Setting };
 
 struct GraphOperation {
     GraphOperationType type;
@@ -10,6 +11,7 @@ struct GraphOperation {
     int from = -1;
     int to = -1;
     int weight = -1;
+    std::string file_path = "";
 
     static GraphOperation insertNode(const int& value) {
         GraphOperation op;
@@ -69,4 +71,30 @@ struct GraphOperation {
         op.type = GraphOperationType::Reset;
         return op;
 	}
+
+    static GraphOperation save(const std::string& s) {
+        GraphOperation op;
+        op.type = GraphOperationType::Save;
+        op.file_path = s;
+        return op;
+    }
+
+    static GraphOperation load(const std::string& s) {
+        GraphOperation op;
+        op.type = GraphOperationType::Load;
+        op.file_path = s;
+        return op;
+    }
+
+    static GraphOperation home() {
+        GraphOperation op;
+        op.type = GraphOperationType::Home;
+        return op;
+    }
+
+    static GraphOperation setting() {
+        GraphOperation op;
+        op.type = GraphOperationType::Setting;
+        return op;
+    }
 };

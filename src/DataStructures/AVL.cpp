@@ -41,6 +41,74 @@ void AVL::applyOperation(const AVLOperation& operation, AVLRecorder& recorder) {
 		recorder.setHighlightedLine(4);
 		return;
 	}
+	if (operation.type == AVLOperationType::Save) {
+		saveToFile(operation.file_path);
+		return;
+	}
+	if (operation.type == AVLOperationType::Load) {
+		loadFromFile(operation.file_path);
+		return;
+	}
+}
+
+void AVL::saveToFile(const std::string& filepath) const {
+	if (filepath.empty()) return;
+
+	AVLState state = getState();
+
+	std::ofstream fout(filepath);
+	if (!fout.is_open()) {
+		std::cerr << "Cannot open file: " << filepath << "\n";
+		return;
+	}
+
+	fout << state.next_ui_id << " " << state.nodes.size() << "\n";
+
+	for (const auto& node : state.nodes) {
+		fout << node.value << " "
+			<< node.ui_id << " "
+			<< node.size << " "
+			<< node.height << " "
+			<< node.leftChild << " "
+			<< node.rightChild << " "
+			<< node.parent << "\n";
+	}
+
+	fout.close();
+	std::cout << "Success: " << filepath << "\n";
+}
+
+void AVL::loadFromFile(const std::string& filepath) {
+	using Target = AVLAnimationTarget;
+	using Type = AVLAnimationType;
+	using Command = AVLAnimationCommand;
+	AVLState state;
+	if (filepath.empty()) return;
+
+	std::ifstream fin(filepath);
+	if (!fin.is_open()) {
+		std::cerr << "Cannot open file:  " << filepath << "\n";
+		return;
+	}
+
+	int node_count = 0;
+	if (fin >> state.next_ui_id >> node_count) {
+		state.nodes.resize(node_count);
+
+		for (int i = 0; i < node_count; ++i) {
+			fin >> state.nodes[i].value
+				>> state.nodes[i].ui_id
+				>> state.nodes[i].size
+				>> state.nodes[i].height
+				>> state.nodes[i].leftChild
+				>> state.nodes[i].rightChild
+				>> state.nodes[i].parent;
+		}
+	}
+
+	fin.close();
+	std::cout << "Success: " << filepath << "\n";
+	loadState(state);
 }
 
 AVLState AVL::getState() const {

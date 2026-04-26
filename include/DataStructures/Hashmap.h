@@ -3,6 +3,7 @@
 #include <Model/HashmapModel/HashmapOperation.h>
 #include <Animation/Hashmap/HashmapRecorder.h>
 #include <vector>
+#include <fstream>
 
 class Hashmap {
 public:
@@ -11,6 +12,8 @@ public:
 	void init(int n);
 	void loadState(const HashmapState& state);
 	void applyOperation(const HashmapOperation& operation, HashmapRecorder& recorder);
+	void saveToFile(const std::string& filepath) const;
+	void loadFromFile(const std::string& file_path);
 	int getHash(int x) const {
 		x %= bucket_count;
 		if (x < 0) x += bucket_count;

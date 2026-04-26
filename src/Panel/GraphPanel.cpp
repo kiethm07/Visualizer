@@ -10,7 +10,12 @@ GraphPanel::GraphPanel(const sf::Font& BUTTON_FONT) :
 	modify_edge_button(BUTTON_FONT, "Modify Edge", {}, {}, 20),
 	dijkstra_button(BUTTON_FONT, "Run Dijkstra", {}, {}, 20),
 	kruskal_button(BUTTON_FONT, "Run Kruskal", {}, {}, 20),
-	reset_button(BUTTON_FONT, "Reset", {}, {}, 20)
+	reset_button(BUTTON_FONT, "Reset", {}, {}, 20),
+
+	home_button(BUTTON_FONT, "Home", {}, {}, 20),
+	setting_button(BUTTON_FONT, "Set", {}, {}, 20),
+	save_button(BUTTON_FONT, "Save", {}, {}, 20),
+	load_button(BUTTON_FONT, "Load", {}, {}, 20)
 {
 	background.setFillColor(sf::Color::White);
 	background.setOrigin({ 0, 0 });
@@ -38,6 +43,10 @@ void GraphPanel::updateButtonState(const sf::RenderWindow& window, const sf::Vie
 	dijkstra_button.update(window, view);
 	kruskal_button.update(window, view);
 	reset_button.update(window, view);
+	save_button.update(window, view);
+	load_button.update(window, view);
+	home_button.update(window, view);
+	setting_button.update(window, view);
 }
 
 void GraphPanel::updateWindowState(const sf::RenderWindow& window, const sf::View& view) {
@@ -67,6 +76,25 @@ void GraphPanel::updateWindowState(const sf::RenderWindow& window, const sf::Vie
 	place_button(dijkstra_button, 6);
 	place_button(kruskal_button, 7);
 	place_button(reset_button, 8);
+
+	auto place_system_button = [&](auto& btn, int index) {
+		float side = background_size.x * 0.25f;
+		sf::Vector2f sq_size = { side, side };
+
+		btn.setButtonSize(sq_size);
+		btn.setOrigin(sq_size / 2.f);
+
+		float margin = 10.f;
+		float pos_x = margin + sq_size.x / 2.f + (sq_size.x + 10.f) * index;
+		float pos_y = size.y - margin - sq_size.y / 2.f;
+
+		btn.setPosition({ pos_x, pos_y });
+		};
+
+	place_system_button(home_button, 0);
+	place_system_button(setting_button, 1);
+	place_system_button(save_button, 2);
+	place_system_button(load_button, 3);
 }
 
 std::optional<GraphOperation> GraphPanel::handleEvent(
@@ -203,6 +231,24 @@ std::optional<GraphOperation> GraphPanel::handleEvent(
 
 			if (reset_button.contains(window, view, mouse_pos)) {
 				return GraphOperation::reset();
+			}
+
+			if (home_button.contains(window, view, mouse_pos)) {
+				return GraphOperation::home();
+			}
+
+			if (setting_button.contains(window, view, mouse_pos)) {
+				return GraphOperation::setting();
+			}
+
+			if (save_button.contains(window, view, mouse_pos)) {
+				std::string filepath = cr::utils::SimpleFileDialog::saveDialog();
+				return GraphOperation::save(filepath);
+			}
+
+			if (load_button.contains(window, view, mouse_pos)) {
+				std::string filepath = cr::utils::SimpleFileDialog::dialog();
+				return GraphOperation::load(filepath);
 			}
 		}
 	}

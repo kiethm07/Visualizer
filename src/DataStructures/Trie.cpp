@@ -63,6 +63,67 @@ void Trie::loadState(const TrieState& state) {
 	this->next_ui_id = state.next_ui_id;
 }
 
+void Trie::saveToFile(const std::string& filepath) const {
+	if (filepath.empty()) return;
+
+	TrieState state = getState();
+
+	std::ofstream fout(filepath);
+	if (!fout.is_open()) {
+		std::cerr << "Cannot open file: " << filepath << "\n";
+		return;
+	}
+
+	fout << state.next_ui_id << " " << state.nodes.size() << "\n";
+
+	for (const auto& snp : state.nodes) {
+		fout << (snp.label.empty() ? "-" : snp.label) << " "
+			<< snp.ui_id << " "
+			<< snp.cnt << " "
+			<< snp.isEnd << "\n";
+		for (int i = 0; i < 26; i++) {
+			fout << snp.child[i] << (i == 25 ? "" : " ");
+		}
+		fout << "\n";
+	}
+
+	fout.close();
+	std::cout << "Success: " << filepath << "\n";
+}
+
+void Trie::loadFromFile(const std::string& filepath) {
+	TrieState state;
+	if (filepath.empty()) return;
+
+	std::ifstream fin(filepath);
+	if (!fin.is_open()) {
+		std::cerr << "Cannot open file: " << filepath << "\n";
+		return;
+	}
+
+	int node_count = 0;
+	if (fin >> state.next_ui_id >> node_count) {
+		state.nodes.resize(node_count);
+
+		for (int i = 0; i < node_count; ++i) {
+			fin >> state.nodes[i].label;
+			if (state.nodes[i].label == "-") state.nodes[i].label = "";
+
+			fin >> state.nodes[i].ui_id
+				>> state.nodes[i].cnt
+				>> state.nodes[i].isEnd;
+
+			for (int j = 0; j < 26; j++) {
+				fin >> state.nodes[i].child[j];
+			}
+		}
+	}
+
+	fin.close();
+	std::cout << "Success: " << filepath << "\n";
+	loadState(state);
+}
+
 void Trie::clearWithoutRecorder(Node*& root) {
 	if (root == nullptr) return;
 	for (int i = 0; i < 26; i++) {
@@ -106,6 +167,14 @@ void Trie::applyOperation(const TrieOperation& operation, TrieRecorder& recorder
 		recorder.addNewPhase();
 		recorder.addCommand(Command(Target::Node, Type::Wait, -1));
 		recorder.setHighlightedLine(4);
+		return;
+	}
+	if (operation.type == TrieOperationType::Save) {
+		saveToFile(operation.file_path);
+		return;
+	}
+	if (operation.type == TrieOperationType::Load) {
+		loadFromFile(operation.file_path);
 		return;
 	}
 }

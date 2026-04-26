@@ -78,45 +78,79 @@ void TrieUI::Init(const sf::RenderWindow& window, const sf::View& view, sf::View
 		trie.rawInit(values);
 	}
 	current_state = trie.getState();
+	timeline.clear();
 	timeline.setInitialState(current_state);
 	timeline.generateAnimation(current_state, current_state, TrieRecorder());
 }
-void TrieUI::handleEvent(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const sf::Event& ev) {
+std::optional<MenuState> TrieUI::handleEvent(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const sf::Event& ev) {
 	if (ui_state == UIState::Init) {
 		std::optional<PanelData> panel_data = init_panel.handleEvent(window, view, ev);
-		if (!panel_data.has_value()) return;
+		if (!panel_data.has_value()) return std::nullopt;
 		Init(window, view, cam_view, cam, *panel_data);
-		return;
+		return std::nullopt;
 	}
 	if (ui_state == UIState::Running) {
 		code_panel.handleEvent(window, view, ev);
 		if (const auto op = panel.handleEvent(window, view, ev); op.has_value()) {
+			if (op->type == TrieOperationType::Home) {
+				return MenuState::DSMenu;
+			}
+			else if (op->type == TrieOperationType::Setting) {
+				return MenuState::Setting;
+			}
+			else if (op->type == TrieOperationType::Load) {
+				if (op->file_path.empty()) return std::nullopt;
+				trie.applyOperation(*op, TrieRecorder());
+				current_state = trie.getState();
+				timeline.clear();
+				timeline.setInitialState(current_state);
+				timeline.generateAnimation(current_state, current_state, TrieRecorder());
+			}
+			else {
+				trie.applyOperation(*op, recorder);
+				TrieState prev = current_state;
+				current_state = trie.getState();
+				timeline.push(prev, current_state, *op, recorder);
+			}
 			recorder.clear();
-			trie.applyOperation(*op, recorder);
-			TrieState prev = current_state;
-			current_state = trie.getState();
-			timeline.push(prev, current_state, *op, recorder);
 		}
 		if (const auto op = timeline_panel.handleEvent(window, view, cam_view, cam, ev)) {
 			if (op->type == TimelineOperation::Play) {
-				if (timeline.isRunning()) timeline.pause();
+				if (timeline.isRunning()) {
+					timeline.pause();
+				}
 				else timeline.run();
 			}
 			else if (op->type == TimelineOperation::AutoPlay) {
-				timeline.setAutoPlay(timeline.isAutoPlaying() ^ 1);
+				bool flag = timeline.isAutoPlaying() ^ 1;
+				timeline.setAutoPlay(flag);
 			}
-			else if (op->type == TimelineOperation::OnePhaseForward) timeline.onePhaseForward();
-			else if (op->type == TimelineOperation::OnePhaseBackward) timeline.onePhaseBackward();
-			else if (op->type == TimelineOperation::OneStepForward) timeline.oneStepForward();
-			else if (op->type == TimelineOperation::OneStepBackward) timeline.oneStepBackward();
-			else if (op->type == TimelineOperation::LastState) timeline.toLast();
-			else if (op->type == TimelineOperation::InitState) timeline.toInit();
+			else if (op->type == TimelineOperation::OnePhaseForward) {
+				timeline.onePhaseForward();
+			}
+			else if (op->type == TimelineOperation::OnePhaseBackward) {
+				timeline.onePhaseBackward();
+			}
+			else if (op->type == TimelineOperation::OneStepForward) {
+				timeline.oneStepForward();
+			}
+			else if (op->type == TimelineOperation::OneStepBackward) {
+				timeline.oneStepBackward();
+			}
+			else if (op->type == TimelineOperation::LastState) {
+				timeline.toLast();
+			}
+			else if (op->type == TimelineOperation::InitState) {
+				timeline.toInit();
+			}
 			else if (op->type == TimelineOperation::ChangeSpeed) {
 				timeline.setSpeed(op->speed);
 			}
 		}
+		return std::nullopt;
 	}
 }
+
 void TrieUI::draw(sf::RenderWindow& window, const sf::View& fixed_view, const sf::View& cam_view) {
 	if (ui_state == UIState::Init) {
 		window.setView(fixed_view);
@@ -126,8 +160,8 @@ void TrieUI::draw(sf::RenderWindow& window, const sf::View& fixed_view, const sf
 		window.setView(cam_view);
 		timeline.draw(window, cam_view);
 		window.setView(fixed_view);
-		window.draw(panel);
 		window.draw(timeline_panel);
+		window.draw(panel);
 		window.draw(code_panel);
 	}
 }

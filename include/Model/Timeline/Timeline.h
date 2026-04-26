@@ -47,7 +47,7 @@ public:
     void clear() {
         controller.reset();
         data.clear();
-        generateAnimation(data.getInitialState(), data.getInitialState(), Record());
+        generateAnimation(State(), State(), Record());
     }
     void generateAnimation(const State& initial_state, const State& finish_state, const Record& record) {
         animator.generateBaseStates(initial_state, finish_state, record);

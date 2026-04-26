@@ -1,10 +1,11 @@
 #pragma once
 #include <vector>
-enum class AVLOperationType { Insert, InsertMultiple, Remove, Update, Reset, Search };
+#include <string>
+enum class AVLOperationType { Insert, InsertMultiple, Remove, Update, Reset, Save, Load, Search, Home, Setting };
 
 struct AVLOperation {
     AVLOperationType type;
-
+    std::string file_path = "";
     int value;
 
     static AVLOperation insert(const int& value) {
@@ -38,6 +39,32 @@ struct AVLOperation {
     static AVLOperation reset() {
         AVLOperation op;
         op.type = AVLOperationType::Reset;
+        return op;
+    }
+
+    static AVLOperation save(const std::string& s) {
+        AVLOperation op;
+        op.type = AVLOperationType::Save;
+        op.file_path = s;
+        return op;
+    }
+
+    static AVLOperation load(const std::string& s) {
+        AVLOperation op;
+        op.type = AVLOperationType::Load;
+        op.file_path = s;
+        return op;
+    }
+
+    static AVLOperation home() {
+        AVLOperation op;
+        op.type = AVLOperationType::Home;
+        return op;
+    }
+
+    static AVLOperation setting() {
+        AVLOperation op;
+        op.type = AVLOperationType::Setting;
         return op;
     }
 };

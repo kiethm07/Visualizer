@@ -17,6 +17,7 @@ public:
      * @return String of file name or empty string if no file selected.
      */
     static std::string dialog();
+    static std::string saveDialog();
 };
 }
 }
