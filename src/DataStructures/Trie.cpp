@@ -314,15 +314,19 @@ void Trie::clear(Node*& root, Node* pa, TrieRecorder& recorder) {
 		}
 	}
 
-	recorder.addNewPhase();
-	recorder.setHighlightedLine(3);
-	recorder.addCommand(Command(Target::Node, Type::FadeOut, root->ui_id));
 	if (pa) {
 		recorder.addCommand(Command(Target::Edge, Type::FadeOut, pa->ui_id, root->ui_id));
 	}
 	if (root != this->root) {
+		recorder.addNewPhase();
+		recorder.setHighlightedLine(3);
+		recorder.addCommand(Command(Target::Node, Type::FadeOut, root->ui_id));
 		delete root;
 		root = nullptr;
+	}
+	else {
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::Node, Type::HighlightOff, root->ui_id));
 	}
 }
 

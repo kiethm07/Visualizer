@@ -29,4 +29,5 @@ private:
 	const float SPEED_CONSTANT = 5.0;
 
 	const sf::Color DEFAULT_WEIGHT_COLOR = sf::Color::Yellow;
+	const sf::Color DEFAULT_POPUP_TEXT_COLOR = sf::Color::White;
 };

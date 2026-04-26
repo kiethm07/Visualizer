@@ -28,7 +28,7 @@ private:
     void applySpawnCommand(const GraphAnimationCommand& command, GraphAnimationState& state, const GraphAnimationState& base_state) const;
     void applyCommandOnNode(GraphAnimationNode& node, const GraphAnimationCommand& command, const float& progress) const;
     void applyCommandOnEdge(GraphAnimationEdge& edge, const GraphAnimationCommand& comamnd, const float& progress) const;
-
+    void applyCommandOnPopup(GraphAnimationPopup& pop_up, const GraphAnimationCommand& comamnd, const float& progress) const;
     GraphAnimationState initial_state;
     std::vector<GraphAnimationState> base_states;
     std::vector<float> start_time;

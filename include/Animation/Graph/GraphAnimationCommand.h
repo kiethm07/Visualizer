@@ -74,7 +74,8 @@ struct GraphAnimationCommand
     }
     static GraphAnimationCommand createChangeValueCommand(int ui_id, int value) {
 		GraphAnimationCommand command;
-		command.target = GraphAnimationTarget::Node;
+        using Target = GraphAnimationTarget;
+        command.target = ui_id >= 0 ? Target::Node : Target::PopUp;
 		command.type = GraphAnimationType::UpdateValue;
         command.value = value;
 		command.ui_id = ui_id;

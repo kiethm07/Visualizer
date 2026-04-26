@@ -30,29 +30,6 @@ static std::string int_to_string(int n) {
 	return res;
 }
 
-//void GraphRenderer::loadState(const GraphAnimationState& animation_state) {
-//	node_list.clear();
-//	edge_list.clear();
-//	const std::vector<GraphAnimationNode>& nodes = animation_state.getNodeList();
-//	const std::vector<GraphAnimationEdge>& edges = animation_state.getEdgeList();
-//	for (int i = 0; i < nodes.size(); i++) {
-//		//ListNode node(a_manager.getFont("Roboto-Regular"), int_to_string(nodes[i].value), nodes[i].position, NODE_RADIUS, 20);
-//		//sf::Color node_color = nodes[i].fill_color;
-//		//node_color.a = nodes[i].alpha;
-//		//node.setListNodeColor(node_color);
-//		//node.setOutlineColor(sf::Color(255, 255, 255, nodes[i].alpha));
-//		//node.setCharacterColor(sf::Color(255, 255, 255, nodes[i].alpha));
-//		//node_list.push_back(node);
-//	}  
-//	for (int i = 0; i < edges.size(); i++) {
-//		//Arrow edge(edges[i].from_position, edges[i].to_position, 3.f, 14.f, 10.f);
-//		//sf::Color edge_color = edges[i].fill_color;
-//		//edge_color.a = edges[i].alpha;
-//		//edge.setColor(edge_color);
-//		//edge_list.push_back(edge);
-//	}
-//}
-
 void GraphRenderer::handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev) {
 
 }
@@ -64,15 +41,6 @@ void GraphRenderer::update(const sf::RenderWindow& window, const sf::View& view)
 void GraphRenderer::loadState(const GraphAnimationState& animation_state) {
 	current_state = animation_state;
 }
-
-//void GraphRenderer::draw(sf::RenderWindow& window, const sf::View& view) {
-//	for (int i = 0; i < node_list.size(); i++) {
-//		window.draw(node_list[i]);
-//	}
-//	for (int i = 0; i < edge_list.size(); i++) {
-//		window.draw(edge_list[i]);
-//	}
-//}
 
 void GraphRenderer::draw(sf::RenderWindow& window, const sf::View& view) {
     sf::Vector2f mouse_world = window.mapPixelToCoords(sf::Mouse::getPosition(window), view);
@@ -180,5 +148,48 @@ void GraphRenderer::draw(sf::RenderWindow& window, const sf::View& view) {
         //}
 
         window.draw(node);
+    }
+
+    // 5. Draw Popup (-1 Dijkstra, -2 MST)
+
+    GraphAnimationPopup popup = current_state.getPopup();
+
+    if (popup.ui_id != 0 && popup.popup_alpha > 0) {
+        sf::View oldView = window.getView();
+        window.setView(window.getDefaultView());
+
+        std::string label = "";
+        if (popup.ui_id == -2) {
+            label = "MST is shown, MST Weight: " + int_to_string(popup.value);
+        }
+        else if (popup.ui_id == -1) {
+            label = "Shortest Path DAG Shown";
+        }
+
+        sf::Text pText(a_manager.getFont("Roboto-Regular"), label, 20);
+
+        sf::Color textColor = DEFAULT_POPUP_TEXT_COLOR;
+        textColor.a = popup.value_alpha;
+        pText.setFillColor(textColor);
+
+        sf::FloatRect bounds = pText.getLocalBounds();
+        sf::RectangleShape pRect(sf::Vector2f(bounds.size.x + 30.f, bounds.size.y + 20.f));
+
+        sf::Color bgColor = sf::Color(40, 40, 40);
+        bgColor.a = popup.popup_alpha;
+        pRect.setFillColor(bgColor);
+
+        sf::Color outlineColor = sf::Color::White;
+        outlineColor.a = popup.popup_alpha;
+        pRect.setOutlineThickness(2.f);
+        pRect.setOutlineColor(outlineColor);
+
+        float winWidth = window.getDefaultView().getSize().x;
+        pRect.setPosition({ winWidth - pRect.getSize().x - 20.f, 20.f });
+        pText.setPosition({ pRect.getPosition().x + 15.f - bounds.position.x, pRect.getPosition().y + 10.f - bounds.position.y });
+
+        window.draw(pRect);
+        window.draw(pText);
+        window.setView(oldView);
     }
 }

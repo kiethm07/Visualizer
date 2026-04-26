@@ -22,6 +22,13 @@ struct GraphAnimationEdge {
 	sf::Color fill_color;
 };
 
+struct GraphAnimationPopup {
+	int ui_id; //0 nothing, -1 Dijkstra, -2 MST
+	int value = 0; // for MST only
+	int value_alpha = 0;
+	int popup_alpha = 0;
+};
+
 class GraphAnimationState {
 public:
 	GraphAnimationState() :
@@ -33,11 +40,17 @@ public:
 	const std::vector<GraphAnimationNode>& getNodeList() const {
 		return node_list;
 	}
+	const GraphAnimationPopup getPopup() const {
+		return pop_up;
+	}
 	void setEdgeList(const std::vector<GraphAnimationEdge>& edge_list) {
 		this->edge_list = edge_list;
 	}
 	void setNodeList(const std::vector<GraphAnimationNode>& node_list) {
 		this->node_list = node_list;
+	}
+	void setPopup(const GraphAnimationPopup& pop_up) {
+		this->pop_up = pop_up;
 	}
 	void clear() {
 		edge_list.clear();
@@ -80,4 +93,5 @@ public:
 private:
 	std::vector<GraphAnimationEdge> edge_list;
 	std::vector<GraphAnimationNode> node_list;
+	GraphAnimationPopup pop_up;
 };

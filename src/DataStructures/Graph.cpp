@@ -368,6 +368,8 @@ void Graph::runDijkstra(int start,  GraphRecorder& recorder) const {
 		recorder.addNewPhase();
 		recorder.addCommand(Command(Target::Node, Type::HighlightOff, nodes.at(u).ui_id));
 	}
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::PopUp, Type::FadeIn, -1));
 }
 
 void Graph::runKruskal(GraphRecorder& recorder) const {
@@ -399,6 +401,8 @@ void Graph::runKruskal(GraphRecorder& recorder) const {
 		return 1;
 	};
 	int MST = 0;
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::PopUp, Type::FadeIn, -2));
 	for (const auto& [w, p] : edge_list) {
 		int u = root(root, p.first);
 		int v = root(root, p.second);
@@ -416,6 +420,7 @@ void Graph::runKruskal(GraphRecorder& recorder) const {
 			recorder.addNewPhase();
 			recorder.setHighlightedLine(4);
 			recorder.addCommand(Command(Target::Edge, Type::FoundedOn, nodes.at(x).ui_id, nodes.at(y).ui_id));
+			recorder.addCommand(Command::createChangeValueCommand(-2, MST));
 			continue;
 		}
 		recorder.addNewPhase();

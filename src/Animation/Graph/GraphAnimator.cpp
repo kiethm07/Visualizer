@@ -241,6 +241,28 @@ void GraphAnimator::applyCommandOnEdge(GraphAnimationEdge& edge, const GraphAnim
 	}
 }
 
+void GraphAnimator::applyCommandOnPopup(GraphAnimationPopup& popup, const GraphAnimationCommand& command, const float& progress) const {
+	using Type = GraphAnimationType;
+
+	if (command.type == Type::FadeIn) {
+		popup.ui_id = command.ui_id; 
+		popup.popup_alpha = popup.value_alpha = lerpByte(0, 255, progress);
+	}
+	else if (command.type == Type::UpdateValue) {
+		if (progress <= 0.5f) {
+			popup.value_alpha = lerpByte(255, 0, progress * 2);
+		}
+		else {
+			popup.value = command.value;
+			popup.value_alpha = lerpByte(0, 255, (progress - 0.5f) * 2);
+		}
+	}
+	else if (command.type == Type::FadeOut) {
+		popup.popup_alpha = popup.value_alpha = lerpByte(255, 0, progress);
+		if (popup.popup_alpha == 0) popup.ui_id = 0;
+	}
+}
+
 void GraphAnimator::applySpawnCommand(const GraphAnimationCommand& command, GraphAnimationState& state, const GraphAnimationState& base_state) const {
 	if (command.target == GraphAnimationTarget::Node) {
 		GraphAnimationNode new_node;
@@ -251,7 +273,7 @@ void GraphAnimator::applySpawnCommand(const GraphAnimationCommand& command, Grap
 		new_node.fill_color = DEFAULT_NODE_COLOR;
 		state.insertNode(new_node);
 	}
-	else {
+	else if (command.target == GraphAnimationTarget::Edge) {
 		GraphAnimationEdge new_edge;
 		new_edge.from_ui_id = command.from_ui_id;
 		new_edge.to_ui_id = command.to_ui_id;
@@ -292,7 +314,7 @@ void GraphAnimator::applyCommand(const GraphAnimationCommand& command, const Gra
 			}
 		}
 	}
-	else {
+	else if (command.target == GraphAnimationTarget::Edge) {
 		const auto& edges = base_state.getEdgeList();
 		for (int i = 0; i < (int)edges.size(); i++) {
 			if (edges[i].from_ui_id == command.from_ui_id && edges[i].to_ui_id == command.to_ui_id) {
@@ -304,6 +326,11 @@ void GraphAnimator::applyCommand(const GraphAnimationCommand& command, const Gra
 				return;
 			}
 		}
+	}
+	else if (command.target == GraphAnimationTarget::PopUp) {
+		GraphAnimationPopup popup = base_state.getPopup();
+		applyCommandOnPopup(popup, command, progress);
+		state.setPopup(popup);
 	}
 }
 
