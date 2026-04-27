@@ -10,7 +10,8 @@ UI::UI(const AssetManager& a_manager) :
     hashmap_ui(asset_manager),
     trie_ui(asset_manager),
     avl_ui(asset_manager),
-	graph_ui(asset_manager)
+	graph_ui(asset_manager),
+    setting(asset_manager)
 {
     settings.antiAliasingLevel = 8;
 
@@ -60,6 +61,11 @@ void UI::run() {
                 }
                 std::optional<MenuState> chosen = main_menu.handleEvent(window, fixed_view, *ev);
                 if (chosen.has_value()) {
+                    if (chosen.value() == MenuState::Setting) {
+                        setting.setPreviouState(current_state);
+                        current_state = MenuState::Setting;
+                        break;
+                    }
                     changed_state = 1;
                     current_state = chosen.value();
                     cam.reset(window, cam_view);
@@ -74,9 +80,26 @@ void UI::run() {
                 }
                 std::optional<MenuState> chosen = ds_menu.handleEvent(window, fixed_view, *ev);
                 if (chosen.has_value()) {
+                    if (chosen.value() == MenuState::Setting) {
+                        setting.setPreviouState(current_state);
+                        current_state = MenuState::Setting;
+                        break;
+                    }
                     changed_state = 1;
                     current_state = chosen.value();
                     cam.reset(window, cam_view);
+                    break;
+                }
+            }
+            if (current_state == MenuState::Setting) {
+                std::optional<MenuState> chosen = setting.handleEvent(window, fixed_view, *ev);
+                if (chosen.has_value()) {
+                    if (chosen.value() == MenuState::Setting) {
+                        setting.setPreviouState(current_state);
+                        current_state = MenuState::Setting;
+                        break;
+                    }
+                    current_state = chosen.value();
                     break;
                 }
             }
@@ -89,6 +112,11 @@ void UI::run() {
                 }
                 std::optional<MenuState> chosen = linked_list_ui.handleEvent(window, fixed_view, cam_view, cam, *ev);
                 if (chosen.has_value()) {
+                    if (chosen.value() == MenuState::Setting) {
+                        setting.setPreviouState(current_state);
+                        current_state = MenuState::Setting;
+                        break;
+                    }
                     changed_state = 1;
                     current_state = chosen.value();
                     cam.reset(window, cam_view);
@@ -104,6 +132,11 @@ void UI::run() {
                 }
                 std::optional<MenuState> chosen = hashmap_ui.handleEvent(window, fixed_view, cam_view, cam, *ev);
                 if (chosen.has_value()) {
+                    if (chosen.value() == MenuState::Setting) {
+                        setting.setPreviouState(current_state);
+                        current_state = MenuState::Setting;
+                        break;
+                    }
                     changed_state = 1;
                     current_state = chosen.value();
                     cam.reset(window, cam_view);
@@ -119,6 +152,11 @@ void UI::run() {
                 }
                 std::optional<MenuState> chosen = trie_ui.handleEvent(window, fixed_view, cam_view, cam, *ev);
                 if (chosen.has_value()) {
+                    if (chosen.value() == MenuState::Setting) {
+                        setting.setPreviouState(current_state);
+                        current_state = MenuState::Setting;
+                        break;
+                    }
                     changed_state = 1;
                     current_state = chosen.value();
                     cam.reset(window, cam_view);
@@ -134,6 +172,11 @@ void UI::run() {
                 }
                 std::optional<MenuState> chosen = avl_ui.handleEvent(window, fixed_view, cam_view, cam, *ev);
                 if (chosen.has_value()) {
+                    if (chosen.value() == MenuState::Setting) {
+                        setting.setPreviouState(current_state);
+                        current_state = MenuState::Setting;
+                        break;
+                    }
                     changed_state = 1;
                     current_state = chosen.value();
                     cam.reset(window, cam_view);
@@ -149,6 +192,11 @@ void UI::run() {
                 }
                 std::optional<MenuState> chosen = graph_ui.handleEvent(window, fixed_view, cam_view, cam, *ev);
                 if (chosen.has_value()) {
+                    if (chosen.value() == MenuState::Setting) {
+                        setting.setPreviouState(current_state);
+                        current_state = MenuState::Setting;
+                        break;
+                    }
                     changed_state = 1;
                     current_state = chosen.value();
                     cam.reset(window, cam_view);
@@ -172,6 +220,11 @@ void UI::run() {
             ds_menu.update(window, fixed_view);
             window.setView(fixed_view);
             window.draw(ds_menu);
+        }
+        if (current_state == MenuState::Setting) {
+            setting.update(window, fixed_view);
+            window.setView(fixed_view);
+            window.draw(setting);
         }
         if (current_state == MenuState::LinkedList) {
             linked_list_ui.update(window, fixed_view, cam_view);

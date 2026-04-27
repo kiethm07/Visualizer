@@ -4,7 +4,8 @@
 
 Button::Button(const AssetManager& a_manager, const std::string& label, const sf::Vector2f pos, const sf::Vector2f size, const unsigned int char_size) :
 	a_manager(a_manager),
-	text(a_manager.getFont(DEFAULT_FONT_NAME), label, char_size)
+	text(a_manager.getFont(DEFAULT_FONT_NAME), label, char_size),
+	click_sound(a_manager.getSound("button_click"))
 	//click_sound(AssetManager::getInstance().getSound("button_click"))
 {
 	container.setPosition(pos);
@@ -16,6 +17,8 @@ Button::Button(const AssetManager& a_manager, const std::string& label, const sf
 	container.setPointCount(10);
 	text.setFillColor(TEXT_IDLE);
 	centerText();
+
+	click_sound.setVolume(80.f);
 }
 
 void Button::setFont(const sf::Font& font) {
@@ -105,14 +108,17 @@ bool Button::contains(const sf::RenderWindow& window, const sf::View& view, cons
 
 bool Button::handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev) {
 	if (mousePressed(window, view, ev)) {
-
+		click_sound.setVolume(SOUND_FACTOR * sound_controller->getSFXVolume());
+		click_sound.play();
+		//std::cout << sound_controller->getMusicVolume() << "\n";
 		return true;
 	}
 	return false;
 }
 
 void Button::update(const sf::RenderWindow& window, const sf::View& view) {
-	sf::Vector2f mouse_world = window.mapPixelToCoords(sf::Mouse::getPosition(window), view);
+	sf::Vector2f mouse_world = window.mapPixelToCoords(sf::Mouse::getPosition(window), view); 
+	bool pre_hover = hovered;
 	hovered = container.getGlobalBounds().contains(mouse_world);
 
 	if (hovered) {

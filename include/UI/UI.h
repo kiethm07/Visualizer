@@ -3,6 +3,7 @@
 #include <UI/Camera.h>
 #include <UI/DSMenu.h>
 #include <UI/MainMenu.h>
+#include <UI/Setting.h>
 #include <optional>
 #include <Model/MenuState.h>
 #include <AssetManager/AssetManager.h>
@@ -26,6 +27,7 @@ private:
 	CameraController cam;
 	MainMenu main_menu;
 	DSMenu ds_menu;
+	Setting setting;
 	LinkedListUI linked_list_ui;
 	HashmapUI hashmap_ui;
 	TrieUI trie_ui;

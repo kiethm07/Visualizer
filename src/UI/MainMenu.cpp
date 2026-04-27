@@ -7,7 +7,8 @@ MainMenu::MainMenu(const AssetManager& a_manager) :
 	start_button(a_manager, "Start", {}, {}, 20),
 	setting_button(a_manager, "Setting", {}, {}, 20),
 	background(a_manager.getTexture("MinecraftBackground")),
-	title(a_manager.getTexture("Title"))
+	title(a_manager.getTexture("Title")),
+	credit(a_manager.getTexture("Credit"))
 {
 	start_button.setFont(menu_font);
 	setting_button.setFont(menu_font);
@@ -93,6 +94,10 @@ void MainMenu::updateWindowSize(const sf::RenderWindow& window, const sf::View& 
 	centerOrigin(title);
 	scaleToWidth(title, 0.6f);
 	title.setPosition({ winSize.x / 2.f, winSize.y * 0.25f });
+
+	centerOrigin(credit);
+	scaleToWidth(credit, 0.3f);
+	credit.setPosition({ winSize.x / 2.f, winSize.y - winSize.y * 0.05f });
 
 	setupButton(start_button, 0.6f);
 	setupButton(setting_button, 0.75f);

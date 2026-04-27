@@ -15,6 +15,7 @@ private:
 	const sf::Font& menu_font;
 	sf::Sprite background;
 	sf::Sprite title;
+	sf::Sprite credit;
 	Button start_button;
 	Button setting_button;
 	void updateWindowSize(const sf::RenderWindow& window, const sf::View& view);
@@ -22,6 +23,7 @@ private:
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
 		target.draw(background, states);
 		target.draw(title, states);
+		target.draw(credit, states);
 		target.draw(start_button, states);
 		target.draw(setting_button, states);
 	}
