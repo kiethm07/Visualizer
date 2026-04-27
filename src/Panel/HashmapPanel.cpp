@@ -19,10 +19,10 @@ HashmapPanel::HashmapPanel(const AssetManager& a_manager) :
 	search_button(a_manager, "Search", {}, {}, 20),
 	reset_button(a_manager, "Reset", {}, {}, 20),
 
-	home_button(a_manager, "Home", {}, {}, 20),
-	setting_button(a_manager, "Set", {}, {}, 20),
-	save_button(a_manager, "Save", {}, {}, 20),
-	load_button(a_manager, "Load", {}, {}, 20)
+	home_button(a_manager, "HomeIcon", {}),
+	setting_button(a_manager, "SettingIcon", {}),
+	save_button(a_manager, "SaveFileIcon", {}),
+	load_button(a_manager, "LoadFileIcon", {})
 {
 	background.setFillColor(sf::Color::White);
 	background.setOrigin({ 0, 0 });

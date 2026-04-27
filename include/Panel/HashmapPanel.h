@@ -1,6 +1,7 @@
 #pragma once
 #include <Model/Button.h>
 #include <Model/TextBox.h>
+#include <Model/TextureButton.h>
 #include <Model/HashmapModel/HashmapOperation.h>
 #include <External/SimpleFileDialog.h>
 #include <optional>
@@ -28,10 +29,10 @@ private:
 	Button search_button;
 	Button reset_button;
 
-	Button save_button;
-	Button load_button;
-	Button home_button;
-	Button setting_button;
+	TextureButton save_button;
+	TextureButton load_button;
+	TextureButton home_button;
+	TextureButton setting_button;
 
 	void updateButtonState(const sf::RenderWindow& window, const sf::View& view);
 	void updateWindowState(const sf::RenderWindow& window, const sf::View& view);

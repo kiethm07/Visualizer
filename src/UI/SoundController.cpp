@@ -13,7 +13,7 @@ void SoundController::playMusic(const std::string& file_path, bool loop) {
 	if (!bgm.openFromFile(file_path)) {
 		return;
 	}
-	std::cout << file_path << "\n";
+	//std::cout << file_path << "\n";
 	bgm.setLooping(loop);
 	bgm.setVolume(music_volume);
 	bgm.play();
@@ -25,16 +25,30 @@ void SoundController::stopMusic() {
 
 void SoundController::playSFX(const std::string& name) {
 	sfx.setBuffer(a_manager.getSound(name));
-	sfx.setVolume(sfx_volume);
+	//sfx.setVolume(sfx_volume);
 	sfx.play();
 }
 
 void SoundController::setMusicVolume(float volume) {
 	music_volume = volume;
-	bgm.setVolume(music_volume);
+	if (music_mute) bgm.setVolume(0);
+	else bgm.setVolume(music_volume);
 }
 
 void SoundController::setSfxVolume(float volume) {
 	sfx_volume = volume;
-	sfx.setVolume(sfx_volume);
+	if (sfx_mute) sfx.setVolume(0);
+	else sfx.setVolume(sfx_volume);
+}
+
+void SoundController::setMuteMusic(bool f) {
+	music_mute = f;
+	if (music_mute) bgm.setVolume(0);
+	else bgm.setVolume(music_volume);
+}
+
+void SoundController::setMuteSfx(bool f) {
+	sfx_mute = f;
+	if (sfx_mute) sfx.setVolume(0);
+	else sfx.setVolume(sfx_volume);
 }

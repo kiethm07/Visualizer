@@ -20,6 +20,7 @@ int main() {
     SoundController sound_controller(asset_manager);
     Setting::setSoundController(&sound_controller);
     Button::setSoundController(&sound_controller);
+    TextureButton::setSoundController(&sound_controller);
 
     UI ui(asset_manager);
     //asset_manager.printAllFont();

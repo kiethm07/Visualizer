@@ -14,9 +14,11 @@ public:
 
 	void setMusicVolume(float volume);
 	void setSfxVolume(float volume);
+	void setMuteMusic(bool f);
+	void setMuteSfx(bool f);
 
-	float getMusicVolume() const { return music_volume; }
-	float getSFXVolume() const { return sfx_volume; }
+	float getMusicVolume() const { return music_mute ? 0 : music_volume; }
+	float getSFXVolume() const { return sfx_mute ? 0 : sfx_volume; }
 
 private:
 	const AssetManager& a_manager;
@@ -25,4 +27,7 @@ private:
 
 	float music_volume = 100.f;
 	float sfx_volume = 100.f;
+
+	float music_mute = 0;
+	float sfx_mute = 0;
 };
