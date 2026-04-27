@@ -1,14 +1,16 @@
 #include <UI/DSMenu.h>
 #include <iostream>
 
-DSMenu::DSMenu(const sf::Font& font) :
-	menu_font(font),
-	main_menu_button(font, "Main Menu", {}, {}, 20),
-	linked_list_button(font, "Linked List", {}, {}, 20),
-	hashmap_button(font, "Hash Map", {}, {}, 20),
-	trie_button(font, "Trie", {}, {}, 20),
-	avl_button(font, "AVL Tree", {}, {}, 20),
-	graph_button(font, "Graph", {}, {}, 20) {
+DSMenu::DSMenu(const AssetManager& a_manager) :
+	a_manager(a_manager),
+	menu_font(a_manager.getFont("Silkscreen-Regular")),
+	background(a_manager.getTexture("MinecraftBackground")),
+	main_menu_button(menu_font, "Main Menu", {}, {}, 20),
+	linked_list_button(menu_font, "Linked List", {}, {}, 20),
+	hashmap_button(menu_font, "Hash Map", {}, {}, 20),
+	trie_button(menu_font, "Trie", {}, {}, 20),
+	avl_button(menu_font, "AVL Tree", {}, {}, 20),
+	graph_button(menu_font, "Graph", {}, {}, 20) {
 }
 
 void DSMenu::update(const sf::RenderWindow& window, const sf::View& view) {
@@ -23,12 +25,12 @@ std::optional<MenuState> DSMenu::handleEvent(const sf::RenderWindow& window, con
 
 	if (const auto* mouse = ev.getIf<sf::Event::MouseButtonPressed>()) {
 		if (mouse->button == sf::Mouse::Button::Left) {
-			if (main_menu_button.mousePressed(window, view, ev)) return MenuState::MainMenu;
-			if (linked_list_button.mousePressed(window, view, ev)) return MenuState::LinkedList;
-			if (hashmap_button.mousePressed(window, view, ev)) return MenuState::Hashmap;
-			if (trie_button.mousePressed(window, view, ev)) return MenuState::Trie;
-			if (avl_button.mousePressed(window, view, ev)) return MenuState::AVL;
-			if (graph_button.mousePressed(window, view, ev)) return MenuState::Graph;
+			if (main_menu_button.handleEvent(window, view, ev)) return MenuState::MainMenu;
+			if (linked_list_button.handleEvent(window, view, ev)) return MenuState::LinkedList;
+			if (hashmap_button.handleEvent(window, view, ev)) return MenuState::Hashmap;
+			if (trie_button.handleEvent(window, view, ev)) return MenuState::Trie;
+			if (avl_button.handleEvent(window, view, ev)) return MenuState::AVL;
+			if (graph_button.handleEvent(window, view, ev)) return MenuState::Graph;
 		}
 	}
 
@@ -61,6 +63,13 @@ void DSMenu::updateWindowSize(const sf::RenderWindow& window, const sf::View& vi
 	place_button(trie_button, 3);
 	place_button(avl_button, 4);
 	place_button(graph_button, 5);
+
+	sf::Vector2u windowSize = window.getSize();
+
+	float scaleX = (float)windowSize.x / background.getTexture().getSize().x;
+	float scaleY = (float)windowSize.y / background.getTexture().getSize().y;
+
+	background.setScale({ scaleX, scaleY });
 }
 
 void DSMenu::updateButtonState(const sf::RenderWindow& window, const sf::View& view) {

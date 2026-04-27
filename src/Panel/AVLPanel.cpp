@@ -101,68 +101,56 @@ std::optional<AVLOperation> AVLPanel::handleEvent(
 ) {
 	input_value.handleEvent(window, view, ev);
 
-	if (const auto* mb = ev.getIf<sf::Event::MouseButtonReleased>()) {
-		if (mb->button == sf::Mouse::Button::Left) {
-			const sf::Vector2f mouse_pos = sf::Vector2f(mb->position);
-
-			if (insert_button.contains(window, view, mouse_pos)) {
-				std::optional<int> value = input_value.getValueAsInt();
-
-				if (value.has_value()) {
-					input_value.setFocused(0);
-					input_value.reset();
-					std::cout << *value << "\n";
-					return AVLOperation::insert(*value);
-				}
-
-				return std::nullopt;
-			}
-
-			if (remove_button.contains(window, view, mouse_pos)) {
-				std::optional<int> value = input_value.getValueAsInt();
-
-				if (value.has_value()) {
-					input_value.setFocused(0);
-					input_value.reset();
-					return AVLOperation::remove(*value);
-				}
-
-				return std::nullopt;
-			}
-
-			if (search_button.contains(window, view, mouse_pos)) {
-				std::optional<int> value = input_value.getValueAsInt();
-				if (value.has_value()) {
-					input_value.setFocused(0);
-					input_value.reset();
-					std::cout << (*value) << "\n";
-					return AVLOperation::search(*value);
-				}
-			}
-
-			if (reset_button.contains(window, view, mouse_pos)) {
-				return AVLOperation::reset();
-			}
-
-			if (home_button.contains(window, view, mouse_pos)) {
-				return AVLOperation::home();
-			}
-
-			if (setting_button.contains(window, view, mouse_pos)) {
-				return AVLOperation::setting();
-			}
-
-			if (save_button.contains(window, view, mouse_pos)) {
-				std::string filepath = cr::utils::SimpleFileDialog::saveDialog();
-				return AVLOperation::save(filepath);
-			}
-
-			if (load_button.contains(window, view, mouse_pos)) {
-				std::string filepath = cr::utils::SimpleFileDialog::dialog();
-				return AVLOperation::load(filepath);
-			}
-
+	if (insert_button.handleEvent(window, view, ev)) {
+		std::optional<int> value = input_value.getValueAsInt();
+		if (value.has_value()) {
+			input_value.setFocused(0);
+			input_value.reset();
+			//std::cout << *value << "\n";
+			return AVLOperation::insert(*value);
 		}
+		return std::nullopt;
+	}
+
+	if (remove_button.handleEvent(window, view, ev)) {
+		std::optional<int> value = input_value.getValueAsInt();
+		if (value.has_value()) {
+			input_value.setFocused(0);
+			input_value.reset();
+			return AVLOperation::remove(*value);
+		}
+		return std::nullopt;
+	}
+
+	if (search_button.handleEvent(window, view, ev)) {
+		std::optional<int> value = input_value.getValueAsInt();
+		if (value.has_value()) {
+			input_value.setFocused(0);
+			input_value.reset();
+			//std::cout << (*value) << "\n";
+			return AVLOperation::search(*value);
+		}
+		return std::nullopt;
+	}
+
+	if (reset_button.handleEvent(window, view, ev)) {
+		return AVLOperation::reset();
+	}
+
+	if (home_button.handleEvent(window, view, ev)) {
+		return AVLOperation::home();
+	}
+
+	if (setting_button.handleEvent(window, view, ev)) {
+		return AVLOperation::setting();
+	}
+
+	if (save_button.handleEvent(window, view, ev)) {
+		return AVLOperation::save(cr::utils::SimpleFileDialog::saveDialog());
+	}
+
+	if (load_button.handleEvent(window, view, ev)) {
+		return AVLOperation::load(cr::utils::SimpleFileDialog::dialog());
 	}
 
 	return std::nullopt;

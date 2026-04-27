@@ -36,9 +36,17 @@ void PseudoCodePanel::draw(sf::RenderTarget& target, sf::RenderStates states) co
 	target.draw(title, states);
 	//std::cout << minimize_button.getSize().x << " " << minimize_button.getSize().y << "\n";
 	//std::cout << minimize_button.getPosition().x << " " << minimize_button.getPosition().y << "\n";
-	target.draw(minimize_button, states);
-	target.draw(maximize_button, states);
-	if (minimized) return;
+	if (minimized) {
+		if (hover == 0) {
+			target.draw(maximize_button, states);
+			target.draw(minimize_button, states);
+		}
+		else {
+			target.draw(minimize_button, states);
+			target.draw(maximize_button, states);
+		}
+		return;
+	}
 	for (int i = 0; i < code_lines.size(); i++) {
 		if (i == current_highlight) {
 			CodeLine highlighted_code = code_lines[i];
@@ -50,6 +58,14 @@ void PseudoCodePanel::draw(sf::RenderTarget& target, sf::RenderStates states) co
 		//std::cout << i << "\n";
 		//std::cout << code_lines[i].getPosition().x << " " << code_lines[i].getPosition().y << "\n";
 		//std::cout << code_lines[i].getSize().x << " " << code_lines[i].getSize().y << "\n";
+	}
+	if (hover == 0) {
+		target.draw(maximize_button, states);
+		target.draw(minimize_button, states);
+	}
+	else {
+		target.draw(minimize_button, states);
+		target.draw(maximize_button, states);
 	}
 }
 
@@ -202,4 +218,10 @@ void PseudoCodePanel::animateHighlight(float progress, bool isHighlight, int ind
 void PseudoCodePanel::update(const sf::RenderWindow& window, const sf::View& view) {
 	minimize_button.update(window, view);
 	maximize_button.update(window, view);
+	if (minimize_button.getHover()) {
+		hover = 0;
+	}
+	if (maximize_button.getHover()) {
+		hover = 1;
+	}
 }

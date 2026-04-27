@@ -23,44 +23,53 @@ TimelinePanel::TimelinePanel(const AssetManager& a_manager) :
 
 std::optional<TimelineConfig> TimelinePanel::handleEvent(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const sf::Event& ev) {
     speed_slider.handleEvent(window, view, ev);
-    TimelineConfig timeline_config;
+
     if (speed_slider.getIsDragging()) {
         return TimelineConfig::changeSpeed(speed_slider.getValue());
     }
-    if (const auto* mb = ev.getIf<sf::Event::MouseButtonReleased>()) {
-        sf::Vector2f mouse_pos = sf::Vector2f(mb->position);
-        if (play.contains(window, view, mouse_pos)) {
-            return TimelineConfig::play();
-        }
-        if (auto_play.contains(window, view, mouse_pos)) {
-            return TimelineConfig::autoPlay();
-        }
-        if (one_phase_forward.contains(window, view, mouse_pos)) {
-            return TimelineConfig::onePhaseForward();
-        }
-        if (one_phase_backward.contains(window, view, mouse_pos)) {
-            return TimelineConfig::onePhaseBackward();
-        }
-        if (one_step_forward.contains(window, view, mouse_pos)) {
-            return TimelineConfig::oneStepForward();
-        }
-        if (one_step_backward.contains(window, view, mouse_pos)) {
-            return TimelineConfig::oneStepBackward();
-        }
-        if (skip_to_last.contains(window, view, mouse_pos)) {
-            return TimelineConfig::toLast();
-        }
-        if (skip_to_init.contains(window, view, mouse_pos)) {
-            return TimelineConfig::toInit();
-        }
-        if (fix_camera.contains(window, view, mouse_pos)) {
-            bool flag = cam.isEnable() ^ 1;
-            cam.setEnable(flag);
-        }
-        if (reset_camera.contains(window, view, mouse_pos)) {
-            cam.reset(window, cam_view);
-        }
+
+    if (play.handleEvent(window, view, ev)) {
+        return TimelineConfig::play();
     }
+
+    if (auto_play.handleEvent(window, view, ev)) {
+        return TimelineConfig::autoPlay();
+    }
+
+    if (one_phase_forward.handleEvent(window, view, ev)) {
+        return TimelineConfig::onePhaseForward();
+    }
+
+    if (one_phase_backward.handleEvent(window, view, ev)) {
+        return TimelineConfig::onePhaseBackward();
+    }
+
+    if (one_step_forward.handleEvent(window, view, ev)) {
+        return TimelineConfig::oneStepForward();
+    }
+
+    if (one_step_backward.handleEvent(window, view, ev)) {
+        return TimelineConfig::oneStepBackward();
+    }
+
+    if (skip_to_last.handleEvent(window, view, ev)) {
+        return TimelineConfig::toLast();
+    }
+
+    if (skip_to_init.handleEvent(window, view, ev)) {
+        return TimelineConfig::toInit();
+    }
+
+    if (fix_camera.handleEvent(window, view, ev)) {
+        cam.setEnable(!cam.isEnable());
+        return std::nullopt;
+    }
+
+    if (reset_camera.handleEvent(window, view, ev)) {
+        cam.reset(window, cam_view);
+        return std::nullopt;
+    }
+
     return std::nullopt;
 }
 

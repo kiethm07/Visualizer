@@ -28,10 +28,10 @@ std::optional<MenuState> MainMenu::handleEvent(const sf::RenderWindow & window, 
 	}
 	if (const auto* mouse_pressed = ev.getIf<sf::Event::MouseButtonPressed>()) {
 		if (mouse_pressed->button == sf::Mouse::Button::Left) {
-			if (start_button.mousePressed(window, view, ev)) {
+			if (start_button.handleEvent(window, view, ev)) {
 				return MenuState::DSMenu;
 			}
-			if (setting_button.mousePressed(window, view, ev)) {
+			if (setting_button.handleEvent(window, view, ev)) {
 				return MenuState::Setting;
 			}
 		}

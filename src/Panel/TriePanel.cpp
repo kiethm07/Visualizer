@@ -95,92 +95,75 @@ void TriePanel::updateWindowState(const sf::RenderWindow& window, const sf::View
 	place_system_button(load_button, 3);
 }
 
-std::optional<TrieOperation> TriePanel::handleEvent(
-	const sf::RenderWindow& window,
-	const sf::View& view,
-	const sf::Event& ev
-) {
+std::optional<TrieOperation> TriePanel::handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev) {
 	input_value.handleEvent(window, view, ev);
 
-	if (const auto* mb = ev.getIf<sf::Event::MouseButtonReleased>()) {
-		if (mb->button == sf::Mouse::Button::Left) {
-			const sf::Vector2f mouse_pos = sf::Vector2f(mb->position);
-
-			auto parser = [](const std::string& s) -> std::string {
-				std::string res = "";
-				for (int i = 0; i < s.size(); i++) {
-					char c = s[i];
-					if (c >= 'a' && c <= 'z') {
-						c = c - 'a' + 'A';
-					}
-					if (c >= 'A' && c <= 'Z') res += c;
-				}
-				return res;
-			};
-
-			if (insert_button.contains(window, view, mouse_pos)) {
-				std::optional<std::string> value = input_value.getValue();
-				
-				if (value.has_value()) {
-					std::string s = parser(*value);
-					if (s.empty()) return std::nullopt;
-					input_value.setFocused(0);
-					input_value.reset();
-					return TrieOperation::insert(s);
-				}
-
-				return std::nullopt;
+	auto parser = [](const std::string& s) -> std::string {
+		std::string res = "";
+		for (int i = 0; i < s.size(); i++) {
+			char c = s[i];
+			if (c >= 'a' && c <= 'z') {
+				c = c - 'a' + 'A';
 			}
-
-			if (remove_button.contains(window, view, mouse_pos)) {
-				std::optional<std::string> value = input_value.getValue();
-
-				if (value.has_value()) {
-					std::string s = parser(*value);
-					if (s.empty()) return std::nullopt;
-					input_value.setFocused(0);
-					input_value.reset();
-					return TrieOperation::remove(s);
-				}
-
-				return std::nullopt;
-			}
-
-			if (search_button.contains(window, view, mouse_pos)) {
-				std::optional<std::string> value = input_value.getValue();
-				if (value.has_value()) {
-					std::string s = parser(*value);
-					if (s.empty()) return std::nullopt;
-					input_value.setFocused(0);
-					input_value.reset();
-					//std::cout << (*value) << "\n";
-					return TrieOperation::search(s);
-				}
-			}
-
-			if (reset_button.contains(window, view, mouse_pos)) {
-				return TrieOperation::reset();
-			}
-
-
-			if (home_button.contains(window, view, mouse_pos)) {
-				return TrieOperation::home();
-			}
-
-			if (setting_button.contains(window, view, mouse_pos)) {
-				return TrieOperation::setting();
-			}
-
-			if (save_button.contains(window, view, mouse_pos)) {
-				std::string filepath = cr::utils::SimpleFileDialog::saveDialog();
-				return TrieOperation::save(filepath);
-			}
-
-			if (load_button.contains(window, view, mouse_pos)) {
-				std::string filepath = cr::utils::SimpleFileDialog::dialog();
-				return TrieOperation::load(filepath);
-			}
+			if (c >= 'A' && c <= 'Z') res += c;
 		}
+		return res;
+	};
+
+	if (insert_button.handleEvent(window, view, ev)) {
+		std::optional<std::string> value = input_value.getValue();
+		if (value.has_value()) {
+			std::string s = parser(*value);
+			if (s.empty()) return std::nullopt;
+			input_value.setFocused(0);
+			input_value.reset();
+			return TrieOperation::insert(s);
+		}
+		return std::nullopt;
+	}
+
+	if (remove_button.handleEvent(window, view, ev)) {
+		std::optional<std::string> value = input_value.getValue();
+		if (value.has_value()) {
+			std::string s = parser(*value);
+			if (s.empty()) return std::nullopt;
+			input_value.setFocused(0);
+			input_value.reset();
+			return TrieOperation::remove(s);
+		}
+		return std::nullopt;
+	}
+
+	if (search_button.handleEvent(window, view, ev)) {
+		std::optional<std::string> value = input_value.getValue();
+		if (value.has_value()) {
+			std::string s = parser(*value);
+			if (s.empty()) return std::nullopt;
+			input_value.setFocused(0);
+			input_value.reset();
+			return TrieOperation::search(s);
+		}
+		return std::nullopt;
+	}
+
+	if (reset_button.handleEvent(window, view, ev)) {
+		return TrieOperation::reset();
+	}
+
+	if (home_button.handleEvent(window, view, ev)) {
+		return TrieOperation::home();
+	}
+
+	if (setting_button.handleEvent(window, view, ev)) {
+		return TrieOperation::setting();
+	}
+
+	if (save_button.handleEvent(window, view, ev)) {
+		return TrieOperation::save(cr::utils::SimpleFileDialog::saveDialog());
+	}
+
+	if (load_button.handleEvent(window, view, ev)) {
+		return TrieOperation::load(cr::utils::SimpleFileDialog::dialog());
 	}
 
 	return std::nullopt;

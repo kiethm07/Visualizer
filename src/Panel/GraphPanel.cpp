@@ -97,160 +97,114 @@ void GraphPanel::updateWindowState(const sf::RenderWindow& window, const sf::Vie
 	place_system_button(load_button, 3);
 }
 
-std::optional<GraphOperation> GraphPanel::handleEvent(
-	const sf::RenderWindow& window,
-	const sf::View& view,
-	const sf::Event& ev
-) {
+std::optional<GraphOperation> GraphPanel::handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev) {
 	input_value.handleEvent(window, view, ev);
 
-	if (const auto* mb = ev.getIf<sf::Event::MouseButtonReleased>()) {
-		if (mb->button == sf::Mouse::Button::Left) {
-			auto parseInput = [](const std::string& input) -> std::vector<int> {
-				std::vector<int> result;
-				auto isDigit = [](char c) -> bool {
-					return c >= '0' && c <= '9';
-				};
-				auto toInt = [](char c) -> int {
-					return c - '0';
-				};
-
-				int currentNum = 0;
-				int digitCount = 0;
-				bool hasValue = false;
-
-				for (char c : input) {
-					if (isDigit(c)) {
-						if (digitCount < 5) {
-							currentNum = currentNum * 10 + toInt(c);
-							digitCount++;
-							hasValue = true;
-						}
-					}
-					else {
-						if (hasValue) {
-							result.push_back(currentNum);
-							currentNum = 0;
-							digitCount = 0;
-							hasValue = false;
-							if (result.size() == 3) {
-								break; // need max 3 parameters
-							}
-						}
-					}
+	auto parseInput = [](const std::string& input) -> std::vector<int> {
+		std::vector<int> result;
+		auto isDigit = [](char c) -> bool { return c >= '0' && c <= '9'; };
+		auto toInt = [](char c) -> int { return c - '0'; };
+		int currentNum = 0;
+		int digitCount = 0;
+		bool hasValue = false;
+		for (char c : input) {
+			if (isDigit(c)) {
+				if (digitCount < 5) {
+					currentNum = currentNum * 10 + toInt(c);
+					digitCount++;
+					hasValue = true;
 				}
+			}
+			else {
 				if (hasValue) {
 					result.push_back(currentNum);
+					currentNum = 0;
+					digitCount = 0;
+					hasValue = false;
+					if (result.size() == 3) break;
 				}
-
-				return result;
-			};
-			const sf::Vector2f mouse_pos = sf::Vector2f(mb->position);
-
-			if (insert_node_button.contains(window, view, mouse_pos)) {
-				std::optional<std::string> value = input_value.getValue();
-				if (!value.has_value()) {
-					return std::nullopt;
-				}
-				std::vector<int> parsed = parseInput(*value);
-				if (parsed.size() < 1) {
-					return std::nullopt;
-				}
-				input_value.reset();
-				return GraphOperation::insertNode(parsed[0]);
-			}
-
-			if (remove_node_button.contains(window, view, mouse_pos)) {
-				std::optional<std::string> value = input_value.getValue();
-				if (!value.has_value()) {
-					return std::nullopt;
-				}
-				std::vector<int> parsed = parseInput(*value);
-				if (parsed.size() < 1) {
-					return std::nullopt;
-				}
-				input_value.reset();
-				return GraphOperation::removeNode(parsed[0]);
-			}
-
-			if (insert_edge_button.contains(window, view, mouse_pos)) {
-				std::optional<std::string> value = input_value.getValue();
-				if (!value.has_value()) {
-					return std::nullopt;
-				}
-				std::vector<int> parsed = parseInput(*value);
-				if (parsed.size() < 3) {
-					return std::nullopt;
-				}
-				input_value.reset();
-				return GraphOperation::insertEdge(parsed[0], parsed[1], parsed[2]);
-			}
-
-			if (remove_edge_button.contains(window, view, mouse_pos)) {
-				std::optional<std::string> value = input_value.getValue();
-				if (!value.has_value()) {
-					return std::nullopt;
-				}
-				std::vector<int> parsed = parseInput(*value);
-				if (parsed.size() < 2) {
-					return std::nullopt;
-				}
-				input_value.reset();
-				return GraphOperation::removeEdge(parsed[0], parsed[1]);
-			}
-
-			if (modify_edge_button.contains(window, view, mouse_pos)) {
-				std::optional<std::string> value = input_value.getValue();
-				if (!value.has_value()) {
-					return std::nullopt;
-				}
-				std::vector<int> parsed = parseInput(*value);
-				if (parsed.size() < 3) {
-					return std::nullopt;
-				}
-				input_value.reset();
-				return GraphOperation::modifyEdge(parsed[0], parsed[1], parsed[2]);
-			}
-
-			if (dijkstra_button.contains(window, view, mouse_pos)) {
-				std::optional<std::string> value = input_value.getValue();
-				if (!value.has_value()) {
-					return std::nullopt;
-				}
-				std::vector<int> parsed = parseInput(*value);
-				if (parsed.size() < 1) {
-					return std::nullopt;
-				}
-				input_value.reset();
-				return GraphOperation::dijkstra(parsed[0]);
-			}
-
-			if (kruskal_button.contains(window, view, mouse_pos)) {
-				return GraphOperation::kruskal();
-			}
-
-			if (reset_button.contains(window, view, mouse_pos)) {
-				return GraphOperation::reset();
-			}
-
-			if (home_button.contains(window, view, mouse_pos)) {
-				return GraphOperation::home();
-			}
-
-			if (setting_button.contains(window, view, mouse_pos)) {
-				return GraphOperation::setting();
-			}
-
-			if (save_button.contains(window, view, mouse_pos)) {
-				std::string filepath = cr::utils::SimpleFileDialog::saveDialog();
-				return GraphOperation::save(filepath);
-			}
-
-			if (load_button.contains(window, view, mouse_pos)) {
-				std::string filepath = cr::utils::SimpleFileDialog::dialog();
-				return GraphOperation::load(filepath);
 			}
 		}
+		if (hasValue) result.push_back(currentNum);
+		return result;
+	};
+
+	if (insert_node_button.handleEvent(window, view, ev)) {
+		std::optional<std::string> value = input_value.getValue();
+		if (!value.has_value()) return std::nullopt;
+		std::vector<int> parsed = parseInput(*value);
+		if (parsed.size() < 1) return std::nullopt;
+		input_value.reset();
+		return GraphOperation::insertNode(parsed[0]);
+	}
+
+	if (remove_node_button.handleEvent(window, view, ev)) {
+		std::optional<std::string> value = input_value.getValue();
+		if (!value.has_value()) return std::nullopt;
+		std::vector<int> parsed = parseInput(*value);
+		if (parsed.size() < 1) return std::nullopt;
+		input_value.reset();
+		return GraphOperation::removeNode(parsed[0]);
+	}
+
+	if (insert_edge_button.handleEvent(window, view, ev)) {
+		std::optional<std::string> value = input_value.getValue();
+		if (!value.has_value()) return std::nullopt;
+		std::vector<int> parsed = parseInput(*value);
+		if (parsed.size() < 3) return std::nullopt;
+		input_value.reset();
+		return GraphOperation::insertEdge(parsed[0], parsed[1], parsed[2]);
+	}
+
+	if (remove_edge_button.handleEvent(window, view, ev)) {
+		std::optional<std::string> value = input_value.getValue();
+		if (!value.has_value()) return std::nullopt;
+		std::vector<int> parsed = parseInput(*value);
+		if (parsed.size() < 2) return std::nullopt;
+		input_value.reset();
+		return GraphOperation::removeEdge(parsed[0], parsed[1]);
+	}
+
+	if (modify_edge_button.handleEvent(window, view, ev)) {
+		std::optional<std::string> value = input_value.getValue();
+		if (!value.has_value()) return std::nullopt;
+		std::vector<int> parsed = parseInput(*value);
+		if (parsed.size() < 3) return std::nullopt;
+		input_value.reset();
+		return GraphOperation::modifyEdge(parsed[0], parsed[1], parsed[2]);
+	}
+
+	if (dijkstra_button.handleEvent(window, view, ev)) {
+		std::optional<std::string> value = input_value.getValue();
+		if (!value.has_value()) return std::nullopt;
+		std::vector<int> parsed = parseInput(*value);
+		if (parsed.size() < 1) return std::nullopt;
+		input_value.reset();
+		return GraphOperation::dijkstra(parsed[0]);
+	}
+
+	if (kruskal_button.handleEvent(window, view, ev)) {
+		return GraphOperation::kruskal();
+	}
+
+	if (reset_button.handleEvent(window, view, ev)) {
+		return GraphOperation::reset();
+	}
+
+	if (home_button.handleEvent(window, view, ev)) {
+		return GraphOperation::home();
+	}
+
+	if (setting_button.handleEvent(window, view, ev)) {
+		return GraphOperation::setting();
+	}
+
+	if (save_button.handleEvent(window, view, ev)) {
+		return GraphOperation::save(cr::utils::SimpleFileDialog::saveDialog());
+	}
+
+	if (load_button.handleEvent(window, view, ev)) {
+		return GraphOperation::load(cr::utils::SimpleFileDialog::dialog());
 	}
 
 	return std::nullopt;

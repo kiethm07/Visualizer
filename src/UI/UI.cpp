@@ -5,7 +5,7 @@
 UI::UI(const AssetManager& a_manager) :
     asset_manager(a_manager),
     main_menu(a_manager),
-    ds_menu(asset_manager.getFont("Roboto-Regular")),
+    ds_menu(a_manager),
     linked_list_ui(asset_manager),
     hashmap_ui(asset_manager),
     trie_ui(asset_manager),

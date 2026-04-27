@@ -28,6 +28,7 @@ private:
     int current_highlight = -1;
     bool minimized;
     bool is_dragging = false;
+    bool hover = 0; //1 is minimize first, 0 is maximize first
 
     sf::Vector2f drag_offset;
     sf::RectangleShape background;

@@ -94,73 +94,58 @@ void HashmapPanel::updateWindowState(const sf::RenderWindow& window, const sf::V
 	place_system_button(load_button, 3);
 }
 
-std::optional<HashmapOperation> HashmapPanel::handleEvent(
-	const sf::RenderWindow& window,
-	const sf::View& view,
-	const sf::Event& ev
-) {
+std::optional<HashmapOperation> HashmapPanel::handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev) {
 	input_value.handleEvent(window, view, ev);
 
-	if (const auto* mb = ev.getIf<sf::Event::MouseButtonReleased>()) {
-		if (mb->button == sf::Mouse::Button::Left) {
-			const sf::Vector2f mouse_pos = sf::Vector2f(mb->position);
-
-			if (insert_button.contains(window, view, mouse_pos)) {
-				std::optional<int> value = input_value.getValueAsInt();
-
-				if (value.has_value()) {
-					input_value.setFocused(0);
-					input_value.reset();
-					return HashmapOperation::insert(*value, *value);
-				}
-
-				return std::nullopt;
-			}
-
-			if (remove_button.contains(window, view, mouse_pos)) {
-				std::optional<int> value = input_value.getValueAsInt();
-
-				if (value.has_value()) {
-					input_value.setFocused(0);
-					input_value.reset();
-					return HashmapOperation::remove(*value);
-				}
-
-				return std::nullopt;
-			}
-
-			if (search_button.contains(window, view, mouse_pos)) {
-				std::optional<int> value = input_value.getValueAsInt();
-				if (value.has_value()) {
-					input_value.setFocused(0);
-					input_value.reset();
-					std::cout << (*value) << "\n";
-					return HashmapOperation::search(*value);
-				}
-			}
-
-			if (reset_button.contains(window, view, mouse_pos)) {
-				return HashmapOperation::reset();
-			}
-
-			if (home_button.contains(window, view, mouse_pos)) {
-				return HashmapOperation::home();
-			}
-
-			if (setting_button.contains(window, view, mouse_pos)) {
-				return HashmapOperation::setting();
-			}
-
-			if (save_button.contains(window, view, mouse_pos)) {
-				std::string filepath = cr::utils::SimpleFileDialog::saveDialog();
-				return HashmapOperation::save(filepath);
-			}
-
-			if (load_button.contains(window, view, mouse_pos)) {
-				std::string filepath = cr::utils::SimpleFileDialog::dialog();
-				return HashmapOperation::load(filepath);
-			}
+	if (insert_button.handleEvent(window, view, ev)) {
+		std::optional<int> value = input_value.getValueAsInt();
+		if (value.has_value()) {
+			input_value.setFocused(0);
+			input_value.reset();
+			return HashmapOperation::insert(*value, *value);
 		}
+		return std::nullopt;
+	}
+
+	if (remove_button.handleEvent(window, view, ev)) {
+		std::optional<int> value = input_value.getValueAsInt();
+		if (value.has_value()) {
+			input_value.setFocused(0);
+			input_value.reset();
+			return HashmapOperation::remove(*value);
+		}
+		return std::nullopt;
+	}
+
+	if (search_button.handleEvent(window, view, ev)) {
+		std::optional<int> value = input_value.getValueAsInt();
+		if (value.has_value()) {
+			input_value.setFocused(0);
+			input_value.reset();
+			std::cout << (*value) << "\n";
+			return HashmapOperation::search(*value);
+		}
+		return std::nullopt;
+	}
+
+	if (reset_button.handleEvent(window, view, ev)) {
+		return HashmapOperation::reset();
+	}
+
+	if (home_button.handleEvent(window, view, ev)) {
+		return HashmapOperation::home();
+	}
+
+	if (setting_button.handleEvent(window, view, ev)) {
+		return HashmapOperation::setting();
+	}
+
+	if (save_button.handleEvent(window, view, ev)) {
+		return HashmapOperation::save(cr::utils::SimpleFileDialog::saveDialog());
+	}
+
+	if (load_button.handleEvent(window, view, ev)) {
+		return HashmapOperation::load(cr::utils::SimpleFileDialog::dialog());
 	}
 
 	return std::nullopt;

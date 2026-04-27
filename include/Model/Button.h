@@ -1,5 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
+#include <AssetManager/AssetManager.h>
 #include <Model/RoundedRectangleShape.h>
 #include <string>
 #include <iostream>
@@ -17,7 +19,7 @@ public:
 	void setOutlineColor(const sf::Color& color);
 	void setCornerRadius(float radius);
 	void setPointCount(int point_count);
-	//void handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
+	bool handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
 	void update(const sf::RenderWindow& window, const sf::View& view);
 	bool mousePressed(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
 	bool contains(const sf::RenderWindow& window, const sf::View& view, const sf::Vector2f& position);
@@ -28,9 +30,14 @@ public:
 	sf::Vector2f getSize() const;
 	sf::FloatRect getGlobalBounds() const;
 	std::string getLabel() const;
+	bool getHover() const {
+		return hovered;
+	}
 protected:
 	RoundedRectangleShape container;
 	sf::Text text;
+	//sf::Sound click_sound;
+	//sf::Sound hover_sound;
 	bool hovered = 0;
 	float currentScale = 1.0f;
 	float targetScale = 1.0f;

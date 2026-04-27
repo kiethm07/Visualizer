@@ -2,7 +2,10 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
-Button::Button(const sf::Font& font, const std::string& label, const sf::Vector2f pos, const sf::Vector2f size, const unsigned int char_size) : text(font, label, char_size) {
+Button::Button(const sf::Font& font, const std::string& label, const sf::Vector2f pos, const sf::Vector2f size, const unsigned int char_size) : 
+	text(font, label, char_size)
+	//click_sound(AssetManager::getInstance().getSound("button_click"))
+{
 	container.setPosition(pos);
 	container.setSize(size);
 	container.setFillColor(IDLE_COLOR);
@@ -90,6 +93,14 @@ bool Button::contains(const sf::RenderWindow& window, const sf::View& view, cons
 //	hovered = container.getGlobalBounds().contains(mouse_world);
 //	container.setFillColor(hovered ? HOVER_COLOR : IDLE_COLOR);
 //}
+
+bool Button::handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev) {
+	if (mousePressed(window, view, ev)) {
+
+		return true;
+	}
+	return false;
+}
 
 void Button::update(const sf::RenderWindow& window, const sf::View& view) {
 	sf::Vector2f mouse_world = window.mapPixelToCoords(sf::Mouse::getPosition(window), view);

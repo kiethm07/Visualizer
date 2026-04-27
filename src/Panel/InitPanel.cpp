@@ -109,13 +109,16 @@ static std::vector<std::string> parseInput(const std::string& s) {
 
 std::optional<PanelData> InitPanel::handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev) {
 	manual_input.handleEvent(window, view, ev);
-	if (random.mousePressed(window, view, ev)) {
+
+	if (random.handleEvent(window, view, ev)) {
 		return PanelData{ PanelOperation::Random, {} };
 	}
-	else if (empty.mousePressed(window, view, ev)) {
+
+	if (empty.handleEvent(window, view, ev)) {
 		return PanelData{ PanelOperation::Empty, {} };
 	}
-	else if (manual_input.mousePressed(window, view, ev)) {
+
+	if (manual_input.mousePressed(window, view, ev)) {
 		const std::string& s = manual_input.getValue();
 		if (s.empty()) return std::nullopt;
 		PanelData data;
@@ -123,7 +126,8 @@ std::optional<PanelData> InitPanel::handleEvent(const sf::RenderWindow& window, 
 		data.values = parseInput(manual_input.getValue());
 		return data;
 	}
-	else if (from_file.mousePressed(window, view, ev)) {
+
+	if (from_file.handleEvent(window, view, ev)) {
 		std::string path = cr::utils::SimpleFileDialog::dialog();
 		if (path.empty()) {
 			std::cout << "No file selected\n";
@@ -143,5 +147,6 @@ std::optional<PanelData> InitPanel::handleEvent(const sf::RenderWindow& window, 
 		}
 		return data;
 	}
+
 	return std::nullopt;
 }

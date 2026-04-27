@@ -21,9 +21,11 @@ public:
 	void loadAllSoundsFromFile();
 	const sf::SoundBuffer& getSound(const std::string& sound_name) const;
 	///Debug purpose
-	int getFontSize() { return font_container.size(); }
-	int getTextureSize() { return texture_container.size(); }
+	int getSoundSize() const { return sound_container.size(); }
+	int getFontSize() const { return font_container.size(); }
+	int getTextureSize() const { return texture_container.size(); }
 	void printAllFont() const { for (const auto& it : font_container) std::cout << it.first << "\n"; }
+	void printAllSound() const { for (const auto& it : sound_container) std::cout << it.first << "\n"; }
 private:
 	std::unordered_map<std::string, sf::Font> font_container;
 	std::unordered_map<std::string, sf::Texture> texture_container;

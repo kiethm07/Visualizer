@@ -100,95 +100,78 @@ void LinkedListPanel::updateWindowState(const sf::RenderWindow& window, const sf
 	place_system_button(load_button, 3);
 }
 
-std::optional<ListOperation> LinkedListPanel::handleEvent(
-	const sf::RenderWindow& window,
-	const sf::View& view,
-	const sf::Event& ev
-) {
+std::optional<ListOperation> LinkedListPanel::handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev) {
 	input_value.handleEvent(window, view, ev);
 	input_position.handleEvent(window, view, ev);
 
-	if (const auto* mb = ev.getIf<sf::Event::MouseButtonReleased>()) {
-		if (mb->button == sf::Mouse::Button::Left) {
-			const sf::Vector2f mouse_pos = sf::Vector2f(mb->position);
-
-			if (insert_button.contains(window, view, mouse_pos)) {
-				std::optional<int> value = input_value.getValueAsInt();
-				std::optional<int> position = input_position.getValueAsInt();
-
-				if (value.has_value() && position.has_value()) {
-					input_value.setFocused(0);
-					input_value.reset();
-					input_position.setFocused(0);
-					input_position.reset();
-					return ListOperation::insertSingle(*position, *value);
-				}
-
-				return std::nullopt;
-			}
-
-			if (remove_button.contains(window, view, mouse_pos)) {
-				std::optional<int> position = input_position.getValueAsInt();
-
-				if (position.has_value()) {
-					input_value.setFocused(0);
-					input_value.reset();
-					input_position.setFocused(0);
-					input_position.reset();
-					return ListOperation::remove(*position);
-				}
-
-				return std::nullopt;
-			}
-
-			if (update_button.contains(window, view, mouse_pos)) {
-				std::optional<int> value = input_value.getValueAsInt();
-				std::optional<int> position = input_position.getValueAsInt();
-
-				if (value.has_value() && position.has_value()) {
-					input_value.setFocused(0);
-					input_value.reset();
-					input_position.setFocused(0);
-					input_position.reset();
-					return ListOperation::update(*position, *value);
-				}
-
-				return std::nullopt;
-			}
-
-			if (search_button.contains(window, view, mouse_pos)) {
-				std::optional<int> value = input_value.getValueAsInt();
-				if (value.has_value()) {
-					input_value.setFocused(0);
-					input_value.reset();
-					input_position.setFocused(0);
-					input_position.reset();
-					return ListOperation::search(*value);
-				}
-			}
-
-			if (reset_button.contains(window, view, mouse_pos)) {
-				return ListOperation::reset();
-			}
-
-			if (home_button.contains(window, view, mouse_pos)) {
-				return ListOperation::home();
-			}
-
-			if (setting_button.contains(window, view, mouse_pos)) {
-				return ListOperation::setting();
-			}
-
-			if (save_button.contains(window, view, mouse_pos)) {
-				std::string filepath = cr::utils::SimpleFileDialog::saveDialog();
-				return ListOperation::save(filepath);
-			}
-
-			if (load_button.contains(window, view, mouse_pos)) {
-				std::string filepath = cr::utils::SimpleFileDialog::dialog();
-				return ListOperation::load(filepath);
-			}
+	if (insert_button.handleEvent(window, view, ev)) {
+		std::optional<int> value = input_value.getValueAsInt();
+		std::optional<int> position = input_position.getValueAsInt();
+		if (value.has_value() && position.has_value()) {
+			input_value.setFocused(0);
+			input_value.reset();
+			input_position.setFocused(0);
+			input_position.reset();
+			return ListOperation::insertSingle(*position, *value);
 		}
+		return std::nullopt;
+	}
+
+	if (remove_button.handleEvent(window, view, ev)) {
+		std::optional<int> position = input_position.getValueAsInt();
+		if (position.has_value()) {
+			input_value.setFocused(0);
+			input_value.reset();
+			input_position.setFocused(0);
+			input_position.reset();
+			return ListOperation::remove(*position);
+		}
+		return std::nullopt;
+	}
+
+	if (update_button.handleEvent(window, view, ev)) {
+		std::optional<int> value = input_value.getValueAsInt();
+		std::optional<int> position = input_position.getValueAsInt();
+		if (value.has_value() && position.has_value()) {
+			input_value.setFocused(0);
+			input_value.reset();
+			input_position.setFocused(0);
+			input_position.reset();
+			return ListOperation::update(*position, *value);
+		}
+		return std::nullopt;
+	}
+
+	if (search_button.handleEvent(window, view, ev)) {
+		std::optional<int> value = input_value.getValueAsInt();
+		if (value.has_value()) {
+			input_value.setFocused(0);
+			input_value.reset();
+			input_position.setFocused(0);
+			input_position.reset();
+			return ListOperation::search(*value);
+		}
+		return std::nullopt;
+	}
+
+	if (reset_button.handleEvent(window, view, ev)) {
+		return ListOperation::reset();
+	}
+
+	if (home_button.handleEvent(window, view, ev)) {
+		return ListOperation::home();
+	}
+
+	if (setting_button.handleEvent(window, view, ev)) {
+		return ListOperation::setting();
+	}
+
+	if (save_button.handleEvent(window, view, ev)) {
+		return ListOperation::save(cr::utils::SimpleFileDialog::saveDialog());
+	}
+
+	if (load_button.handleEvent(window, view, ev)) {
+		return ListOperation::load(cr::utils::SimpleFileDialog::dialog());
 	}
 
 	return std::nullopt;
