@@ -4,10 +4,11 @@
 #include <Model/LinkedListModel/ListOperation.h>
 #include <External/SimpleFileDialog.h>
 #include <optional>
+#include <AssetManager/AssetManager.h>
 
 class LinkedListPanel : public sf::Drawable {
 public:
-	LinkedListPanel(const sf::Font& BUTTON_FONT);
+	LinkedListPanel(const AssetManager& a_manager);
 
 	sf::Vector2f getSize();
 	void update(const sf::RenderWindow& window, const sf::View& view);
@@ -15,6 +16,7 @@ public:
 
 private:
 	const sf::Font& BUTTON_FONT;
+	const AssetManager& a_manager;
 
 	sf::RectangleShape background;
 

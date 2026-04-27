@@ -17,12 +17,11 @@ public:
 		return background.getSize();
 	}
 private:
+	static inline const int X_PADDING = 5;
+	static inline const sf::Color DEFAULT_BG_COLOR = sf::Color(255, 255, 255);
+	static inline const sf::Color DEFAULT_TEXT_COLOR = sf::Color(0, 0, 0);
+
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 	sf::Text text;
 	sf::RectangleShape background;
-
-	const int X_PADDING = 5;
-
-	const sf::Color DEFAULT_BG_COLOR = sf::Color(255, 255, 255);
-	const sf::Color DEFAULT_TEXT_COLOR = sf::Color(0, 0, 0);
 };

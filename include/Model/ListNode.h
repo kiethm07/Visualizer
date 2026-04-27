@@ -28,17 +28,19 @@ public:
 		return is_dragging;
 	}
 protected:
+	static inline const sf::Color IDLE_COLOR = sf::Color(89, 145, 46);
+	static inline const sf::Color HOVER_COLOR = sf::Color(209, 70, 38);
+
 	sf::CircleShape container;
 	sf::Text text;
 	sf::Vector2f drag_offset;
+
 	bool hovered = 0;
 	bool is_dragging = 0;
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
 		target.draw(container, states);
 		target.draw(text, states);
 	}
-	const sf::Color IDLE_COLOR = sf::Color(89, 145, 46);
-	const sf::Color HOVER_COLOR = sf::Color(209, 70, 38);
 
 	void centerText();
 };

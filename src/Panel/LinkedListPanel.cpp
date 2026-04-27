@@ -10,20 +10,21 @@ static int rand(int l, int r) {
 	return std::uniform_int_distribution<int>(l,r)(rng);
 }
 
-LinkedListPanel::LinkedListPanel(const sf::Font& BUTTON_FONT) :
-	BUTTON_FONT(BUTTON_FONT),
-	input_value(BUTTON_FONT, "value", {}, {}, 20, 0),
-	input_position(BUTTON_FONT, "position", {}, {}, 20, 0),
-	insert_button(BUTTON_FONT, "Insert", {}, {}, 20),
-	remove_button(BUTTON_FONT, "Remove", {}, {}, 20),
-	update_button(BUTTON_FONT, "Update", {}, {}, 20),
-	search_button(BUTTON_FONT, "Search", {}, {}, 20),
-	reset_button(BUTTON_FONT, "Reset", {}, {}, 20),
+LinkedListPanel::LinkedListPanel(const AssetManager& a_manager) :
+	a_manager(a_manager),
+	BUTTON_FONT(a_manager.getFont("Roboto-Regular")),
+	input_value(a_manager, "value", {}, {}, 20, 0),
+	input_position(a_manager, "position", {}, {}, 20, 0),
+	insert_button(a_manager, "Insert", {}, {}, 20),
+	remove_button(a_manager, "Remove", {}, {}, 20),
+	update_button(a_manager, "Update", {}, {}, 20),
+	search_button(a_manager, "Search", {}, {}, 20),
+	reset_button(a_manager, "Reset", {}, {}, 20),
 
-	home_button(BUTTON_FONT, "Home", {}, {}, 20),
-	setting_button(BUTTON_FONT, "Set", {}, {}, 20),
-	save_button(BUTTON_FONT, "Save", {}, {}, 20),
-	load_button(BUTTON_FONT, "Load", {}, {}, 20)
+	home_button(a_manager, "Home", {}, {}, 20),
+	setting_button(a_manager, "Set", {}, {}, 20),
+	save_button(a_manager, "Save", {}, {}, 20),
+	load_button(a_manager, "Load", {}, {}, 20)
 {
 	background.setFillColor(sf::Color::White);
 	background.setOrigin({ 0, 0 });

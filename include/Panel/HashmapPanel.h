@@ -5,16 +5,18 @@
 #include <External/SimpleFileDialog.h>
 #include <optional>
 #include <iostream>
+#include <AssetManager/AssetManager.h>
 
 class HashmapPanel : public sf::Drawable {
 public:
-	HashmapPanel(const sf::Font& BUTTON_FONT);
+	HashmapPanel(const AssetManager& a_manager);
 
 	sf::Vector2f getSize();
 	void update(const sf::RenderWindow& window, const sf::View& view);
 	std::optional<HashmapOperation> handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
 
 private:
+	const AssetManager& a_manager;
 	const sf::Font& BUTTON_FONT;
 
 	sf::RectangleShape background;

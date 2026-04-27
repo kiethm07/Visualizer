@@ -2,8 +2,9 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
-Button::Button(const sf::Font& font, const std::string& label, const sf::Vector2f pos, const sf::Vector2f size, const unsigned int char_size) : 
-	text(font, label, char_size)
+Button::Button(const AssetManager& a_manager, const std::string& label, const sf::Vector2f pos, const sf::Vector2f size, const unsigned int char_size) :
+	a_manager(a_manager),
+	text(a_manager.getFont(DEFAULT_FONT_NAME), label, char_size)
 	//click_sound(AssetManager::getInstance().getSound("button_click"))
 {
 	container.setPosition(pos);
@@ -15,6 +16,14 @@ Button::Button(const sf::Font& font, const std::string& label, const sf::Vector2
 	container.setPointCount(10);
 	text.setFillColor(TEXT_IDLE);
 	centerText();
+}
+
+void Button::setFont(const sf::Font& font) {
+	text.setFont(font);
+}
+
+void Button::setFont(const std::string& font_name) {
+	text.setFont(a_manager.getFont(font_name));
 }
 
 void Button::setCornerRadius(float f) {

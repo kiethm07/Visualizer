@@ -15,6 +15,7 @@ public:
 	void draw(sf::RenderWindow& window, const sf::View& view);
 private:
 	const AssetManager& a_manager;
+
 	std::vector<ListNode> node_list;
 	std::vector<Arrow> edge_list;
 	std::vector<sf::RectangleShape> bucket_shape_list;

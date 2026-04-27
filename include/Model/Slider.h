@@ -21,6 +21,11 @@ public:
 	bool getIsDragging() const;
 
 protected:
+	static inline const sf::Color TRACK_COLOR = sf::Color(50, 50, 50);
+	static inline const sf::Color FILL_COLOR = sf::Color(89, 145, 46);
+	static inline const sf::Color HOVER_COLOR = sf::Color(209, 70, 38);
+	static inline const sf::Color KNOB_COLOR = sf::Color::White;
+
 	sf::RectangleShape track;
 	sf::RectangleShape fill_track;
 	sf::CircleShape knob;
@@ -36,11 +41,6 @@ protected:
 		target.draw(fill_track, states);
 		target.draw(knob, states);
 	}
-
-	const sf::Color TRACK_COLOR = sf::Color(50, 50, 50);
-	const sf::Color FILL_COLOR = sf::Color(89, 145, 46);
-	const sf::Color HOVER_COLOR = sf::Color(209, 70, 38);
-	const sf::Color KNOB_COLOR = sf::Color::White;
 
 	void updateVisuals();
 };

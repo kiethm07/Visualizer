@@ -3,10 +3,10 @@
 InitPanel::InitPanel(const AssetManager& a_manager) :
 	a_manager(a_manager),
 	FONT(a_manager.getFont("Roboto-Regular")),
-	manual_input(FONT, "Input value manually, format : ", {}, {}, 30),
-	random(FONT, "Random data", {}, {}, 30),
-	from_file(FONT, "Choose init data from file", {}, {}, 30),
-	empty(FONT, "Start with empty data", {}, {}, 30) 
+	manual_input(a_manager, "Input value manually, format : ", {}, {}, 30),
+	random(a_manager, "Random data", {}, {}, 30),
+	from_file(a_manager, "Choose init data from file", {}, {}, 30),
+	empty(a_manager, "Start with empty data", {}, {}, 30)
 {
 	background.setFillColor(sf::Color(255, 204, 153));
 	manual_input.setMaxLength(696969);

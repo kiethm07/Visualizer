@@ -5,12 +5,19 @@ DSMenu::DSMenu(const AssetManager& a_manager) :
 	a_manager(a_manager),
 	menu_font(a_manager.getFont("Silkscreen-Regular")),
 	background(a_manager.getTexture("MinecraftBackground")),
-	main_menu_button(menu_font, "Main Menu", {}, {}, 20),
-	linked_list_button(menu_font, "Linked List", {}, {}, 20),
-	hashmap_button(menu_font, "Hash Map", {}, {}, 20),
-	trie_button(menu_font, "Trie", {}, {}, 20),
-	avl_button(menu_font, "AVL Tree", {}, {}, 20),
-	graph_button(menu_font, "Graph", {}, {}, 20) {
+	main_menu_button(a_manager, "Main Menu", {}, {}, 20),
+	linked_list_button(a_manager, "Linked List", {}, {}, 20),
+	hashmap_button(a_manager, "Hash Map", {}, {}, 20),
+	trie_button(a_manager, "Trie", {}, {}, 20),
+	avl_button(a_manager, "AVL Tree", {}, {}, 20),
+	graph_button(a_manager, "Graph", {}, {}, 20) 
+{
+	main_menu_button.setFont(menu_font);
+	linked_list_button.setFont(menu_font);
+	hashmap_button.setFont(menu_font);
+	trie_button.setFont(menu_font);
+	avl_button.setFont(menu_font);
+	graph_button.setFont(menu_font);
 }
 
 void DSMenu::update(const sf::RenderWindow& window, const sf::View& view) {

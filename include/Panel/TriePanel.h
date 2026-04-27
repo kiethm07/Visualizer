@@ -5,15 +5,19 @@
 #include <optional>
 #include <iostream>
 #include <External/SimpleFileDialog.h>
+#include <AssetManager/AssetManager.h>
+
 class TriePanel : public sf::Drawable
 {
 public:
-    TriePanel(const sf::Font& BUTTON_FONT);
+    TriePanel(const AssetManager& a_manager);
     sf::Vector2f getSize();
     void update(const sf::RenderWindow& window, const sf::View& view);
     std::optional<TrieOperation> handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
 private:
+    const AssetManager& a_manager;
     const sf::Font& BUTTON_FONT;
+
     sf::RectangleShape background;
     TextBox input_value;
     Button insert_button;
@@ -25,6 +29,7 @@ private:
     Button load_button;
     Button home_button;
     Button setting_button;
+
     void updateButtonState(const sf::RenderWindow& window, const sf::View& view);
     void updateWindowState(const sf::RenderWindow& window, const sf::View& view);
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override

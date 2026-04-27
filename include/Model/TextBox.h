@@ -8,7 +8,7 @@
 class TextBox : public Button {
 public:
     explicit TextBox(
-        const sf::Font& font,
+        const AssetManager& a_manager,
         const std::string& placeholder,
         const sf::Vector2f& pos,
         const sf::Vector2f& size,
@@ -40,6 +40,11 @@ public:
         outside_click_reset = reset;
 	}
 private:
+    static inline const float BLINK_INTERVAL = 0.5f;
+    static inline const sf::Color FOCUSED_COLOR = sf::Color(70, 110, 180);
+    static inline const sf::Color PLACEHOLDER_COLOR = sf::Color(160, 160, 160);
+    static inline const sf::Color TEXT_COLOR = sf::Color::White;
+
     std::string value;
     std::string placeholder;
     bool focused = false;
@@ -49,11 +54,6 @@ private:
     bool caret_visible;
     sf::RectangleShape caret;
     bool outside_click_reset = true;
-
-    const float BLINK_INTERVAL = 0.5f;
-    const sf::Color FOCUSED_COLOR = sf::Color(70, 110, 180);
-    const sf::Color PLACEHOLDER_COLOR = sf::Color(160, 160, 160);
-    const sf::Color TEXT_COLOR = sf::Color::White;
 
     void refreshText();
     bool isPrintable(char32_t unicode) const;

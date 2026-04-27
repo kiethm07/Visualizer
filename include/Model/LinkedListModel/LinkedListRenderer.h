@@ -14,11 +14,13 @@ public:
 	void draw(sf::RenderWindow& window, const sf::View& view);
 	LinkedListRenderer(const AssetManager& asset_manager);
 private:
+	static inline const int NODE_RADIUS = 50;
+	static inline const int NODE_GAP = 2 * NODE_RADIUS + 100;
+	static inline const int X_MARGIN = 400;
+	static inline const int Y_MARGIN = 400;
+	
 	const AssetManager& a_manager;
-	const int NODE_RADIUS = 50;
-	const int NODE_GAP = 2 * NODE_RADIUS + 100;
-	const int X_MARGIN = 400;
-	const int Y_MARGIN = 400;
+
 	std::vector<ListNode> node_list;
 	std::vector<Arrow> edge_list;
 };

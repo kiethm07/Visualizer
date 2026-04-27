@@ -35,8 +35,8 @@ public:
     }
 
 private:
+    static inline const float PI = 3.141592654f;
     sf::Vector2f mySize;
     unsigned int myPointCount;
-    const float PI = 3.141592654f;
     float myRadius = 0.0f;
 };

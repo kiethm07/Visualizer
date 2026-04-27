@@ -1,21 +1,22 @@
 #include <Panel/GraphPanel.h>
 
-GraphPanel::GraphPanel(const sf::Font& BUTTON_FONT) :
-	BUTTON_FONT(BUTTON_FONT),
-	input_value(BUTTON_FONT, "value", {}, {}, 20, 0),
-	insert_node_button(BUTTON_FONT, "Insert Node", {}, {}, 20),
-	remove_node_button(BUTTON_FONT, "Remove Node", {}, {}, 20),
-	insert_edge_button(BUTTON_FONT, "Insert Edge", {}, {}, 20),
-	remove_edge_button(BUTTON_FONT, "Remove Edge", {}, {}, 20),
-	modify_edge_button(BUTTON_FONT, "Modify Edge", {}, {}, 20),
-	dijkstra_button(BUTTON_FONT, "Run Dijkstra", {}, {}, 20),
-	kruskal_button(BUTTON_FONT, "Run Kruskal", {}, {}, 20),
-	reset_button(BUTTON_FONT, "Reset", {}, {}, 20),
+GraphPanel::GraphPanel(const AssetManager& a_manager) :
+	a_manager(a_manager),
+	BUTTON_FONT(a_manager.getFont("Roboto-Regular")),
+	input_value(a_manager, "value", {}, {}, 20, 0),
+	insert_node_button(a_manager, "Insert Node", {}, {}, 20),
+	remove_node_button(a_manager, "Remove Node", {}, {}, 20),
+	insert_edge_button(a_manager, "Insert Edge", {}, {}, 20),
+	remove_edge_button(a_manager, "Remove Edge", {}, {}, 20),
+	modify_edge_button(a_manager, "Modify Edge", {}, {}, 20),
+	dijkstra_button(a_manager, "Run Dijkstra", {}, {}, 20),
+	kruskal_button(a_manager, "Run Kruskal", {}, {}, 20),
+	reset_button(a_manager, "Reset", {}, {}, 20),
 
-	home_button(BUTTON_FONT, "Home", {}, {}, 20),
-	setting_button(BUTTON_FONT, "Set", {}, {}, 20),
-	save_button(BUTTON_FONT, "Save", {}, {}, 20),
-	load_button(BUTTON_FONT, "Load", {}, {}, 20)
+	home_button(a_manager, "Home", {}, {}, 20),
+	setting_button(a_manager, "Set", {}, {}, 20),
+	save_button(a_manager, "Save", {}, {}, 20),
+	load_button(a_manager, "Load", {}, {}, 20)
 {
 	background.setFillColor(sf::Color::White);
 	background.setOrigin({ 0, 0 });

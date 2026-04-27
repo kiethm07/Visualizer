@@ -4,16 +4,18 @@
 #include <Model/GraphModel/GraphOperation.h>
 #include <External/SimpleFileDialog.h>
 #include <optional>
+#include <AssetManager/AssetManager.h>
 
 class GraphPanel : public sf::Drawable {
 public:
-	GraphPanel(const sf::Font& BUTTON_FONT);
+	GraphPanel(const AssetManager& a_manager);
 
 	sf::Vector2f getSize();
 	void update(const sf::RenderWindow& window, const sf::View& view);
 	std::optional<GraphOperation> handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
 
 private:
+	const AssetManager& a_manager;
 	const sf::Font& BUTTON_FONT;
 
 	sf::RectangleShape background;

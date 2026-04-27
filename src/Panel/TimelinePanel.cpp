@@ -3,16 +3,16 @@
 TimelinePanel::TimelinePanel(const AssetManager& a_manager) :
     a_manager(a_manager),
     FONT(a_manager.getFont("Roboto-Regular")),
-    play(FONT, "Play", {}, {}, 20),
-    one_phase_forward(FONT, ">", {}, {}, 20),
-    one_phase_backward(FONT, "<", {}, {}, 20),
-    one_step_forward(FONT, ">>", {}, {}, 20),
-    one_step_backward(FONT, "<<", {}, {}, 20),
-    skip_to_last(FONT, "|>", {}, {}, 20),
-    skip_to_init(FONT, "<|", {}, {}, 20),
-    auto_play(FONT, "Auto play", {}, {}, 20),
-    fix_camera(FONT, "Fix camera", {}, {}, 20),
-    reset_camera(FONT, "Reset camera", {}, {}, 20),
+    play(a_manager, "Play", {}, {}, 20),
+    one_phase_forward(a_manager, ">", {}, {}, 20),
+    one_phase_backward(a_manager, "<", {}, {}, 20),
+    one_step_forward(a_manager, ">>", {}, {}, 20),
+    one_step_backward(a_manager, "<<", {}, {}, 20),
+    skip_to_last(a_manager, "|>", {}, {}, 20),
+    skip_to_init(a_manager, "<|", {}, {}, 20),
+    auto_play(a_manager, "Auto play", {}, {}, 20),
+    fix_camera(a_manager, "Fix camera", {}, {}, 20),
+    reset_camera(a_manager, "Reset camera", {}, {}, 20),
     speed_slider({ 200.f, 300.f }, { 400.f, 10.f }, 0.1f, 10.0f, 1.0f)
 {
     background.setFillColor(sf::Color::Blue);

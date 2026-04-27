@@ -18,17 +18,17 @@ public:
 	void update(const sf::RenderWindow& window, const sf::View& view);
 	void handleEvent(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
 private:
-	GraphAnimationState current_state;
+	static inline const int NODE_RADIUS = 50;
+	static inline const float SPEED_CONSTANT = 5.0f;
+	static inline const sf::Color DEFAULT_WEIGHT_COLOR = sf::Color::Yellow;
+	static inline const sf::Color DEFAULT_POPUP_TEXT_COLOR = sf::Color::White;
+
 	const AssetManager& a_manager;
+
+	GraphAnimationState current_state;
 	std::vector<ListNode> node_list;
 	std::vector<Arrow> edge_list;
 	GraphPhysics physics;
 	sf::Clock physics_clock;
 	bool was_left_pressed = false;
-
-	const int NODE_RADIUS = 50;
-	const float SPEED_CONSTANT = 5.0;
-
-	const sf::Color DEFAULT_WEIGHT_COLOR = sf::Color::Yellow;
-	const sf::Color DEFAULT_POPUP_TEXT_COLOR = sf::Color::White;
 };

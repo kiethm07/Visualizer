@@ -14,9 +14,10 @@ public:
 	void loadState(const AVLAnimationState& animation_state);
 	void draw(sf::RenderWindow& window, const sf::View& view);
 private:
+	static inline const int NODE_RADIUS = 50;
+
 	const AssetManager& a_manager;
+
 	std::vector<ListNode> node_list;
 	std::vector<Arrow> edge_list;
-	const int NODE_RADIUS = 50;
-
 };

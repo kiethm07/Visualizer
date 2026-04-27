@@ -4,10 +4,13 @@
 MainMenu::MainMenu(const AssetManager& a_manager) :
 	a_manager(a_manager),
 	menu_font(a_manager.getFont("Silkscreen-Regular")),
-	start_button(menu_font, "Start", {}, {}, 20),
-	setting_button(menu_font, "Setting", {}, {}, 20),
+	start_button(a_manager, "Start", {}, {}, 20),
+	setting_button(a_manager, "Setting", {}, {}, 20),
 	background(a_manager.getTexture("MinecraftBackground")),
-	title(a_manager.getTexture("Title")){
+	title(a_manager.getTexture("Title"))
+{
+	start_button.setFont(menu_font);
+	setting_button.setFont(menu_font);
 }
 
 void MainMenu::update(const sf::RenderWindow& window, const sf::View& view) {

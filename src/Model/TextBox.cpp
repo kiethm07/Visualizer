@@ -1,13 +1,13 @@
 #include <Model/TextBox.h>
 
 TextBox::TextBox(
-    const sf::Font& font,
+    const AssetManager& a_manager,
     const std::string& placeholder,
     const sf::Vector2f& pos,
     const sf::Vector2f& size,
     unsigned int char_size,
     bool outside_click_reset
-) : Button(font, "", pos, size, char_size), placeholder(placeholder), caret_visible(0), outside_click_reset(outside_click_reset) {
+) : Button(a_manager, "", pos, size, char_size), placeholder(placeholder), caret_visible(0), outside_click_reset(outside_click_reset) {
     caret.setSize({ 1.5f, float(char_size) });
     caret.setFillColor(sf::Color::White);
     refreshText();

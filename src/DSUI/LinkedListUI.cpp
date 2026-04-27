@@ -11,8 +11,8 @@ static int rand(int l, int r) {
 LinkedListUI::LinkedListUI(const AssetManager& a_manager) :
 	a_manager(a_manager),
 	NODE_FONT(a_manager.getFont("Roboto-Regular")),
-	panel(NODE_FONT),
-	test(NODE_FONT, "TEST", {}, {}, 30),
+	panel(a_manager),
+	test(a_manager, "TEST", {}, {}, 30),
 	timeline(a_manager),
 	timeline_panel(a_manager),
 	ui_state(UIState::Init),

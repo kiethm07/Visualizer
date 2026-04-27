@@ -4,9 +4,9 @@ PseudoCodePanel::PseudoCodePanel(const AssetManager& asset_manager, const std::s
 	asset_manager(asset_manager), 
 	current_highlight(-1), 
 	minimized(false),
-	title(asset_manager.getFont(font_name), "No Operation", { 0, 0 }, TITLE_SIZE, 20),
-	minimize_button(asset_manager.getFont(font_name), "-", { 0, 0 }, BUTTON_SIZE, 20),
-	maximize_button(asset_manager.getFont(font_name), "+", { 0, 0 }, BUTTON_SIZE, 20)
+	title(asset_manager, "No Operation", { 0, 0 }, TITLE_SIZE, 20),
+	minimize_button(asset_manager, "-", { 0, 0 }, BUTTON_SIZE, 20),
+	maximize_button(asset_manager, "+", { 0, 0 }, BUTTON_SIZE, 20)
 {
 	position = { 600, 600 };
 	title.setCornerRadius(0);

@@ -10,7 +10,7 @@ static int rand(int l, int r) {
 TrieUI::TrieUI(const AssetManager& a_manager) :
 	a_manager(a_manager),
 	NODE_FONT(a_manager.getFont("Roboto-Regular")),
-	panel(NODE_FONT),
+	panel(a_manager),
 	timeline(a_manager),
 	timeline_panel(a_manager),
 	ui_state(UIState::Init),
