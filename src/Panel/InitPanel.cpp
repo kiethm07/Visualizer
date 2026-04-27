@@ -6,9 +6,9 @@ InitPanel::InitPanel(const AssetManager& a_manager) :
 	manual_input(a_manager, "Input value manually, format : ", {}, {}, 30),
 	random(a_manager, "Random data", {}, {}, 30),
 	from_file(a_manager, "Choose init data from file", {}, {}, 30),
-	empty(a_manager, "Start with empty data", {}, {}, 30)
+	empty(a_manager, "Start with empty data", {}, {}, 30),
+	background(a_manager.getTexture("Landscape"))
 {
-	background.setFillColor(sf::Color(255, 204, 153));
 	manual_input.setMaxLength(696969);
 }
 
@@ -26,16 +26,18 @@ void InitPanel::updateButtonState(const sf::RenderWindow& window, const sf::View
 void InitPanel::updateWindowState(const sf::RenderWindow& window, const sf::View& view) {
 	sf::Vector2u size = window.getSize();
 
-	sf::Vector2f background_size = { size.x * 1.f, size.y * 1.f };
-	background.setSize(background_size);
-	background.setOrigin(background_size / 2.f);
-	background.setPosition(view.getCenter());
+	sf::Vector2u windowSize = window.getSize();
 
-	sf::Vector2f button_size = { background_size.x * 0.8f, background_size.y * 0.12f };
+	float scaleX = (float)windowSize.x / background.getTexture().getSize().x;
+	float scaleY = (float)windowSize.y / background.getTexture().getSize().y;
+
+	background.setScale({ scaleX, scaleY });
+
+	sf::Vector2f button_size = { size.x * 0.8f, size.y * 0.12f };
 
 	const float center_x = view.getCenter().x;
-	const float start_y = view.getCenter().y - background_size.y * 0.3f;
-	const float gap = background_size.y * 0.2f;
+	const float start_y = view.getCenter().y - size.y * 0.3f;
+	const float gap = size.y * 0.2f;
 
 	auto place_button = [&](auto& btn, int index) {
 		btn.setButtonSize(button_size);

@@ -3,7 +3,7 @@
 TimelinePanel::TimelinePanel(const AssetManager& a_manager) :
     a_manager(a_manager),
     FONT(a_manager.getFont("Roboto-Regular")),
-    play(a_manager, "Play", {}, {}, 20),
+    play(a_manager, "Pause", {}, {}, 20),
     one_phase_forward(a_manager, ">", {}, {}, 20),
     one_phase_backward(a_manager, "<", {}, {}, 20),
     one_step_forward(a_manager, ">>", {}, {}, 20),
@@ -15,7 +15,7 @@ TimelinePanel::TimelinePanel(const AssetManager& a_manager) :
     reset_camera(a_manager, "Reset camera", {}, {}, 20),
     speed_slider({ 200.f, 300.f }, { 400.f, 10.f }, 0.1f, 10.0f, 1.0f)
 {
-    background.setFillColor(sf::Color::Blue);
+    background.setFillColor(sf::Color(240, 202, 236, 200));
     background.setOrigin({ 0,0 });
     background.setPosition({ 0,0 });
     background.setSize({ 0,0 });
@@ -29,6 +29,8 @@ std::optional<TimelineConfig> TimelinePanel::handleEvent(const sf::RenderWindow&
     }
 
     if (play.handleEvent(window, view, ev)) {
+        is_playing = !is_playing;
+        play.setLabel(is_playing ? "Pause" : "Play");
         return TimelineConfig::play();
     }
 

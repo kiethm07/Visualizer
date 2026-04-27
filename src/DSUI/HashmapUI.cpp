@@ -18,7 +18,8 @@ HashmapUI::HashmapUI(const AssetManager& a_manager) :
 	timeline_panel(a_manager),
 	ui_state(UIState::Init),
 	init_panel(a_manager),
-	code_panel(a_manager, "Consola")
+	code_panel(a_manager, "Consola"),
+	background(a_manager.getTexture("NightSky"))
 {
 	init_panel.setPlaceHolderForManualInput("Input value manually, format: bucket_count, values");
 }
@@ -38,6 +39,13 @@ void HashmapUI::update(const sf::RenderWindow& window, const sf::View& fixed_vie
 		//std::cout << highlighted_line << "\n";
 		code_panel.sync(type, highlighted_line);
 		code_panel.update(window, fixed_view);
+
+		sf::Vector2u windowSize = window.getSize();
+
+		float scaleX = (float)windowSize.x / background.getTexture().getSize().x;
+		float scaleY = (float)windowSize.y / background.getTexture().getSize().y;
+
+		background.setScale({ scaleX, scaleY });
 	}
 }
 
@@ -187,9 +195,10 @@ void HashmapUI::draw(sf::RenderWindow& window, const sf::View& fixed_view, const
 	}
 
 	if (ui_state == UIState::Running) {
+		window.setView(fixed_view);
+		window.draw(background);
 		window.setView(cam_view);
 		timeline.draw(window, cam_view);
-
 		window.setView(fixed_view);
 		window.draw(timeline_panel);
 		window.draw(panel);

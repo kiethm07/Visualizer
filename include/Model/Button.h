@@ -45,7 +45,7 @@ protected:
 	static inline const sf::Color HOVER_COLOR = sf::Color(60, 60, 70, 255);
 	static inline const sf::Color NEON_CYAN = sf::Color(0, 255, 255);
 	static inline const sf::Color TEXT_IDLE = sf::Color(200, 200, 200);
-	static inline const float SOUND_FACTOR = 0.8f;
+	static inline const float SOUND_FACTOR = 1.0f;
 
 	const AssetManager& a_manager;
 	RoundedRectangleShape container;

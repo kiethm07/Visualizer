@@ -40,5 +40,7 @@ private:
     TimelinePanel timeline_panel;
     UIState ui_state;
     InitPanel init_panel;
+    sf::Sprite background;
+
     PseudoCodeController <TrieOperationType, TrieDictionary> code_panel;
 };

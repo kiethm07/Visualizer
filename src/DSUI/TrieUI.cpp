@@ -15,7 +15,8 @@ TrieUI::TrieUI(const AssetManager& a_manager) :
 	timeline_panel(a_manager),
 	ui_state(UIState::Init),
 	init_panel(a_manager),
-	code_panel(a_manager, "Consola")
+	code_panel(a_manager, "Consola"),
+	background(a_manager.getTexture("NightSky"))
 {
 	init_panel.setPlaceHolderForManualInput("Input strings (comma separated)");
 }
@@ -34,6 +35,13 @@ void TrieUI::update(const sf::RenderWindow& window, const sf::View& fixed_view, 
 		//std::cout << highlighted_line << "\n";
 		code_panel.sync(type, highlighted_line);
 		code_panel.update(window, fixed_view);
+
+		sf::Vector2u windowSize = window.getSize();
+
+		float scaleX = (float)windowSize.x / background.getTexture().getSize().x;
+		float scaleY = (float)windowSize.y / background.getTexture().getSize().y;
+
+		background.setScale({ scaleX, scaleY });
 	}
 }
 void TrieUI::Init(const sf::RenderWindow& window, const sf::View& view, sf::View& cam_view, CameraController& cam, const PanelData& data) {
@@ -159,6 +167,8 @@ void TrieUI::draw(sf::RenderWindow& window, const sf::View& fixed_view, const sf
 		window.draw(init_panel);
 	}
 	if (ui_state == UIState::Running) {
+		window.setView(fixed_view);
+		window.draw(background);
 		window.setView(cam_view);
 		timeline.draw(window, cam_view);
 		window.setView(fixed_view);

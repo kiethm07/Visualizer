@@ -43,4 +43,5 @@ private:
     UIState ui_state;
     InitPanel init_panel;
     PseudoCodeController <GraphOperationType, GraphDictionary> code_panel;
+    sf::Sprite background;
 };

@@ -35,7 +35,7 @@ public:
 	bool mousePressed(const sf::RenderWindow& window, const sf::View& view, const sf::Event& ev);
 
 protected:
-	static inline const float SOUND_FACTOR = 0.8f;
+	static inline const float SOUND_FACTOR = 1.0f;
 
 	const AssetManager& a_manager;
 	sf::Sprite sprite;

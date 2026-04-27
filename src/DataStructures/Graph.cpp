@@ -476,7 +476,7 @@ void Graph::runKruskal(GraphRecorder& recorder) const {
 		parent[v] = u;
 		return 1;
 	};
-	int MST = 0;
+	int MST = 0, cnt = 0;
 	recorder.addNewPhase();
 	recorder.addCommand(Command(Target::PopUp, Type::FadeIn, -2));
 	for (const auto& [w, p] : edge_list) {
@@ -493,6 +493,7 @@ void Graph::runKruskal(GraphRecorder& recorder) const {
 		recorder.setHighlightedLine(2);
 		if (join(u, v)) {
 			MST += w;
+			cnt++;
 			recorder.addNewPhase();
 			recorder.setHighlightedLine(4);
 			recorder.addCommand(Command(Target::Edge, Type::FoundedOn, nodes.at(x).ui_id, nodes.at(y).ui_id));
@@ -502,5 +503,9 @@ void Graph::runKruskal(GraphRecorder& recorder) const {
 		recorder.addNewPhase();
 		recorder.setHighlightedLine(3);
 		recorder.addCommand(Command(Target::Edge, Type::FadeOut, nodes.at(x).ui_id, nodes.at(y).ui_id));
+	}
+	if ((nodes.size() > 1) && (cnt + 1 != nodes.size())) {
+		recorder.addNewPhase();
+		recorder.addCommand(Command::createChangeValueCommand(-2, -1));
 	}
 }

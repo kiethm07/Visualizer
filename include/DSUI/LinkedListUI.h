@@ -41,6 +41,7 @@ private:
 	UIState ui_state;
 	LinkedList list;
 	Button test;
+	sf::Sprite background;
 
 	PseudoCodeController<ListOperationType, LinkedListDictionary> code_panel;
 };  

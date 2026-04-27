@@ -30,7 +30,8 @@ private:
 	}
 	const AssetManager& a_manager;
 	const sf::Font& FONT;
-	sf::RectangleShape background;
+	//sf::RectangleShape background;
+	sf::Sprite background;
 	TextBox manual_input;
 	Button random;
 	Button empty;

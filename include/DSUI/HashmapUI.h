@@ -42,4 +42,5 @@ private:
 	InitPanel init_panel;
 	PseudoCodeController<HashmapOperationType, HashmapDictionary> code_panel;
 	const int DEFAULT_BUCKET_COUNT = 13;
+	sf::Sprite background;
 };

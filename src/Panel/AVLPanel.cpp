@@ -24,7 +24,7 @@ AVLPanel::AVLPanel(const AssetManager& a_manager) :
 	save_button(a_manager, "SaveFileIcon", {}),
 	load_button(a_manager, "LoadFileIcon", {})
 {
-	background.setFillColor(sf::Color::White);
+	background.setFillColor(sf::Color(240, 206, 155, 200));
 	background.setOrigin({ 0, 0 });
 	background.setPosition({ 0, 0 });
 	background.setSize({ 0, 0 });

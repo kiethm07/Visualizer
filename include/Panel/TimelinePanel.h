@@ -38,4 +38,5 @@ private:
 	Button skip_to_last, skip_to_init;
 	Button auto_play, fix_camera, reset_camera;
 	Slider speed_slider;
+	bool is_playing = 1;
 };

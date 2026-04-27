@@ -163,7 +163,8 @@ void GraphRenderer::draw(sf::RenderWindow& window, const sf::View& view) {
 
         std::string label = "";
         if (popup.ui_id == -2) {
-            label = "MST is shown, MST Weight: " + int_to_string(popup.value);
+            if (popup.value != -1) label = "MST is shown, MST Weight: " + int_to_string(popup.value);
+            else label = "Graph is not connected, MST not found!";
         }
         else if (popup.ui_id == -1) {
             label = "Shortest Path DAG Shown";

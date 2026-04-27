@@ -17,7 +17,8 @@ LinkedListUI::LinkedListUI(const AssetManager& a_manager) :
 	timeline_panel(a_manager),
 	ui_state(UIState::Init),
 	init_panel(a_manager),
-	code_panel(a_manager, "Consola")
+	code_panel(a_manager, "Consola"),
+	background(a_manager.getTexture("NightSky"))
 {
 	test.setButtonSize({ 200.f,200.f });
 	init_panel.setPlaceHolderForManualInput("Input value manually, format : x y z");
@@ -41,6 +42,13 @@ void LinkedListUI::update(const sf::RenderWindow& window, const sf::View& fixed_
 		//std::cout << highlighted_line << "\n";
 		code_panel.sync(type, highlighted_line);
 		code_panel.update(window, fixed_view);
+
+		sf::Vector2u windowSize = window.getSize();
+
+		float scaleX = (float)windowSize.x / background.getTexture().getSize().x;
+		float scaleY = (float)windowSize.y / background.getTexture().getSize().y;
+
+		background.setScale({ scaleX, scaleY });
 	}
 }
 
@@ -176,13 +184,13 @@ void LinkedListUI::draw(sf::RenderWindow& window, const sf::View& fixed_view, co
 		window.draw(init_panel);
 	}
 	if (ui_state == UIState::Running) {
+		window.setView(fixed_view);
+		window.draw(background);
 		window.setView(cam_view);
-		//window.draw(test);
 		timeline.draw(window, cam_view);
 		window.setView(fixed_view);
 		window.draw(timeline_panel);
 		window.draw(panel);
-		//test_panel.setSize({ 300.f, 200.f });
 		window.draw(code_panel);
 	}
 }
