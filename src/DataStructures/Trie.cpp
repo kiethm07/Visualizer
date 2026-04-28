@@ -143,7 +143,7 @@ void Trie::applyOperation(const TrieOperation& operation, TrieRecorder& recorder
 		insert(x, recorder);
 		recorder.addNewPhase();
 		recorder.addCommand(Command(Target::Node, Type::Wait, -1));
-		recorder.setHighlightedLine(4);
+		recorder.setHighlightedLine(6);
 		return;
 	}
 	if (operation.type == TrieOperationType::Remove) {
@@ -181,20 +181,24 @@ void Trie::applyOperation(const TrieOperation& operation, TrieRecorder& recorder
 
 void Trie::rawInit(const std::vector<std::string>& values) {
 	for (int i = 0; i < 26; i++) clearWithoutRecorder(root->child[i]);
+	TrieRecorder dummy;
 	for (const std::string& s : values) {
-		Node* tmp = root;
-		for (int i = 0; i < s.size(); i++) {
-			int nxt = s[i] - 'A';
-			if (tmp->child[nxt] == nullptr) {
-				std::string label = "";
-				label += s[i];
-				tmp->child[nxt] = new Node(label, next_ui_id++);
-			}
-			tmp = tmp->child[nxt];
-			tmp->cnt++;
-		}
-		tmp->isEnd = 1;
+		insert(s, dummy);
 	}
+	//for (const std::string& s : values) {
+	//	Node* tmp = root;
+	//	for (int i = 0; i < s.size(); i++) {
+	//		int nxt = s[i] - 'A';
+	//		if (tmp->child[nxt] == nullptr) {
+	//			std::string label = "";
+	//			label += s[i];
+	//			tmp->child[nxt] = new Node(label, next_ui_id++);
+	//		}
+	//		tmp = tmp->child[nxt];
+	//		tmp->cnt++;
+	//	}
+	//	tmp->isEnd = 1;
+	//}
 }
 
 void Trie::insert(const std::string& s, TrieRecorder& recorder) {
@@ -204,7 +208,41 @@ void Trie::insert(const std::string& s, TrieRecorder& recorder) {
 
 	Node* tmp = root;
 	int pre_id = -1;
+	recorder.addNewPhase();
+	recorder.addCommand(Command(Target::Node, Type::HighlightOn, root->ui_id));
+	recorder.setHighlightedLine(0);
+	pre_id = root->ui_id;
+	int cnt = 0;
+	for (int i = 0; i < s.size(); i++) {
+		int nxt = s[i] - 'A';
+		if (tmp->child[nxt] == nullptr) {
+			recorder.addNewPhase();
+			recorder.addCommand(Command(Target::Node, Type::HighlightOff, tmp->ui_id));
+			recorder.setHighlightedLine(0);
+			break;
+		}
+		cnt++;
+		pre_id = tmp->ui_id;
+		tmp = tmp->child[nxt];
+		recorder.addNewPhase();
+		recorder.setHighlightedLineAsPrevious();
+		recorder.addCommand(Command(Target::Node, Type::HighlightOn, tmp->ui_id));
+		recorder.addCommand(Command(Target::Node, Type::HighlightOff, pre_id));
+	}
+	if (cnt == s.size() && tmp->isEnd) {
+		//search(s, recorder);
+		recorder.addNewPhase();
+		recorder.addCommand(Command(Target::Node, Type::HighlightOff, tmp->ui_id));
+		recorder.setHighlightedLine(1);
+		return;
+	}
+	//else {
+	//	recorder.addNewPhase();
+	//	recorder.addCommand(Command(Target::Node, Type::HighlightOff, tmp->ui_id));
+	//}
 
+	tmp = root;
+	pre_id = -1;
 	recorder.addNewPhase();
 	recorder.addCommand(Command(Target::Node, Type::HighlightOn, root->ui_id));
 	pre_id = root->ui_id;
@@ -212,7 +250,7 @@ void Trie::insert(const std::string& s, TrieRecorder& recorder) {
 	for (int i = 0; i < s.size(); i++) {
 		recorder.addNewPhase();
 		recorder.addCommand(Command(Target::Node, Type::Wait, -1));
-		recorder.setHighlightedLine(0);
+		recorder.setHighlightedLine(2);
 		int nxt = s[i] - 'A';
 		bool is_new = false;
 		if (tmp->child[nxt] == nullptr) {
@@ -225,10 +263,10 @@ void Trie::insert(const std::string& s, TrieRecorder& recorder) {
 		Node* next_node = tmp->child[nxt];
 		recorder.addNewPhase();
 		recorder.addCommand(Command(Target::Node, Type::Wait, -1));
-		recorder.setHighlightedLine(1);
+		recorder.setHighlightedLine(3);
 		if (is_new) {
 			recorder.addNewPhase();
-			recorder.setHighlightedLine(2);
+			recorder.setHighlightedLine(4);
 			recorder.addCommand(Command(Target::All, Type::Reconstruct, -1));
 			recorder.addState(getState());
 
@@ -244,7 +282,7 @@ void Trie::insert(const std::string& s, TrieRecorder& recorder) {
 		}
 
 		recorder.addNewPhase();
-		recorder.setHighlightedLine(0);
+		recorder.setHighlightedLine(2);
 		recorder.addCommand(Command(Target::Node, Type::HighlightOn, next_node->ui_id));
 		if (pre_id != -1) recorder.addCommand(Command(Target::Node, Type::HighlightOff, pre_id));
 
@@ -253,7 +291,7 @@ void Trie::insert(const std::string& s, TrieRecorder& recorder) {
 		pre_id = tmp->ui_id;
 	}
 	recorder.addNewPhase();
-	recorder.setHighlightedLine(3);
+	recorder.setHighlightedLine(5);
 	recorder.addCommand(Command(Target::Node, Type::HighlightOff, tmp->ui_id));
 	if (tmp->isEnd == 0){
 		recorder.addNewPhase();

@@ -50,7 +50,7 @@ void Graph::applyOperation(const GraphOperation& operation, GraphRecorder& recor
 		addEdge(operation.from, operation.to, operation.weight, recorder);
 		recorder.addNewPhase();
 		recorder.addCommand(Command::createWaitCommand());
-		recorder.setHighlightedLine(3);
+		recorder.setHighlightedLine(5);
 	}
 	else if (operation.type == GraphOperationType::RemoveEdge) {
 		removeEdge(operation.from, operation.to, recorder);
@@ -277,25 +277,73 @@ void Graph::addEdge(int from, int to, int weight, GraphRecorder& recorder) {
 	recorder.addNewPhase();
 	recorder.setHighlightedLine(0);
 	recorder.addCommand(Command::createWaitCommand());
-	if (edges.find({ u, v }) != edges.end()) {
-		recorder.addNewPhase();
-		recorder.setHighlightedLine(0);
-		recorder.addCommand(Command(Target::Edge, Type::HighlightOn, nodes[u].ui_id, nodes[v].ui_id));
-		recorder.addNewPhase();
-		recorder.setHighlightedLine(0);
-		recorder.addCommand(Command::createWaitCommand());
+	int cnt = 0;
+	recorder.addNewPhase();
+	if (nodes.find(u) != nodes.end()) {
+		recorder.setHighlightedLineAsPrevious();
+		recorder.addCommand(Command(Target::Node, Type::HighlightOn, nodes[u].ui_id));
+		cnt++;
+	}
+	if (nodes.find(v) != nodes.end()) {
+		recorder.setHighlightedLineAsPrevious();
+		recorder.addCommand(Command(Target::Node, Type::HighlightOn, nodes[v].ui_id));
+		cnt++;
+	}
+	recorder.addNewPhase();
+	recorder.setHighlightedLine(0);
+	recorder.addCommand(Command::createWaitCommand());
+	if (cnt != 2) {
 		recorder.addNewPhase();
 		recorder.setHighlightedLine(1);
+		recorder.addCommand(Command::createWaitCommand());
+		recorder.addNewPhase();
+		if (nodes.find(u) != nodes.end()) {
+			recorder.setHighlightedLineAsPrevious();
+			recorder.addCommand(Command(Target::Node, Type::HighlightOff, nodes[u].ui_id));
+		}
+		if (nodes.find(v) != nodes.end()) {
+			recorder.setHighlightedLineAsPrevious();
+			recorder.addCommand(Command(Target::Node, Type::HighlightOff, nodes[v].ui_id));
+		}
+		return;
+	}
+	recorder.addNewPhase();
+	recorder.setHighlightedLine(2);
+	recorder.addCommand(Command::createWaitCommand());
+	if (edges.find({ u, v }) != edges.end()) {
+		recorder.addNewPhase();
+		recorder.setHighlightedLine(2);
+		recorder.addCommand(Command(Target::Edge, Type::HighlightOn, nodes[u].ui_id, nodes[v].ui_id));
+		recorder.addNewPhase();
+		recorder.setHighlightedLine(2);
+		recorder.addCommand(Command::createWaitCommand());
+		recorder.addNewPhase();
+		recorder.setHighlightedLine(3);
 		recorder.addCommand(Command(Target::Edge, Type::HighlightOff, nodes[u].ui_id, nodes[v].ui_id));
+		if (nodes.find(u) != nodes.end()) {
+			recorder.addCommand(Command(Target::Node, Type::HighlightOff, nodes[u].ui_id));
+		}
+		if (nodes.find(v) != nodes.end()) {
+			recorder.addCommand(Command(Target::Node, Type::HighlightOff, nodes[v].ui_id));
+		}
 		return;
 	}
 	edges[{u, v}] = weight;
 	nodes[u].neighbors[v] = weight;
 	nodes[v].neighbors[u] = weight;
 	recorder.addNewPhase();
-	recorder.setHighlightedLine(2);
+	recorder.setHighlightedLine(4);
 	recorder.addCommand(Command::createSpawnEdgeCommand(nodes[u].ui_id, nodes[v].ui_id, weight));
 	recorder.addCommand(Command(Target::Edge, Type::FadeIn, nodes[u].ui_id, nodes[v].ui_id));
+	recorder.addNewPhase();
+	if (nodes.find(u) != nodes.end()) {
+		recorder.setHighlightedLineAsPrevious();
+		recorder.addCommand(Command(Target::Node, Type::HighlightOff, nodes[u].ui_id));
+	}
+	if (nodes.find(v) != nodes.end()) {
+		recorder.setHighlightedLineAsPrevious();
+		recorder.addCommand(Command(Target::Node, Type::HighlightOff, nodes[v].ui_id));
+	}
 }
 
 void Graph::removeEdge(int from, int to, GraphRecorder& recorder) {

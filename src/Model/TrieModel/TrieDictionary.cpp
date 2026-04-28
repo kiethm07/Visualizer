@@ -5,6 +5,8 @@ TrieDictionary::TrieDictionary() {
 
 	// 1. Insert Node
 	pseudocode[Type::Insert] = {
+		"Find if string exists",
+		"If exists then return",
 		"Iterate each character",
 		"If character not in trie",
 		"    create new node",

@@ -1,5 +1,6 @@
 #include <DataStructures/Hashmap.h>
 #include <iostream>
+#include <set>
 
 void Hashmap::init(int n)
 {
@@ -105,10 +106,10 @@ void Hashmap::rawInit(const int& bucket_count, const std::vector<int>& values)
 	this->bucket_count = bucket_count;
 	next_ui_id = 0;
 	buckets.assign(bucket_count, {});
+	HashmapRecorder dummy;
 	for (const int& i : values)
 	{
-		int x = getHash(i);
-		buckets[x].push_back(Node(i, next_ui_id++));
+		insert(i, dummy);
 	}
 }
 

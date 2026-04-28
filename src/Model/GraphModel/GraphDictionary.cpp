@@ -22,6 +22,8 @@ GraphDictionary::GraphDictionary() {
 	titles[Type::RemoveNode] = "Remove Node";
 
 	pseudocode[Type::InsertEdge] = {
+		"If neither node exists",
+		"    Return",
 		"If edge already exists",
 		"    Return",
 		"Add edge (u, v, weight)",

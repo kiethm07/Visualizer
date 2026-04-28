@@ -14,7 +14,7 @@ HashmapPanel::HashmapPanel(const AssetManager& a_manager) :
 	a_manager(a_manager),
 	BUTTON_FONT(a_manager.getFont("Roboto-Regular")),
 	input_value(a_manager, "value", {}, {}, 20, 0),
-	insert_button(a_manager, "insert", {}, {}, 20),
+	insert_button(a_manager, "Insert", {}, {}, 20),
 	remove_button(a_manager, "Remove", {}, {}, 20),
 	search_button(a_manager, "Search", {}, {}, 20),
 	reset_button(a_manager, "Reset", {}, {}, 20),
