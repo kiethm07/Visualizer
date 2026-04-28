@@ -19,7 +19,7 @@ GraphUI::GraphUI(const AssetManager& a_manager) :
 	code_panel(a_manager, "Consola"),
 	background(a_manager.getTexture("NightSky"))
 {
-	init_panel.setPlaceHolderForManualInput("Manual input: (nodes count, edge info [u, v, w])");
+	init_panel.setPlaceHolderForManualInput("Manual input: (nodes count, nodes list, edge info [u, v, w])");
 }
 
 void GraphUI::update(const sf::RenderWindow& window, const sf::View& fixed_view, const sf::View& cam_view) {
@@ -83,7 +83,7 @@ void GraphUI::Init(const sf::RenderWindow& window, const sf::View& view, sf::Vie
 	std::vector<int> values = parseValues(data.values);
 	if (data.operation == PanelOperation::Empty) {
 		//Do nothing
-		graph.rawInit({}, {});
+		graph.rawInit(0, {}, {});
 	}
 	else if (data.operation == PanelOperation::Random) {
 		int n = rand(7, 11);
@@ -107,22 +107,28 @@ void GraphUI::Init(const sf::RenderWindow& window, const sf::View& view, sf::Vie
 			int weight = rand(1, 100);
 			edges.push_back({ u, v, weight });
 		}
-		graph.rawInit(n, edges);
+		std::vector<int> nodes;
+		for (int i = 0; i < n; i++) nodes.push_back(i);
+		graph.rawInit(n, nodes, edges);
 	}
 	else if (data.operation == PanelOperation::Manual || data.operation == PanelOperation::File) {
+		//for (int i : values) std::cout << i << "\n";
 		if (values.size() == 0) {
-			graph.rawInit({}, {});
+			graph.rawInit(0, {}, {});
 		}
 		else {
 			int n = values[0];
+			std::vector<int> nodes;
 			std::vector<std::tuple<int, int, int>> edges;
-			for (int i = 1; i + 2 < values.size(); i += 3) {
+			int i = 1;
+			for (i = 1; i <= n && i < values.size(); i++) nodes.push_back(values[i]);
+			for (i; i + 2 < values.size(); i += 3) {
 				int u = values[i];
 				int v = values[i + 1];
 				int w = values[i + 2];
 				edges.push_back({ u,v,w });
 			}
-			graph.rawInit(n, edges);
+			graph.rawInit(n, nodes, edges);
 		}
 	}
 	current_state = graph.getState();

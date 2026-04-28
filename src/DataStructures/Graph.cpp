@@ -103,21 +103,12 @@ void Graph::saveToFile(const std::string& filepath) const {
 		return;
 	}
 
-	fout << state.next_ui_id << " " << state.nodes.size() << " " << state.edges.size() << "\n";
-
-	for (const auto& [key, node] : state.nodes) {
-		fout << key << " "
-			<< node.ui_id << " "
-			<< node.neighbors.size() << "\n";
-		for (const auto& [neigh_id, val] : node.neighbors) {
-			fout << neigh_id << " " << val << " ";
-		}
-		fout << "\n";
+	fout << nodes.size() << "\n";
+	for (const auto& [u, w] : nodes) fout << u << " "; fout << "\n";
+	for (const auto& [e, w] : edges) {
+		fout << e.first << " " << e.second << " " << w << "\n";
 	}
 
-	for (const auto& [p, w] : state.edges) {
-		fout << p.first << " " << p.second << " " << w << "\n";
-	}
 
 	fout.close();
 	std::cout << "Success: " << filepath << "\n";
@@ -134,41 +125,33 @@ void Graph::loadFromFile(const std::string& filepath) {
 	}
 
 	int node_count = 0;
-	int edge_count = 0;
-	if (fin >> state.next_ui_id >> node_count >> edge_count) {
-		for (int i = 0; i < node_count; ++i) {
-			int key, ui_id, sz;
-			fin >> key >> ui_id >> sz;
-			state.nodes[key] = GraphState::Node(ui_id);
-			for (int j = 0; j < sz; ++j) {
-				int neigh_id, val;
-				fin >> neigh_id >> val;
-				state.nodes[key].neighbors[neigh_id] = val;
+	std::vector<int> node_list;
+	std::vector<std::tuple<int, int, int>> edge_list;
+	if (fin >> node_count) {
+		for (int i = 0; i < node_count; i++) {
+			int x;
+			if (fin >> x) {
+				node_list.push_back(x);
 			}
+			else break;
 		}
-
-		for (int i = 0; i < edge_count; ++i) {
-			int u, v, w;
-			fin >> u >> v >> w;
-			state.edges[{u, v}] = w;
-		}
+		int u, v, w;
+		while (fin >> u >> v >> w) edge_list.push_back({ u,v,w });
 	}
 
 	fin.close();
 	std::cout << "Success: " << filepath << "\n";
-	loadState(state);
+	rawInit(node_count, node_list, edge_list);
 }
 
-void Graph::rawInit(int node_cnt, const std::vector<std::tuple<int, int, int>>& edges) {
+void Graph::rawInit(int node_cnt, const std::vector<int>& node_list, const std::vector<std::tuple<int, int, int>>& edges) {
 	clearWithoutRecorder();
 	std::set<std::pair<int, int>> added_edges;
 	//for (int value : nodes) {
 	//	insertNode(value, GraphRecorder());
 	//}
 	GraphRecorder dummy;
-	for (int i = 0; i < node_cnt; i++) {
-		insertNode(i, dummy);
-	}
+	for (int i : node_list) insertNode(i, dummy);
 	for (const auto& [u, v, w] : edges) {
 		int x = u;
 		int y = v;

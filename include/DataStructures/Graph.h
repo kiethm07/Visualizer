@@ -13,7 +13,7 @@ public:
 	GraphState getState() const;
 	void loadState(const GraphState& state);
 	void applyOperation(const GraphOperation& operation, GraphRecorder& recorder);
-	void rawInit(int node_cnt, const std::vector<std::tuple<int, int, int>>& edges);
+	void rawInit(int node_cnt, const std::vector<int>& node_list, const std::vector<std::tuple<int, int, int>>& edges);
 	void saveToFile(const std::string& filepath) const;
 	void loadFromFile(const std::string& file_path);
 private:

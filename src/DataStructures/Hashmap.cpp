@@ -57,14 +57,12 @@ void Hashmap::saveToFile(const std::string& filepath) const {
 		return;
 	}
 
-	fout << state.next_ui_id << " " << state.bucket_count << "\n";
+	fout << state.bucket_count << " ";
 
-	for (int i = 0; i < state.bucket_count; i++) {
-		fout << state.value[i].size() << "\n";
-		for (int j = 0; j < (int)state.value[i].size(); j++) {
-			fout << state.value[i][j] << " " << state.ui_id[i][j] << " ";
+	for (int i = 0; i < bucket_count; i++) {
+		for (int j = 0; j < buckets[i].size(); j++) {
+			fout << buckets[i][j].val << " ";
 		}
-		fout << "\n";
 	}
 
 	fout.close();
@@ -81,24 +79,18 @@ void Hashmap::loadFromFile(const std::string& filepath) {
 		return;
 	}
 
-	if (fin >> state.next_ui_id >> state.bucket_count) {
-		state.value.resize(state.bucket_count);
-		state.ui_id.resize(state.bucket_count);
-
-		for (int i = 0; i < state.bucket_count; i++) {
-			int sz = 0;
-			fin >> sz;
-			state.value[i].resize(sz);
-			state.ui_id[i].resize(sz);
-			for (int j = 0; j < sz; j++) {
-				fin >> state.value[i][j] >> state.ui_id[i][j];
-			}
-		}
+	int bc = 13;
+	std::vector<int> values;
+	
+	if (fin >> bc) {
+		int x;
+		while (fin >> x) values.push_back(x);
 	}
 
 	fin.close();
+
 	std::cout << "Success: " << filepath << "\n";
-	loadState(state);
+	rawInit(bc, values);
 }
 
 void Hashmap::rawInit(const int& bucket_count, const std::vector<int>& values)

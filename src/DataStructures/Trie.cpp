@@ -8,6 +8,8 @@ Trie::Trie() :
 
 Trie::~Trie() {
 	clearWithoutRecorder(root);
+	delete root;
+	root = nullptr;
 }
 
 TrieState Trie::getState() const {
@@ -66,26 +68,27 @@ void Trie::loadState(const TrieState& state) {
 void Trie::saveToFile(const std::string& filepath) const {
 	if (filepath.empty()) return;
 
-	TrieState state = getState();
-
 	std::ofstream fout(filepath);
 	if (!fout.is_open()) {
 		std::cerr << "Cannot open file: " << filepath << "\n";
 		return;
 	}
 
-	fout << state.next_ui_id << " " << state.nodes.size() << "\n";
+	auto dfs = [&](auto&& self, Node* node, std::string current_word) -> void {
+		if (!node) return;
 
-	for (const auto& snp : state.nodes) {
-		fout << (snp.label.empty() ? "-" : snp.label) << " "
-			<< snp.ui_id << " "
-			<< snp.cnt << " "
-			<< snp.isEnd << "\n";
-		for (int i = 0; i < 26; i++) {
-			fout << snp.child[i] << (i == 25 ? "" : " ");
+		if (node->isEnd) {
+			fout << current_word << "\n";
 		}
-		fout << "\n";
-	}
+
+		for (int i = 0; i < 26; ++i) {
+			if (node->child[i] != nullptr) {
+				self(self, node->child[i], current_word + char('A' + i));
+			}
+		}
+		};
+
+	dfs(dfs, root, "");
 
 	fout.close();
 	std::cout << "Success: " << filepath << "\n";
@@ -101,27 +104,15 @@ void Trie::loadFromFile(const std::string& filepath) {
 		return;
 	}
 
-	int node_count = 0;
-	if (fin >> state.next_ui_id >> node_count) {
-		state.nodes.resize(node_count);
-
-		for (int i = 0; i < node_count; ++i) {
-			fin >> state.nodes[i].label;
-			if (state.nodes[i].label == "-") state.nodes[i].label = "";
-
-			fin >> state.nodes[i].ui_id
-				>> state.nodes[i].cnt
-				>> state.nodes[i].isEnd;
-
-			for (int j = 0; j < 26; j++) {
-				fin >> state.nodes[i].child[j];
-			}
-		}
+	std::vector<std::string> values;
+	std::string s;
+	while (fin >> s) {
+		values.push_back(s);
 	}
 
 	fin.close();
 	std::cout << "Success: " << filepath << "\n";
-	loadState(state);
+	rawInit(values);
 }
 
 void Trie::clearWithoutRecorder(Node*& root) {
@@ -129,6 +120,7 @@ void Trie::clearWithoutRecorder(Node*& root) {
 	for (int i = 0; i < 26; i++) {
 		clearWithoutRecorder(root->child[i]);
 	}
+	if (root == this->root) return;
 	delete root;
 	root = nullptr;
 }
@@ -183,6 +175,7 @@ void Trie::rawInit(const std::vector<std::string>& values) {
 	for (int i = 0; i < 26; i++) clearWithoutRecorder(root->child[i]);
 	TrieRecorder dummy;
 	for (const std::string& s : values) {
+		//std::cout << s << "\n";
 		insert(s, dummy);
 	}
 	//for (const std::string& s : values) {

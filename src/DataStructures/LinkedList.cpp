@@ -110,10 +110,8 @@ void LinkedList::saveToFile(const std::string& filepath) const {
         return;
     }
 
-    fout << state.next_ui_id << " " << state.value.size() << "\n";
-
-    for (int i = 0; i < (int)state.value.size(); i++) {
-        fout << state.value[i] << " " << state.ui_id[i] << "\n";
+    for (Node* cur = pHead; cur != nullptr; cur = cur->pNext) {
+        fout << cur->val << " ";
     }
 
     fout.close();
@@ -130,18 +128,13 @@ void LinkedList::loadFromFile(const std::string& filepath) {
         return;
     }
 
-    int node_count = 0;
-    if (fin >> state.next_ui_id >> node_count) {
-        state.value.resize(node_count);
-        state.ui_id.resize(node_count);
-        for (int i = 0; i < node_count; i++) {
-            fin >> state.value[i] >> state.ui_id[i];
-        }
-    }
+    std::vector<int> values;
+    int x;
+    while (fin >> x) values.push_back(x);
 
     fin.close();
     std::cout << "Success: " << filepath << "\n";
-    loadState(state);
+    rawInit(values);
 }
 
 LinkedList::LinkedList() :
