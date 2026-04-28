@@ -109,11 +109,21 @@ void GraphUI::Init(const sf::RenderWindow& window, const sf::View& view, sf::Vie
 		}
 		graph.rawInit(n, edges);
 	}
-	else if (data.operation == PanelOperation::Manual) {
-
-	}
-	else if (data.operation == PanelOperation::File) {
-
+	else if (data.operation == PanelOperation::Manual || data.operation == PanelOperation::File) {
+		if (values.size() == 0) {
+			graph.rawInit({}, {});
+		}
+		else {
+			int n = values[0];
+			std::vector<std::tuple<int, int, int>> edges;
+			for (int i = 1; i + 2 < values.size(); i += 3) {
+				int u = values[i];
+				int v = values[i + 1];
+				int w = values[i + 2];
+				edges.push_back({ u,v,w });
+			}
+			graph.rawInit(n, edges);
+		}
 	}
 	current_state = graph.getState();
 	timeline.clear();

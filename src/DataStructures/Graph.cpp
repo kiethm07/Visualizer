@@ -274,6 +274,7 @@ void Graph::addEdge(int from, int to, int weight, GraphRecorder& recorder) {
 	using Target = GraphAnimationTarget;
 	int u = std::min(from, to);
 	int v = std::max(from, to);
+	if (u == v) return;
 	recorder.addNewPhase();
 	recorder.setHighlightedLine(0);
 	recorder.addCommand(Command::createWaitCommand());
@@ -352,6 +353,7 @@ void Graph::removeEdge(int from, int to, GraphRecorder& recorder) {
 	using Target = GraphAnimationTarget;
 	int u = std::min(from, to);
 	int v = std::max(from, to);
+	if (u == v) return;
 	recorder.addNewPhase();
 	recorder.setHighlightedLine(0);
 	recorder.addCommand(Command::createWaitCommand());
@@ -375,6 +377,7 @@ void Graph::modifyEdge(int from, int to, int new_weight, GraphRecorder& recorder
 	using Target = GraphAnimationTarget;
 	int u = std::min(from, to);
 	int v = std::max(from, to);
+	if (u == v) return;
 	recorder.addNewPhase();
 	recorder.setHighlightedLine(0);
 	recorder.addCommand(Command::createWaitCommand());
