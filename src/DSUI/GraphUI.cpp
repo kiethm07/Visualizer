@@ -190,6 +190,7 @@ std::optional<MenuState> GraphUI::handleEvent(const sf::RenderWindow& window, co
 		}
 		return std::nullopt;
 	}
+	return std::nullopt;
 }
 
 void GraphUI::draw(sf::RenderWindow& window, const sf::View& fixed_view, const sf::View& cam_view) {

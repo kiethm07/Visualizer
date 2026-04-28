@@ -174,6 +174,7 @@ std::optional<MenuState> AVLUI::handleEvent(const sf::RenderWindow& window, cons
 		}
 		return std::nullopt;
 	}
+	return std::nullopt;
 }
 
 void AVLUI::draw(sf::RenderWindow& window, const sf::View& fixed_view, const sf::View& cam_view) {

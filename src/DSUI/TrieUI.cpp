@@ -159,6 +159,7 @@ std::optional<MenuState> TrieUI::handleEvent(const sf::RenderWindow& window, con
 		}
 		return std::nullopt;
 	}
+	return std::nullopt;
 }
 
 void TrieUI::draw(sf::RenderWindow& window, const sf::View& fixed_view, const sf::View& cam_view) {

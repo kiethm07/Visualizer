@@ -185,6 +185,7 @@ std::optional<MenuState> HashmapUI::handleEvent(const sf::RenderWindow& window, 
 		}
 		return std::nullopt;
 	}
+	return std::nullopt;
 }
 
 

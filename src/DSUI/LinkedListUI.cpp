@@ -176,6 +176,7 @@ std::optional<MenuState> LinkedListUI::handleEvent(const sf::RenderWindow& windo
 		}
 		return std::nullopt;
 	}
+	return std::nullopt;
 }
 
 void LinkedListUI::draw(sf::RenderWindow& window, const sf::View& fixed_view, const sf::View& cam_view) {
